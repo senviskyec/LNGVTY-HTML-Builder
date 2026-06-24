@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <link rel="icon" href="favicon.ico" type="image/x-icon">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LNGVTY Email Section Builder</title>
@@ -20,7 +19,16 @@
   .rail-head p{font-size:11px;color:#888;margin-top:4px;line-height:1.4;}
   /* top mode toggle: SECTIONS | MERGE TAGS */
   .rail-modes{display:flex;border-bottom:1px solid #34353a;flex-shrink:0;}
-  .rail-sublabel{padding:10px 14px 2px;font-family:'Montserrat';font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);flex-shrink:0;}
+  .builder-toggle{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 12px;border-bottom:1px solid #34353a;background:#202126;}
+  .builder-toggle .bt-label{font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;transition:.15s;}
+  .builder-toggle .bt-label.on{color:var(--accent);}
+  .bt-switch{position:relative;display:inline-block;width:40px;height:21px;flex-shrink:0;}
+  .bt-switch input{opacity:0;width:0;height:0;}
+  .bt-slider{position:absolute;cursor:pointer;inset:0;background:#3a3a3a;border-radius:21px;transition:.18s;}
+  .bt-slider:before{content:'';position:absolute;height:15px;width:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s;}
+  .bt-switch input:checked + .bt-slider{background:var(--accent);}
+  .bt-switch input:checked + .bt-slider:before{transform:translateX(19px);}
+  .bt-hint{text-align:center;font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#777;padding:0 12px 9px;background:#202126;border-bottom:1px solid #34353a;}  .rail-sublabel{padding:10px 14px 2px;font-family:'Montserrat';font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);flex-shrink:0;}
   .rail-mode{flex:1;text-align:center;padding:13px 2px;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
   .rail-mode:hover{color:#bbb;}
   .rail-mode.active{color:#fff;border-bottom-color:var(--accent);}
@@ -99,6 +107,10 @@
   .tb-label{font-size:11px;color:#999;font-weight:600;}
   .canvas-scroll{flex:1;overflow-y:auto;padding:30px 20px 140px;display:flex;justify-content:center;}
   .email-frame{width:620px;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.16);min-height:200px;position:relative;}
+  .email-frame.webpage-mode{width:100%;max-width:1100px;}
+  body.webpage-builder .canvas-scroll{padding-left:0;padding-right:0;}
+  /* drop-cap lead paragraph (blog) */
+  .dropcap::first-letter{font-family:'Montserrat',sans-serif;font-weight:900;float:left;font-size:72px;line-height:.78;padding:8px 14px 0 0;color:var(--accent);}
   .empty-hint{padding:80px 30px;text-align:center;color:#bbb;}
   .empty-hint .big{font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:#ccc;margin-bottom:8px;text-transform:uppercase;}
   .empty-hint p{font-size:13px;line-height:1.6;}
@@ -272,9 +284,16 @@
     <h1>LNGVTY <span class="accent">BUILDER</span></h1>
     <p>Add blocks, replace ghost text, restyle.</p>
   </div>
-  <div class="rail-modes">
-    <div class="rail-mode active" id="mode-graphics" onclick="setRailMode('graphics')">Graphics</div>
+  <div class="builder-toggle">
+    <span class="bt-label" id="btEmailLbl">Email / Graphic</span>
+    <label class="bt-switch"><input type="checkbox" id="builderModeSwitch" onchange="setBuilderMode(this.checked?'webpage':'email')"><span class="bt-slider"></span></label>
+    <span class="bt-label" id="btWebLbl">Webpage</span>
+  </div>
+  <div class="bt-hint" id="btHint">Page format: narrow email/graphic</div>
+  <div class="rail-modes" id="railModes">
+    <div class="rail-mode" id="mode-blog" onclick="setRailMode('blog')">Webpage</div>
     <div class="rail-mode" id="mode-newsletter" onclick="setRailMode('newsletter')">Newsletter</div>
+    <div class="rail-mode active" id="mode-graphics" onclick="setRailMode('graphics')">Graphics</div>
     <div class="rail-mode" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
   </div>
   <div class="rail-body active" id="railSections">
@@ -485,8 +504,8 @@
 <!-- PREVIEW modal -->
 <div class="preview-bg" id="previewBg">
   <div class="preview-top">
-    <h3>&#128065; Email Preview</h3>
-    <button id="pvDesktop" class="active" onclick="setPreviewWidth(620,'pvDesktop')">Desktop</button>
+    <h3 id="pvTitle">&#128065; Preview</h3>
+    <button id="pvDesktop" class="active" onclick="previewDesktop()">Desktop</button>
     <button id="pvMobile" onclick="setPreviewWidth(380,'pvMobile')">Mobile</button>
     <button onclick="closePreview()">Close</button>
   </div>
@@ -662,6 +681,28 @@ function statCell(num,label){
 function statRow(cells){
   const proto=statCell('00','Label');
   return `<div class="stat-row" data-proto="${esc(proto)}" style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:center;gap:8px 12px;">${cells.map(c=>statCell(c[0],c[1])).join('')}<button class="stat-add" onclick="addStat(this)" title="Add stat">+ stat</button></div>`;
+}
+/* the LNGVTY heartbeat / EKG line — a decorative SVG motif.
+   stroke = line color, op = opacity. Sits absolutely inside a positioned parent. */
+function ekg(stroke,op,pos){
+  stroke=stroke||'var(--accent)';op=(op==null?0.1:op);
+  pos=pos||'left:0;right:0;bottom:30px;';
+  return `<svg viewBox="0 0 1200 90" preserveAspectRatio="none" aria-hidden="true" style="position:absolute;${pos}width:100%;height:80px;opacity:${op};pointer-events:none;">`
+    +`<path d="M0 45 H300 L330 45 L350 12 L375 78 L400 30 L420 45 H560 L585 45 L605 20 L628 70 L650 45 H900 L925 45 L945 16 L968 74 L990 38 L1010 45 H1200" stroke="${stroke}" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+/* a small inline heartbeat glyph (for logos / dividers) */
+function ekgGlyph(stroke,w){
+  stroke=stroke||'var(--accent)';w=w||34;
+  return `<svg width="${w}" height="${Math.round(w*0.6)}" viewBox="0 0 34 20" fill="none" aria-hidden="true" style="vertical-align:middle;display:inline-block;"><path d="M1 10 H8 L11 3 L15 17 L19 7 L22 10 H33" stroke="${stroke}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+/* an add/removable blog tip card (icon + heading + text), 2-up via flex-basis 45% */
+function blogTipCard(icon,title,text){
+  return `<div class="li-wrap" style="flex:1 1 45%;min-width:200px;border:1px solid #ececec;border-top:3px solid var(--accent);border-radius:8px;padding:22px 22px 24px;background:#faf8f6;">`
+    +`<div style="font-size:24px;margin-bottom:10px;">${icon}</div>`
+    +ph(title,"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;line-height:1.3;")
+    +ph(text,"font-size:15px;line-height:1.6;color:var(--body-text);font-weight:300;",'p')
+    +liMoves()
+    +`<button class="li-del" onclick="delLi(this)">×</button></div>`;
 }
 
 /* ═══════════ SECTION LIBRARY ═══════════ */
@@ -1200,6 +1241,144 @@ const SECTIONS = {
       ${ph('Show up. Stay consistent. The results take care of themselves.',"font-size:13px;color:#aaa;margin-bottom:28px;font-weight:300;")}
       ${btn('» Book Your Session',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:18px 44px;border-radius:4px;",'https://app.chalkitpro.com/classschedulepublic/894')}
       <div style="margin-top:16px;">${ph('Questions? Reply to this email — a real person will respond.',"font-size:12px;color:#888;font-weight:300;")}</div>
+    </div>`},
+
+  /* ═══════════ BLOG / WEBPAGE SECTIONS (mode:'blog') ═══════════ */
+
+  blognav:{group:'Header',icon:'▤',name:'Site Nav Bar',theme:'dark',mode:'blog',
+    html:()=>`<div style="background:var(--dark);padding:18px 7%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+      <span style="display:flex;align-items:center;gap:10px;">${ekgGlyph('var(--accent)',32)}${ph('LNGVTY',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;letter-spacing:1.5px;color:#fff;",'span')}</span>
+      <div style="display:flex;align-items:center;gap:26px;flex-wrap:wrap;">
+        ${ph('Get Started',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d6d6d6;",'span')}
+        ${ph('Pricing',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d6d6d6;",'span')}
+        ${ph('Schedule',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d6d6d6;",'span')}
+        ${ph('Blog',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);",'span')}
+        ${btn('Get Started »',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:11px 22px;border-radius:4px;",'#')}
+      </div>
+    </div>`},
+
+  bloghero:{group:'Header',icon:'★',name:'Blog Hero (EKG)',theme:'dark',mode:'blog',
+    html:()=>`<div style="background:var(--dark);padding:84px 7% 92px;text-align:center;position:relative;overflow:hidden;">
+      ${ekg('var(--accent)',0.10,'left:0;right:0;bottom:34px;')}
+      <div style="position:relative;z-index:1;">
+        ${tagBlock(['Recovery'],"display:inline-flex;align-items:center;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;background:rgba(224,90,27,.12);color:var(--accent);padding:7px 15px;border-radius:3px;","display:inline-block;margin-bottom:26px;")}
+        ${ph("The One Habit That's Wrecking Your Results","font-family:'Montserrat',sans-serif;font-weight:900;font-size:56px;line-height:1.04;letter-spacing:-.5px;color:#fff;text-transform:uppercase;max-width:880px;margin:0 auto 22px;")}
+        ${ph("It's not your diet. It's not your program. It's the eight hours you keep treating as optional.","font-size:20px;line-height:1.6;color:#b9b9bd;font-weight:300;max-width:600px;margin:0 auto;",'p')}
+        <div style="margin-top:30px;display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;">
+          ${ph('By the LNGVTY Team',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#fff;",'span')}
+          <span style="color:var(--accent);">|</span>
+          ${ph('June 2026',"font-size:13px;color:#9a9a9e;",'span')}
+          <span style="color:var(--accent);">|</span>
+          ${ph('5 min read',"font-size:13px;color:#9a9a9e;",'span')}
+        </div>
+      </div>
+    </div>`},
+
+  blogimage:{group:'Header',icon:'▦',name:'Featured Image',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:0;">
+      <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;border-bottom:3px solid var(--accent);">
+        <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;max-height:520px;"/>
+        <div class="media-empty" style="padding:90px 24px;text-align:center;color:#999;">
+          <div style="font-size:40px;margin-bottom:10px;">&#128247;</div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#777;margin-bottom:4px;">Featured Image</div>
+          <div style="font-size:12px;color:#aaa;line-height:1.5;">Set a public image URL with &ldquo;Set Image URL&rdquo; below.</div>
+        </div>
+      </div>
+      <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:10px 7% 0;width:auto;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;border-radius:5px;cursor:pointer;">&#128247; Set Image URL</button>
+      ${ph('Caption — where and when this photo was taken.',"max-width:760px;margin:14px auto 0;padding:0 7%;font-size:13px;color:#7a7a7e;font-style:italic;text-align:center;",'p')}
+    </div>`},
+
+  blogintro:{group:'Content',icon:'¶',name:'Lead Paragraph (Drop Cap)',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:46px 7% 6px;">
+      <div style="max-width:760px;margin:0 auto;">
+        <p class="dropcap" contenteditable="true" data-ph="Showing up fully — for your training, your work, your family, and yourself — starts the night before. Good sleep isn't about feeling rested. It's the single biggest lever most people never pull, and it quietly decides how every other habit pays off." style="font-size:21px;line-height:1.7;color:var(--heading);font-weight:400;margin:0;"></p>
+      </div>
+    </div>`},
+
+  blogbody:{group:'Content',icon:'¶',name:'Article Text',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:18px 7%;">
+      <div style="max-width:760px;margin:0 auto;">
+        ${ph('Why It Hits Harder Than You Think',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:31px;line-height:1.18;color:var(--heading);text-transform:uppercase;letter-spacing:.3px;margin:28px 0 18px;")}
+        ${ph("Write your article here. This is a full paragraph of body text — click to edit it. You can select any words to color them or turn them into a link using the floating bar. Keep paragraphs readable and let the content breathe.","font-size:18px;line-height:1.8;color:var(--body-text);margin-bottom:24px;font-weight:300;",'p')}
+        ${ph("Add a second paragraph to keep developing the idea. Short, clear sentences land best. When you want to emphasize something, select it and color it your brand orange.","font-size:18px;line-height:1.8;color:var(--body-text);font-weight:300;",'p')}
+      </div>
+    </div>`},
+
+  blogquote:{group:'Content',icon:'❝',name:'Pull Quote',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:30px 7%;">
+      <div style="max-width:760px;margin:0 auto;border-left:5px solid var(--accent);padding:6px 0 6px 30px;">
+        ${ph('"You don’t get stronger in the gym. You get stronger when you recover from it."',"font-family:'Montserrat',sans-serif;font-weight:700;font-style:italic;font-size:28px;line-height:1.38;color:var(--heading);margin-bottom:12px;",'p')}
+        ${ph('— Coach Tim, LNGVTY Hub',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);",'span')}
+      </div>
+    </div>`},
+
+  blogtips:{group:'Content',icon:'▥',name:'Tip Card Grid',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:24px 7%;">
+      <div style="max-width:760px;margin:0 auto;">
+        ${listBlock([
+          blogTipCard('🧊','Keep Your Bedroom Cool','66–68°F is the sweet spot for deep sleep — a cooler room helps your core temperature drop.'),
+          blogTipCard('☀️','Get Morning Sunlight','Even 10 minutes outside early sets your circadian rhythm for the night ahead.'),
+          blogTipCard('☕','Cut Caffeine After 2PM','Caffeine has a six-hour half-life; that 3pm coffee is still half-active at 9pm.'),
+          blogTipCard('📵','Screens Off an Hour Before','Blue light suppresses melatonin and tells your brain to stay alert.')
+        ],blogTipCard('⭐','New Tip','Short detail here.'),'Add tip card',"display:flex;flex-wrap:wrap;gap:16px;")}
+      </div>
+    </div>`},
+
+  blogtakeaway:{group:'Content',icon:'◆',name:'Takeaway Box',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:24px 7%;">
+      <div style="max-width:760px;margin:0 auto;background:var(--dark);border-radius:12px;padding:34px 38px;position:relative;overflow:hidden;border-left:5px solid var(--accent);">
+        ${ph('The Takeaway',"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;")}
+        ${ph('Treat sleep like a training variable, not an afterthought. Protect it the way you’d protect a hard session — and watch everything else you’re already doing finally pay off.',"font-size:18px;line-height:1.7;color:#e7e7e7;font-weight:300;",'p')}
+      </div>
+    </div>`},
+
+  blogdivider:{group:'Content',icon:'—',name:'Divider Rule',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#fff;padding:14px 7%;"><div style="max-width:760px;margin:0 auto;height:1px;background:#ececec;"></div></div>`},
+
+  blognewsletter:{group:'Embed',icon:'✉',name:'Newsletter Embed',theme:'white',mode:'blog',
+    html:()=>`<div style="background:#faf8f6;padding:60px 7%;border-top:1px solid #ececec;border-bottom:1px solid #ececec;">
+      <div style="max-width:880px;margin:0 auto;">
+        ${ph('This Week at LNGVTY',"font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#7a7a7e;margin-bottom:8px;text-align:center;")}
+        ${ph('The Weekly Newsletter',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:32px;color:var(--heading);text-transform:uppercase;margin-bottom:6px;text-align:center;")}
+        ${ph('Everything happening at the Hub — schedule, events, recipes, and tips.',"font-size:15px;color:#7a7a7e;font-weight:300;text-align:center;margin-bottom:26px;",'p')}
+        <div class="embed-host" data-embed="" style="border:2px dashed var(--accent);background:#fff;padding:0;min-height:140px;border-radius:12px;">
+          <div class="embed-empty" style="padding:56px 24px;text-align:center;">
+            <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">&#9993; Newsletter Embed Slot</div>
+            <div style="font-size:13px;color:#888;line-height:1.6;font-weight:300;">Paste the <strong>exported newsletter HTML</strong> (or an iframe) here to embed this week&rsquo;s newsletter right in the blog post.<br>Use the &ldquo;Edit Embed&rdquo; button below.</div>
+          </div>
+        </div>
+        <button class="embed-edit-btn" type="button" onclick="openEmbedEditor(this)" style="margin-top:12px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:11px;border-radius:5px;cursor:pointer;">&#9998; Edit Newsletter Embed</button>
+      </div>
+    </div>`},
+
+  blogcta:{group:'CTA',icon:'▶',name:'Blog CTA Banner (EKG)',theme:'dark',mode:'blog',
+    html:()=>`<div style="background:var(--accent);padding:66px 7%;text-align:center;position:relative;overflow:hidden;">
+      ${ekg('#1a1a1a',0.16,'left:0;right:0;top:50%;transform:translateY(-50%);')}
+      <div style="position:relative;z-index:1;max-width:640px;margin:0 auto;">
+        ${ph('Ready to Start Your Journey?',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:#fff;text-transform:uppercase;margin-bottom:14px;line-height:1.08;")}
+        ${ph("Join Carrboro's longevity & performance hub — diagnostics, fitness, recovery.","font-size:18px;color:rgba(255,255,255,.92);margin-bottom:30px;font-weight:300;",'p')}
+        ${btn('Get Started »',"display:inline-block;background:#1a1a1a;color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;letter-spacing:1.6px;text-transform:uppercase;text-decoration:none;padding:18px 46px;border-radius:5px;",'#')}
+      </div>
+    </div>`},
+
+  blogfooter:{group:'CTA',icon:'▭',name:'Site Footer',theme:'dark',mode:'blog',
+    html:()=>`<div style="background:var(--dark);padding:54px 7% 40px;text-align:center;">
+      <span style="display:inline-flex;align-items:center;gap:11px;margin-bottom:8px;">
+        ${ekgGlyph('var(--accent)',30)}
+        ${ph('LNGVTY',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;letter-spacing:1.5px;color:#fff;",'span')}
+        <span style="color:var(--accent);font-weight:300;font-size:22px;">|</span>
+        ${ph('Carrboro',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;color:#cfcfcf;",'span')}
+      </span>
+      <div style="max-width:360px;height:1px;background:#3a3a3c;margin:14px auto 16px;"></div>
+      ${ph('601-A W Main St, Carrboro · 919-914-0249',"font-size:13px;color:#888;margin-bottom:22px;font-weight:300;")}
+      <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">
+        ${realBtn('Facebook',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
+        <span style="color:#3a3a3c;">|</span>
+        ${realBtn('Instagram',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
+        <span style="color:#3a3a3c;">|</span>
+        ${realBtn('Website',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
+      </div>
+      <div style="margin-top:22px;">${ph('© 2026 LNGVTY Hub. All rights reserved.',"font-size:11px;color:#666;",'span')}</div>
     </div>`}
 };
 </script>
@@ -1247,7 +1426,20 @@ const DEFAULT_DESC={
   nlevents:'Special events as date boxes. Reorder them, add tags, and add an optional time chip by the title.',
   nlupcoming:'This-week upcoming events as date boxes, with reorder, tags, and an optional time chip.',
   nl90:'The 90-day review reminder. Available in both the Graphics and Newsletter palettes.',
-  nlcta:'The closing newsletter call-to-action ("Ready for This Week?").'
+  nlcta:'The closing newsletter call-to-action ("Ready for This Week?").',
+  // blog / webpage
+  blognav:'Full-width site nav with the heartbeat logo, menu links, and a Get Started button.',
+  bloghero:'Big blog hero with the LNGVTY heartbeat line behind it — category tag, headline, subtitle, author | date | read-time.',
+  blogimage:'A full-width featured image with a caption. Set the image URL with the button on the block.',
+  blogintro:'The opening paragraph with a large orange drop-cap first letter.',
+  blogbody:'An article text block — uppercase heading plus paragraphs. Select words to color or link them.',
+  blogquote:'A pull quote with an accent left border to break up the article.',
+  blogtips:'A 2-up grid of add/removable tip cards (icon + heading + text).',
+  blogtakeaway:'A dark "takeaway" box with an accent edge for the single key point.',
+  blogdivider:'A thin horizontal rule to separate article sections.',
+  blognewsletter:'Embed slot for this week\u2019s newsletter — paste the exported newsletter HTML or an iframe.',
+  blogcta:'A bold full-width call-to-action banner in brand orange, with the heartbeat line.',
+  blogfooter:'Site footer with the heartbeat logo, "LNGVTY | Carrboro" divider, address, and social links.'
 };
 function getDescMap(){try{return Object.assign({},DEFAULT_DESC,JSON.parse(localStorage.getItem('lngvty_secdesc')||'{}'));}catch(e){return Object.assign({},DEFAULT_DESC);}}
 function getDesc(key){const m=getDescMap();return m[key]||'A reusable section block. Click to add it to your canvas.';}
@@ -1279,14 +1471,20 @@ function builtCustomMap(){
 }
 /* does a section belong in the currently-shown rail tab? */
 function secMode(s){return s.mode||'graphics';}
-function inCurrentMode(s){const m=secMode(s);return m==='both'||m===railMode;}
+function inCurrentMode(s){
+  const m=secMode(s);
+  if(railMode==='blog')return m==='blog';            // blog tab: only blog sections
+  if(m==='blog')return false;                        // blog sections never show in email tabs
+  return m==='both'||m===railMode;                   // 'both' = graphics + newsletter
+}
 const NEWSLETTER_GROUP_ORDER=['Newsletter','Members','Recipe','Tips','Nutrition','Events','CTA'];
+const BLOG_GROUP_ORDER=['Header','Content','Embed','CTA'];
 function computeTabs(){
   const groups=new Set();
   Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(s.group);});
   // start from default order, then any custom-created tabs in creation order
   const ordered=[];
-  const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:DEFAULT_GROUP_ORDER;
+  const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:DEFAULT_GROUP_ORDER;
   orderList.forEach(g=>{if(groups.has(g)){ordered.push(g);groups.delete(g);}});
   // preserve any previously-known custom tab order
   TABS.forEach(g=>{if(groups.has(g)){ordered.push(g);groups.delete(g);}});
@@ -1296,19 +1494,37 @@ function computeTabs(){
 }
 
 /* ═══════════ RAIL: MODE TOGGLE + ACCORDION PALETTE ═══════════ */
-let railMode='graphics';                  // 'graphics' | 'newsletter' | 'hotkeys'
+let railMode='graphics';                  // 'graphics' | 'newsletter' | 'blog' | 'hotkeys'
+let builderMode='email';                  // 'email' | 'webpage'
 let openGroups=null;                      // Set of expanded group names (null = init to all)
+
+function setBuilderMode(mode){
+  builderMode=mode;
+  const isWeb=(mode==='webpage');
+  document.getElementById('builderModeSwitch').checked=isWeb;
+  document.getElementById('btEmailLbl').classList.toggle('on',!isWeb);
+  document.getElementById('btWebLbl').classList.toggle('on',isWeb);
+  document.getElementById('btHint').textContent=isWeb?'Page format: full-width webpage':'Page format: narrow email/graphic';
+  // the toggle only changes how the page is FORMATTED (width + export),
+  // not which sections are available — every tab stays usable in both formats.
+  document.getElementById('frame').classList.toggle('webpage-mode',isWeb);
+  document.body.classList.toggle('webpage-builder',isWeb);
+  refreshState&&refreshState();
+}
 
 function setRailMode(m){
   railMode=m;
-  const isSections=(m==='graphics'||m==='newsletter');
+  const isSections=(m==='graphics'||m==='newsletter'||m==='blog');
   document.getElementById('mode-graphics').classList.toggle('active',m==='graphics');
   document.getElementById('mode-newsletter').classList.toggle('active',m==='newsletter');
+  document.getElementById('mode-blog').classList.toggle('active',m==='blog');
   document.getElementById('mode-hotkeys').classList.toggle('active',m==='hotkeys');
   document.getElementById('railSections').classList.toggle('active',isSections);
   document.getElementById('pane-hotkeys').classList.toggle('active',m==='hotkeys');
   const sl=document.getElementById('railSubLabel');
-  if(sl&&isSections)sl.textContent=(m==='newsletter')?'Newsletter Sections':'Graphics Sections';
+  if(sl&&isSections){
+    sl.textContent=(m==='newsletter')?'Newsletter Sections':(m==='blog')?'Webpage / Blog Sections':'Graphics Sections';
+  }
   if(isSections){openGroups=null;renderRail(document.getElementById('palSearch')?.value||'');}
 }
 
@@ -1637,9 +1853,11 @@ let mediaTargetHost=null;
 function openMediaEditor(btn){
   mediaTargetHost=btn.closest('.sec').querySelector('.media-host');
   const kind=mediaTargetHost.dataset.mediaKind;
-  document.getElementById('mediaModalTitle').textContent= kind==='audio'?'Set Audio URL (MP3)':'Set Video URL (MP4)';
+  const titles={audio:'Set Audio URL (MP3)',video:'Set Video URL (MP4)',image:'Set Image URL'};
+  const phs={audio:'https://.../coaching.mp3',video:'https://.../welcome.mp4',image:'https://.../featured.jpg'};
+  document.getElementById('mediaModalTitle').textContent= titles[kind]||'Set Media URL';
   document.getElementById('mediaUrlInput').value=mediaTargetHost.dataset.src||'';
-  document.getElementById('mediaUrlInput').placeholder= kind==='audio'?'https://.../coaching.mp3':'https://.../welcome.mp4';
+  document.getElementById('mediaUrlInput').placeholder= phs[kind]||'https://...';
   document.getElementById('mediaModalBg').classList.add('show');
 }
 function closeMediaModal(){document.getElementById('mediaModalBg').classList.remove('show');mediaTargetHost=null;}
@@ -1656,9 +1874,15 @@ function applyMedia(host){
   const url=host.dataset.src||'';
   const el=host.querySelector('.media-el');
   const empty=host.querySelector('.media-empty');
-  const src=el?el.querySelector('source'):null;
-  if(src)src.setAttribute('src',url);
-  if(el){el.style.display=url?'block':'none';if(url)el.load();}
+  if(el && el.tagName==='IMG'){
+    // image host: src lives directly on the <img>
+    el.setAttribute('src',url);
+    el.style.display=url?'block':'none';
+  }else if(el){
+    const src=el.querySelector('source');
+    if(src)src.setAttribute('src',url);
+    el.style.display=url?'block':'none';if(url)el.load();
+  }
   if(empty)empty.style.display=url?'none':'';
 }
 function hydrateMedia(sec){
@@ -1831,8 +2055,8 @@ function buildExport(){
     const empty=h.querySelector('.media-empty');
     if(empty)empty.remove();
     if(el){
-      const src=el.querySelector('source');if(src)src.setAttribute('src',url);
-      el.style.display=url?'block':'none';
+      if(el.tagName==='IMG'){el.setAttribute('src',url);el.style.display=url?'block':'none';}
+      else{const src=el.querySelector('source');if(src)src.setAttribute('src',url);el.style.display=url?'block':'none';}
       el.classList.remove('media-el');if(!el.getAttribute('class'))el.removeAttribute('class');
     }
     h.removeAttribute('class');h.removeAttribute('data-media-kind');h.removeAttribute('data-src');
@@ -1897,6 +2121,38 @@ function buildExport(){
 
   const v=currentVars();
 
+  // ── WEBPAGE MODE: full-width browser HTML (flex is fine; resolve vars to hex for portability) ──
+  if(builderMode==='webpage'){
+    resolveVarsOnly(clone, v);
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LNGVTY Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&family=Open+Sans:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#ffffff;font-family:'Open Sans',Arial,sans-serif;color:${v['--body-text']};line-height:1.6;}
+  img{max-width:100%;display:block;}
+  a{text-decoration:none;}
+  .lngvty-page{width:100%;margin:0 auto;background:#fff;}
+  .dropcap::first-letter{font-family:'Montserrat',sans-serif;font-weight:900;float:left;font-size:72px;line-height:.78;padding:8px 14px 0 0;color:${v['--accent']};}
+  @media (max-width:640px){
+    .lngvty-page [style*="font-size:46px"]{font-size:32px!important;}
+    .lngvty-page [style*="font-size:34px"]{font-size:26px!important;}
+    .lngvty-page [style*="font-size:30px"]{font-size:24px!important;}
+  }
+</style>
+</head>
+<body>
+<div class="lngvty-page">
+${clone.innerHTML.trim()}
+</div>
+</body>
+</html>`;
+  }
+
   // ── EMAIL-SAFE PASS ──────────────────────────────────────────────
   // Real inboxes (Gmail/Outlook/Apple Mail) don't support CSS variables
   // or flexbox. Resolve every var(--x) to a hex value and convert flex
@@ -1937,6 +2193,43 @@ ${clone.innerHTML.trim()}
 </table>
 </body>
 </html>`;
+}
+
+/* Resolve CSS variables to hex throughout the tree, but KEEP flexbox
+   (browsers support it). Used for the full-width webpage export. */
+function resolveVarsOnly(root, vars){
+  const baseMap={
+    '--accent':vars['--accent'],'--dark':vars['--dark'],'--gray':vars['--gray'],
+    '--bg':vars['--bg'],'--body-text':vars['--body-text'],'--heading':vars['--heading']
+  };
+  function resolveVar(name, secMap){
+    let val=(secMap&&secMap[name]!==undefined)?secMap[name]:baseMap[name];
+    if(val===undefined)return null;
+    let guard=0;
+    while(typeof val==='string' && val.indexOf('var(')!==-1 && guard++<6){
+      val=val.replace(/var\(\s*(--[a-z0-9-]+)\s*\)/gi,(m,n)=>{
+        const r=(secMap&&secMap[n]!==undefined)?secMap[n]:baseMap[n];
+        return (r!==undefined&&r!==null)?r:m;
+      });
+    }
+    return val;
+  }
+  function subVars(style, secMap){
+    if(!style||style.indexOf('var(')===-1)return style;
+    return style.replace(/var\(\s*(--[a-z0-9-]+)\s*\)/gi,(m,n)=>{const r=resolveVar(n,secMap);return r!=null?r:m;});
+  }
+  [...root.children].forEach(sec=>{
+    const secMap={};
+    const sty=sec.getAttribute('style')||'';
+    sty.replace(/(--[a-z0-9-]+)\s*:\s*([^;]+)/gi,(m,k,val)=>{secMap[k.trim()]=val.trim();return m;});
+    Object.keys(secMap).forEach(k=>{secMap[k]=resolveVar(k,secMap);});
+    const apply=el=>{
+      const s=el.getAttribute&&el.getAttribute('style');if(s&&s.indexOf('var(')!==-1)el.setAttribute('style',subVars(s,secMap));
+      ['stroke','fill'].forEach(a=>{const av=el.getAttribute&&el.getAttribute(a);if(av&&av.indexOf('var(')!==-1)el.setAttribute(a,subVars(av,secMap));});
+    };
+    apply(sec);
+    sec.querySelectorAll('[style*="var"],[stroke*="var"],[fill*="var"]').forEach(apply);
+  });
 }
 
 /* ═══════════ EMAIL-SAFE TRANSFORM ═══════════
@@ -1982,9 +2275,14 @@ function emailSafe(root, vars){
     const apply=el=>{
       const s=el.getAttribute&&el.getAttribute('style');
       if(s&&s.indexOf('var(')!==-1)el.setAttribute('style',subVars(s,secMap));
+      // SVG presentation attrs (stroke/fill) can hold var() too
+      ['stroke','fill'].forEach(a=>{
+        const av=el.getAttribute&&el.getAttribute(a);
+        if(av&&av.indexOf('var(')!==-1)el.setAttribute(a,subVars(av,secMap));
+      });
     };
     apply(sec);
-    sec.querySelectorAll('[style*="var"]').forEach(apply);
+    sec.querySelectorAll('[style*="var"],[stroke*="var"],[fill*="var"]').forEach(apply);
   });
 
   // 3) convert flex containers to email-safe tables (rows) repeatedly until none remain
@@ -2103,11 +2401,24 @@ function openPreview(){
   const html=buildExport();
   const iframe=document.getElementById('previewIframe');
   iframe.srcdoc=html;
+  const isWeb=(builderMode==='webpage');
+  document.getElementById('pvTitle').innerHTML=isWeb?'&#128065; Webpage Preview':'&#128065; Email Preview';
+  previewDesktop();
   document.getElementById('previewBg').classList.add('show');
+}
+function previewDesktop(){
+  const iframe=document.getElementById('previewIframe');
+  const isWeb=(builderMode==='webpage');
+  iframe.style.width=isWeb?'100%':'620px';
+  iframe.style.maxWidth=isWeb?'1100px':'620px';
+  document.querySelectorAll('.preview-top button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pvDesktop').classList.add('active');
 }
 function closePreview(){document.getElementById('previewBg').classList.remove('show');document.getElementById('previewIframe').srcdoc='';}
 function setPreviewWidth(w,btnId){
-  document.getElementById('previewIframe').style.width=w+'px';
+  const iframe=document.getElementById('previewIframe');
+  iframe.style.maxWidth='';
+  iframe.style.width=w+'px';
   document.querySelectorAll('.preview-top button').forEach(b=>b.classList.remove('active'));
   document.getElementById(btnId).classList.add('active');
 }
@@ -2567,6 +2878,7 @@ In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>.
 </table>
 
 <h2>🧭 The Left Rail (Choosing Blocks)</h2>
+<p><strong>Email / Graphic vs Webpage:</strong> the toggle at the top of the rail sets the <strong>page format</strong>, not which blocks you can use. Left = <strong>Email / Graphic</strong> (narrow, exports as bulletproof email HTML). Right = <strong>Webpage</strong> (full-width, exports as a normal browser page). <strong>All tabs — Webpage, Newsletter, Graphics, Tags — stay available in either format</strong>, so you can mix any blocks and just choose how the final page is sized and exported. Preview and Copy/Download both follow the format you've selected. The Webpage tab adds on-brand blog blocks: nav, EKG hero, drop-cap lead, article text, pull quote, tip grid, takeaway, newsletter embed, CTA, and footer.</p>
 <p>Three tabs at the top: <strong>Graphics</strong>, <strong>Newsletter</strong>, and <strong>Tags</strong> (merge tags). Graphics holds promo/landing blocks; Newsletter holds the weekly-newsletter blocks. Blocks are grouped into collapsible folders — click a folder header to open or close it. The <strong>search box</strong> filters all folders at once.</p>
 <p><strong>Hover to preview:</strong> rest your mouse on any block to see a live mini-preview and description before adding it. The description has an <span class="btnrep">✎ Edit</span> button so you can reword it for your team.</p>
 <p><strong>One shared canvas:</strong> Graphics and Newsletter build into the <em>same</em> email. Switching tabs only changes which list you're browsing — it never erases your work, and you can mix blocks from both. The <strong>Coming Up on 90 Days?</strong> block appears in both lists.</p>
