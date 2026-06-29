@@ -326,21 +326,20 @@
 
 <div class="canvas-wrap">
   <div class="toolbar">
-    <button class="tb-btn primary" onclick="saveState()" data-tip="Saves your work in this browser AND sends it to Airtable (you'll fill in Name, Tag, Status, Notes).">&#128190; Save</button>
+    <button class="tb-btn primary" onclick="saveState()" data-tip="Saves your work in this browser AND to GitHub (you'll fill in Name, Tag, Status, Notes).">&#128190; Save</button>
     <div class="tb-dd" id="syncDD">
-      <button class="tb-btn" onclick="toggleSyncDD(event)" data-tip="Push or Pull the email HTML to/from your GoHighLevel tag.">&#128260; Sync HTML ▾</button>
+      <button class="tb-btn" onclick="toggleSyncDD(event)" data-tip="Push the email HTML to your GoHighLevel tag.">&#128260; Sync HTML ▾</button>
       <div class="tb-dd-menu" id="syncMenu">
         <button class="tb-dd-item" onclick="pushHTML()" data-tip="Sends the current HTML to your GHL tag via webhook.">&#11014; Push HTML</button>
-        <button class="tb-dd-item" onclick="pullHTML()" data-tip="Pulls the HTML stored in your GHL tag back into the builder.">&#11015; Pull HTML</button>
       </div>
     </div>
     <button class="tb-btn" onclick="openPreview()" data-tip="See exactly how the finished email looks, with desktop/mobile toggles.">&#128065; Preview</button>
     <button class="tb-btn" onclick="copyHTML()" data-tip="Copies the finished email HTML to your clipboard (paste this into GHL).">&#128203; Copy HTML</button>
     <button class="tb-btn" onclick="downloadHTML()" data-tip="Saves the finished email HTML as a file.">&#8595; Download</button>
     <button class="tb-btn" onclick="viewHTML()" data-tip="Opens the finished HTML in a window so you can read or copy it.">&#10216;&#10217; View HTML</button>
-    <button class="tb-btn" onclick="openImport()" data-tip="Paste HTML you exported earlier (a saved template) to keep editing it.">&#128229; Import HTML</button>
     <button class="tb-btn" onclick="openAddSection()" data-tip="Create your own section by pasting in HTML.">&#10010; New Section</button>
-    <button class="tb-btn" onclick="openSaved()" data-tip="Browse graphics saved to Airtable (coming soon). Reload to fetch the latest.">&#9733; Saved Graphics</button>
+    <button class="tb-btn" onclick="openSaved()" data-tip="Browse newsletters saved to GitHub. Reload to fetch the latest, then load one to keep editing.">&#9733; Saved Newsletters</button>
+    <button class="tb-btn" onclick="openGithubSettings()" data-tip="Connect the GitHub repo where newsletters are stored.">&#9881; GitHub</button>
     <button class="tb-btn" onclick="openDocs()" data-tip="Open the step-by-step guide.">&#128214; Docs</button>
     <div class="tb-spacer"></div>
     <span class="tb-label" id="secCount">0 sections</span>
@@ -554,12 +553,12 @@
   </div>
 </div>
 
-<!-- SAVE (client + Airtable) modal -->
+<!-- SAVE (client + GitHub) modal -->
 <div class="modal-bg" id="saveBg">
   <div class="modal" style="width:520px;">
-    <div class="modal-head"><h3>&#128190; Save Graphic</h3><button onclick="closeSaveModal()">&times;</button></div>
+    <div class="modal-head"><h3>&#128190; Save Newsletter</h3><button onclick="closeSaveModal()">&times;</button></div>
     <div class="modal-scroll">
-      <div class="panel-note" style="margin-top:0;">Saves your work in this browser <strong>and</strong> sends it to Airtable (Saved Graphics). Re-saving with the same <strong>Name</strong> updates that entry — no duplicates.</div>
+      <div class="panel-note" style="margin-top:0;">Saves your work in this browser <strong>and</strong> as a JSON file in GitHub (Saved Newsletters). Re-saving with the same <strong>Name</strong> updates that file — no duplicates. Connect a repo under <strong>⚙ GitHub</strong> first.</div>
       <div class="field-row" style="margin-top:14px;">
         <label>Name <span style="color:var(--accent);">*</span></label>
         <input type="text" id="saveName" placeholder="e.g. Week of Jun 16 Newsletter" style="width:100%;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;"/>
@@ -596,45 +595,66 @@
   </div>
 </div>
 
-<!-- SAVED GRAPHICS modal (Airtable — webhooks wired later) -->
+<!-- SAVED NEWSLETTERS modal (GitHub) -->
 <div class="modal-bg" id="savedBg">
   <div class="modal" style="width:760px;">
     <div class="modal-head">
-      <h3>&#9733; Saved Graphics</h3>
+      <h3>&#9733; Saved Newsletters</h3>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="tb-btn" id="savedReload" onclick="reloadSaved()" data-tip="Fetch the latest saved graphics from Airtable.">&#8635; Reload</button>
+        <button class="tb-btn" id="savedReload" onclick="reloadSaved()" data-tip="Fetch the latest newsletters from GitHub.">&#8635; Reload</button>
         <button onclick="closeSaved()">&times;</button>
       </div>
     </div>
     <div class="modal-scroll">
-      <div class="panel-note" style="margin-top:0;">This is where your saved graphics &amp; newsletter templates from Airtable will appear. Click <strong>Reload</strong> to pull the latest, then load any one back into the builder to keep editing. <em>Connection is being set up — the items below are placeholders for now.</em></div>
+      <div class="panel-note" style="margin-top:0;">Your saved newsletters live as JSON files in the repo's <code>/saved</code> folder. Click <strong>Reload</strong> to pull the latest from GitHub, then <strong>Load</strong> any one back into the builder to keep editing — every section keeps its type and dynamic controls. <em>Connect a repo under <strong>&#9881; GitHub</strong> first.</em></div>
       <div id="savedFilterBar" style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:14px;">
         <span style="font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-right:2px;">Filter:</span>
       </div>
       <div id="savedGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:14px;"></div>
     </div>
     <div class="modal-foot">
-      <span style="flex:1;font-size:11px;color:#999;" id="savedStatus">Not connected to Airtable yet.</span>
+      <span style="flex:1;font-size:11px;color:#999;" id="savedStatus">Not connected to GitHub yet.</span>
       <button class="tb-btn" onclick="closeSaved()">Close</button>
     </div>
   </div>
 </div>
 
-<!-- IMPORT HTML modal -->
-<div class="modal-bg" id="importBg">
-  <div class="modal wide">
-    <div class="modal-head"><h3>&#128229; Import HTML Back Into Builder</h3><button onclick="closeImport()">&times;</button></div>
+<!-- GITHUB SETTINGS modal -->
+<div class="modal-bg" id="githubBg">
+  <div class="modal" style="width:560px;">
+    <div class="modal-head"><h3>&#9881; GitHub Storage</h3><button onclick="closeGithubSettings()">&times;</button></div>
     <div class="modal-scroll">
-      <div class="panel-note" style="margin-top:0;">Paste HTML you previously got from <strong>Copy HTML</strong> or <strong>Download</strong> (e.g. a saved template). Each section comes back in as an editable block so you can keep working — edit text, links, themes, reorder, and re-export.</div>
+      <div class="panel-note" id="githubNote" style="margin-top:0;">Newsletters are stored as JSON files in a GitHub repo — this gives you free version history, backups, and keeps everything next to the builder. Reading from a <strong>public</strong> repo needs no token; <strong>saving</strong> requires a fine-grained token with <em>Contents: Read &amp; write</em> on this repo.</div>
       <div class="field-row" style="margin-top:14px;">
-        <label>Paste exported email HTML</label>
-        <textarea id="importHtml" placeholder="Paste the full &lt;!DOCTYPE html&gt;… document here" style="width:100%;min-height:280px;font-family:monospace;font-size:11px;line-height:1.5;padding:12px;border:1px solid #ddd;border-radius:6px;resize:vertical;box-sizing:border-box;"></textarea>
+        <label>Owner (user or org)</label>
+        <input type="text" id="ghOwner" placeholder="e.g. evansenvisky" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
       </div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555;margin-top:4px;cursor:pointer;"><input type="checkbox" id="importReplace"/> Replace everything currently on the canvas (otherwise append below)</label>
+      <div class="field-row" style="margin-top:10px;">
+        <label>Repository</label>
+        <input type="text" id="ghRepo" placeholder="e.g. lngvty-builder" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
+      </div>
+      <div style="display:flex;gap:10px;margin-top:10px;">
+        <div class="field-row" style="flex:1;">
+          <label>Folder</label>
+          <input type="text" id="ghDir" placeholder="saved" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
+        </div>
+        <div class="field-row" style="flex:1;">
+          <label>Branch (optional)</label>
+          <input type="text" id="ghBranch" placeholder="main" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:10px;">
+        <label>Personal access token (needed to save)</label>
+        <input type="password" id="ghToken" placeholder="github_pat_… (stored only in this browser)" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;font-family:monospace;">
+        <div style="font-size:11px;color:#999;margin-top:5px;">Kept in this browser's local storage on this device only. Create one at <strong>github.com → Settings → Developer settings → Fine-grained tokens</strong>, scoped to just this repo with Contents read &amp; write. Leave blank to browse a public repo read-only.</div>
+      </div>
+      <div id="ghTestStatus" style="font-size:12px;color:#666;margin-top:10px;min-height:16px;"></div>
     </div>
     <div class="modal-foot">
-      <button class="tb-btn" onclick="closeImport()">Cancel</button>
-      <button class="tb-btn primary" onclick="doImport()">&#128229; Import</button>
+      <button class="tb-btn" onclick="testGithub()">&#128279; Test connection</button>
+      <div style="flex:1;"></div>
+      <button class="tb-btn" onclick="closeGithubSettings()">Cancel</button>
+      <button class="tb-btn primary" onclick="saveGithubSettings()">&#128190; Save settings</button>
     </div>
   </div>
 </div>
@@ -2182,7 +2202,9 @@ function buildExport(){
   clone.querySelectorAll('.sec').forEach(s=>{
     const key=s.dataset.key||'';const theme=s.dataset.theme||'';
     s.removeAttribute('class');s.removeAttribute('draggable');s.removeAttribute('data-key');s.removeAttribute('data-theme');s.style.opacity='';
-    // stamp identity so Import/Pull can rebuild the correct, fully-editable section
+    // stamp section identity into the exported HTML as metadata (data-sec).
+    // Not used for re-import anymore (newsletters round-trip via JSON), but it
+    // documents each block’s type and is harmless in email clients.
     if(key){s.setAttribute('data-sec',key);}
     if(theme){s.setAttribute('data-sectheme',theme);}
   });
@@ -2376,6 +2398,13 @@ function convertFlexToTable(el){
   const alignItems=o['align-items']||'';const justify=o['justify-content']||'';
   delete o['align-items'];delete o['justify-content'];delete o['flex'];
   const valign=alignItems.indexOf('center')!==-1?'middle':(alignItems.indexOf('end')!==-1?'bottom':'top');
+  // Flexbox stretches children to equal height by default (align-items:stretch,
+  // which is also the value when align-items is unspecified). A table won't do
+  // that on its own, so when the source row stretched, force the cells (and the
+  // child's own box) to full height — this keeps coloured side-blocks (date
+  // chips, accent bars) filling the whole row instead of leaving a gap where
+  // the section background shows through.
+  const isStretch=(alignItems==='' || alignItems.indexOf('stretch')!==-1);
   let tAlign='left';
   if(justify.indexOf('center')!==-1)tAlign='center';
   else if(justify.indexOf('end')!==-1)tAlign='right';
@@ -2394,6 +2423,24 @@ function convertFlexToTable(el){
   let cols=0;
   if(flexWrap && !isColumn && kids.length>1){cols=colsFromChild(kids[0]);}
 
+  // Does any child grow to fill the row? In flexbox `flex:1` (or flex-grow>0)
+  // makes the content expand so the row spans the full container width. A table
+  // shrinks to its content unless told otherwise, so when a child grows we must
+  // stretch the table to 100% — otherwise the row's white card / accent bar
+  // only covers the text and the section background shows through the rest.
+  function childGrows(kid){
+    const ks=styleToObj(kid.getAttribute&&kid.getAttribute('style')||'');
+    const f=(ks['flex']||'').trim();
+    if(f){
+      // flex shorthand: first number is flex-grow (e.g. "1", "1 1 45%", "1 0 auto")
+      const g=parseFloat(f.split(/\s+/)[0]);
+      if(!isNaN(g)&&g>0)return true;
+    }
+    const fg=parseFloat(ks['flex-grow']||'');
+    return !isNaN(fg)&&fg>0;
+  }
+  const hasGrowingChild=!isColumn && kids.some(childGrows);
+
   const gapPx=parseInt(gap,10)||0;
   const tbl=document.createElement('table');
   tbl.setAttribute('role','presentation');tbl.setAttribute('cellpadding','0');tbl.setAttribute('cellspacing','0');tbl.setAttribute('border','0');
@@ -2404,19 +2451,31 @@ function convertFlexToTable(el){
   }
   // keep container background/padding/etc on the table; make wrapped grids full width
   const contStyle=Object.assign({},o);
-  if(contStyle['width']===undefined && !isColumn && (tAlign==='spread'||cols>1))contStyle['width']='100%';
+  if(contStyle['width']===undefined && !isColumn && (tAlign==='spread'||cols>1||hasGrowingChild))contStyle['width']='100%';
   tbl.setAttribute('style',objToStyle(contStyle));
 
   if(isColumn){
-    // stack children vertically: one row per child
     const tbody=document.createElement('tbody');
-    kids.forEach((kid,idx)=>{
+    if(justify.indexOf('center')!==-1 || justify.indexOf('around')!==-1 || justify.indexOf('evenly')!==-1){
+      // column flex centered along its main axis -> put the whole stack in one
+      // middle-aligned cell so it sits centred in the (often full-height) box.
       const tr=document.createElement('tr');const td=document.createElement('td');
-      td.setAttribute('valign','top');
-      let cs='';if(idx>0 && gapPx)cs+=`padding-top:${gapPx}px;`;
-      if(cs)td.setAttribute('style',cs);
-      td.appendChild(kid);tr.appendChild(td);tbody.appendChild(tr);
-    });
+      td.setAttribute('valign','middle');td.setAttribute('style','height:100%;');
+      kids.forEach((kid,idx)=>{
+        if(idx>0 && gapPx){const ks=styleToObj(kid.getAttribute('style')||'');ks['margin-top']=gapPx+'px';kid.setAttribute('style',objToStyle(ks));}
+        td.appendChild(kid);
+      });
+      tr.appendChild(td);tbody.appendChild(tr);
+    }else{
+      // stack children vertically: one row per child
+      kids.forEach((kid,idx)=>{
+        const tr=document.createElement('tr');const td=document.createElement('td');
+        td.setAttribute('valign','top');
+        let cs='';if(idx>0 && gapPx)cs+=`padding-top:${gapPx}px;`;
+        if(cs)td.setAttribute('style',cs);
+        td.appendChild(kid);tr.appendChild(td);tbody.appendChild(tr);
+      });
+    }
     tbl.appendChild(tbody);
   }else if(cols>1){
     // WRAPPED GRID: chunk children into rows of `cols`, each cell equal width.
@@ -2447,6 +2506,16 @@ function convertFlexToTable(el){
       const ks=styleToObj(kid.getAttribute&&kid.getAttribute('style')||'');
       let cs='';
       if(ks['width'])cs+=`width:${ks['width']};`;
+      // a growing child (flex:1) should take all remaining width after the
+      // fixed-width siblings, so its cell gets width:100% (and the table is
+      // already 100%). This makes the white card / content fill the row.
+      else if(childGrows(kid)){cs+='width:100%;';td.setAttribute('width','100%');}
+      // stretched rows: make every cell + its child fill the full row height so
+      // coloured side-blocks don't leave a gap (matches flex align-items:stretch)
+      if(isStretch && kids.length>1){
+        cs+='height:100%;';
+        if(ks['height']===undefined){ks['height']='100%';kid.setAttribute('style',objToStyle(ks));}
+      }
       if(idx>0 && gapPx)cs+=`padding-left:${gapPx}px;`;
       if(tAlign==='center')td.setAttribute('align','center');
       if(cs)td.setAttribute('style',cs);
@@ -2491,134 +2560,18 @@ function setPreviewWidth(w,btnId){
   document.getElementById(btnId).classList.add('active');
 }
 
-/* ═══════════ IMPORT HTML BACK INTO BUILDER ═══════════
-   Takes HTML produced by Copy/Download and re-hydrates each top-level
-   section into an editable .sec block: text leaves become contenteditable,
-   <a> tags get wrapped back into editable-link buttons, and theme vars are
-   read off each section so the block-theme button keeps working. */
-function openImport(){document.getElementById('importHtml').value='';document.getElementById('importReplace').checked=false;document.getElementById('importBg').classList.add('show');}
-function closeImport(){document.getElementById('importBg').classList.remove('show');}
+/* HTML Import has been removed. Newsletters now load from structured JSON
+   (Saved Newsletters → Load), so sections keep their type identity and all
+   dynamic controls. These stubs remain only so any stray reference is safe. */
+function openImport(){toast('HTML import was removed — use \u2b50 Saved Newsletters instead.');}
+function closeImport(){}
 
-const TEXT_TAGS=['P','SPAN','DIV','A','H1','H2','H3','H4','H5','H6','LI','TD','STRONG','EM','B','I','SMALL','LABEL'];
-function rehydrateNode(root){
-  // 1) wrap bare <a> into editable-link buttons (skip ones already wrapped)
-  root.querySelectorAll('a').forEach(a=>{
-    if(a.closest('.editable-link'))return;
-    const href=a.getAttribute('href')||'#';
-    const wrap=document.createElement('span');
-    wrap.className='editable-link';wrap.setAttribute('data-href',href);
-    const disp=(a.style.display==='block')?'display:block;position:relative;':'display:inline-block;position:relative;';
-    wrap.setAttribute('style',disp);
-    a.removeAttribute('href');
-    a.setAttribute('contenteditable','true');
-    a.parentNode.insertBefore(wrap,a);
-    wrap.appendChild(a);
-    const edit=document.createElement('button');edit.className='link-edit';edit.type='button';edit.setAttribute('onclick','openLinkModal(this)');edit.innerHTML='&#128279; link';
-    const del=document.createElement('button');del.className='btn-del';del.type='button';del.setAttribute('onclick','removeBtn(this)');del.title='Remove this button';del.innerHTML='&times;';
-    wrap.appendChild(edit);wrap.appendChild(del);
-  });
-  // 2) make text-bearing block elements editable.
-  //    Key fix: inline formatting children (span/b/i/strong/em/u/small/font/br),
-  //    such as per-character color spans, count as part of THIS element's text —
-  //    so the whole block becomes editable, not just the colored fragment.
-  const INLINE_FMT=new Set(['SPAN','B','I','STRONG','EM','U','SMALL','FONT','BR','SUB','SUP','MARK']);
-  const BLOCK_TEXT=['P','DIV','H1','H2','H3','H4','H5','H6','LI','TD','A','LABEL'];
-  root.querySelectorAll(BLOCK_TEXT.join(',')).forEach(el=>{
-    if(el.closest('.link-edit,.btn-del'))return;
-    if(el.hasAttribute('contenteditable'))return;
-    if(el.querySelector('img,iframe,video,audio'))return;
-    if(el.tagName==='A' && el.closest('.editable-link'))return; // handled in step 1
-    const ownText=el.textContent.trim().length>0;
-    if(!ownText)return;
-    // editable when every element child is inline formatting (or there are none)
-    const childEls=[...el.children];
-    const onlyInline=childEls.every(c=>INLINE_FMT.has(c.tagName));
-    if(onlyInline){el.setAttribute('contenteditable','true');}
-  });
-  return root;
-}
-function doImport(rawOverride,replaceOverride){
-  const raw=(typeof rawOverride==='string'?rawOverride:document.getElementById('importHtml').value).trim();
-  if(!raw){toast('Paste some HTML first');return false;}
-  let doc;
-  try{doc=new DOMParser().parseFromString(raw,'text/html');}catch(e){toast('Could not parse that HTML');return false;}
-  if(!doc.body){toast('No content found');return false;}
-  // pull root theme vars from :root style block if present (older exports)
-  const styleText=[...doc.querySelectorAll('style')].map(s=>s.textContent).join('\n');
-  const rootVars={};
-  const rootMatch=styleText.match(/:root\s*{([^}]*)}/);
-  if(rootMatch){rootMatch[1].split(';').forEach(p=>{const m=p.split(':');if(m.length>=2){const k=m[0].trim();const v=m.slice(1).join(':').trim();if(k.startsWith('--'))rootVars[k]=v;}});}
-  // apply global theme vars
-  Object.entries(rootVars).forEach(([cv,val])=>{
-    document.documentElement.style.setProperty(cv,val);
-    const key=Object.keys(THEME_VARMAP).find(k=>THEME_VARMAP[k]===cv);
-    if(key){const inp=document.getElementById('col-'+key);if(inp&&/^#/.test(val))inp.value=val;const hx=document.getElementById('hex-'+key);if(hx)hx.textContent=val;}
-  });
-  // Find the section blocks. Newer exports stamp each section with data-sec
-  // (and may wrap everything in tables), so prefer those. Fall back to the
-  // direct children of .email-wrapper / body for older or hand-written HTML.
-  let blocks=[...doc.querySelectorAll('[data-sec]')];
-  if(!blocks.length){
-    let container=doc.querySelector('.email-wrapper')||doc.body;
-    // if the wrapper is a table, drill into the cell that holds the sections
-    if(container){
-      const inhabited=container.querySelector('td')||container;
-      // pick the deepest single content cell if the structure is table-wrapped
-      let probe=container;
-      while(probe && probe.children.length===1 && /TABLE|TBODY|TR|TD/.test(probe.children[0].tagName)){
-        probe=probe.children[0];
-      }
-      container=probe||container;
-    }
-    blocks=container?[...container.children].filter(n=>n.nodeType===1):[];
-  }
-  if(!blocks.length){toast('No sections found in that HTML');return false;}
-  const doReplace=(typeof replaceOverride==='boolean')?replaceOverride:document.getElementById('importReplace').checked;
-  if(doReplace){frame.querySelectorAll('.sec').forEach(s=>s.remove());}
-  const allSecs=allSections();
-  let count=0;
-  blocks.forEach(b=>{
-    const inner=b.cloneNode(true);
-    // identity stamped at export time
-    const stampedKey=inner.getAttribute('data-sec')||'';
-    const stampedTheme=inner.getAttribute('data-sectheme')||'';
-    inner.removeAttribute('data-sec');inner.removeAttribute('data-sectheme');
 
-    const known=stampedKey && allSecs[stampedKey];
-    const sec=document.createElement('div');sec.className='sec';
-    sec.dataset.key=known?stampedKey:'imported';
-
-    rehydrateNode(inner);
-    sec.appendChild(inner);
-    sec.insertAdjacentHTML('beforeend',controlsHTML());
-    const tag=sec.querySelector('.sec-tag');
-    if(tag)tag.textContent=known?allSecs[stampedKey].name:'Imported Section';
-    frame.appendChild(sec);
-
-    // theme: prefer the stamped theme, else the section's default, else infer from bg
-    let theme=stampedTheme||(known?(allSecs[stampedKey].theme||'white'):'');
-    if(!theme){const bg=(inner.getAttribute('style')||'');theme=/var\(--dark\)/.test(bg)?'dark':(/var\(--gray\)/.test(bg)?'gray':'white');}
-    applySecTheme(sec,theme);
-    wireSec(sec);
-    count++;
-  });
-  refreshPlaceholders();refreshState();
-  closeImport();
-  toast('Imported '+count+(count===1?' section':' sections'));
-  frame.lastElementChild?.scrollIntoView({behavior:'smooth',block:'center'});
-  return true;
-}
-
-/* ═══════════ PUSH / PULL HTML (GHL via webhook) ═══════════ */
+/* ═══════════ PUSH HTML (GHL via webhook) ═══════════ */
 const PUSH_WEBHOOK='https://hook.us2.make.com/elcnfcjykiy0gqhdeo7w5h2kt44arxm2';
-// TODO: paste the Pull webhook URL here once it's built in Make.
-const PULL_WEBHOOK='';   // <-- ADD PULL WEBHOOK URL HERE
 
-/* ═══════════ SAVED GRAPHICS (Airtable) ═══════════ */
-// Retrieves saved graphics (Name, Notes, Status, Tag, HTML) from Airtable.
-const SAVED_FETCH_WEBHOOK='https://hook.us2.make.com/elcnfcjykiy0gqhdeo7w5h2kt44arxm2';
-// (Saving uses SAVE_WEBHOOK defined in the Save section below.)
-const SAVED_PUSH_WEBHOOK='';
+/* ═══════════ SAVED NEWSLETTERS (GitHub) ═══════════ */
+// Browses structured newsletter JSON files stored in the repo's /saved folder.
 
 // placeholder items shown only before the first successful reload
 const SAVED_PLACEHOLDERS=[
@@ -2627,73 +2580,6 @@ const SAVED_PLACEHOLDERS=[
   {name:'Final Scan Reminder',tag:'Graphic',updated:'placeholder'},
   {name:'New Member Welcome',tag:'Newsletter',updated:'placeholder'}
 ];
-
-/* normalize one record coming back from Airtable/Make into our shape.
-   Handles flat objects, Airtable {id, fields:{...}}, and varied key casing. */
-function normalizeSavedRecord(r){
-  if(!r||typeof r!=='object')return null;
-  const f=(r.fields&&typeof r.fields==='object')?r.fields:r;
-  const pick=(...keys)=>{
-    for(const k of keys){
-      for(const actual of Object.keys(f)){
-        if(actual.toLowerCase()===k.toLowerCase() && f[actual]!=null && f[actual]!=='')return f[actual];
-      }
-    }
-    return '';
-  };
-  const name=pick('name','title');
-  const html=pick('html','body','content','code');
-  if(!name && !html)return null;        // not a usable record
-  return {
-    name:String(name||'Untitled'),
-    notes:String(pick('notes','note','description')||''),
-    status:String(pick('status')||''),
-    tag:String(pick('tag','type','category')||''),
-    html:String(html||''),
-    updated:String(pick('updated','updatedAt','last modified','modified','lastModified')||'')
-  };
-}
-function normalizeSavedPayload(data){
-  let arr=[];
-  if(Array.isArray(data))arr=data;
-  else if(data&&Array.isArray(data.records))arr=data.records;
-  else if(data&&Array.isArray(data.items))arr=data.items;
-  else if(data&&typeof data==='object')arr=[data];   // single record object
-  return arr.map(normalizeSavedRecord).filter(Boolean);
-}
-
-/* Fallback for when the webhook returns PLAIN TEXT instead of JSON.
-   Best effort: if the text contains an HTML document, split it off as the
-   html field and treat the text before it as the name. Also supports a
-   pipe/tab-delimited "Name | Tag | Status | Notes | HTML" layout, and
-   multiple records separated by a line of three dashes (---). */
-function parseSavedText(raw){
-  if(!raw||!/<(!doctype|html|table|div)/i.test(raw))return [];
-  const chunks=raw.split(/\n-{3,}\n/).map(s=>s.trim()).filter(Boolean);
-  const out=[];
-  chunks.forEach(chunk=>{
-    // delimited layout?
-    if(/\s\|\s/.test(chunk.split(/<(!doctype|html)/i)[0]||'')){
-      const parts=chunk.split(/\s*\|\s*/);
-      const htmlIdx=parts.findIndex(p=>/<(!doctype|html|table|div)/i.test(p));
-      const html=htmlIdx>=0?parts.slice(htmlIdx).join(' | '):'';
-      const meta=htmlIdx>=0?parts.slice(0,htmlIdx):parts;
-      out.push({name:meta[0]||'Untitled',tag:meta[1]||'',status:meta[2]||'',notes:meta[3]||'',html:html||'',updated:''});
-      return;
-    }
-    // concatenated: find where the HTML doc begins
-    const m=chunk.match(/<!doctype html|<html[\s>]|<table[\s>]|<div[\s>]/i);
-    if(m){
-      const cut=m.index;
-      const meta=chunk.slice(0,cut).trim();
-      const html=chunk.slice(cut).trim();
-      // we can't reliably split Name/Tag/Status without delimiters,
-      // so keep the whole leading text as the name (still loadable + identifiable)
-      out.push({name:meta||'Untitled',tag:'',status:'',notes:'',html:html,updated:''});
-    }
-  });
-  return out;
-}
 
 let savedEverLoaded=false;
 let savedActiveTag='All';                 // current filter
@@ -2704,9 +2590,9 @@ const SAVED_STD_TAGS=['Graphic','Newsletter','Webpage','Promo','Announcement','O
 
 function openSaved(){
   const list=getSavedList();
-  if(list.length){savedCurrentItems=list;savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent=list.length+' saved graphic(s) available.';}
-  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved graphics found. Hit Reload to check Airtable.';}
-  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent='Hit Reload to pull your saved graphics from Airtable.';}
+  if(list.length){savedCurrentItems=list;savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent=list.length+' saved newsletter(s).';}
+  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved newsletters found. Hit Reload to check GitHub.';}
+  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent=ghReady()?'Hit Reload to pull your newsletters from GitHub.':'Connect a GitHub repo (⚙ GitHub) to store newsletters.';}
   savedActiveTag='All';
   renderSavedFilters();
   renderSaved(savedCurrentItems,savedCurrentPlaceholder);
@@ -2745,7 +2631,7 @@ function renderSaved(items,isPlaceholder){
   if(!view.length){
     const empty=document.createElement('div');
     empty.style.cssText='grid-column:1/-1;padding:30px 10px;text-align:center;color:#aaa;font-size:13px;';
-    empty.textContent=(savedActiveTag&&savedActiveTag!=='All')?`No saved items tagged “${savedActiveTag}”.`:'No saved graphics yet.';
+    empty.textContent=(savedActiveTag&&savedActiveTag!=='All')?`No saved items tagged “${savedActiveTag}”.`:'No saved newsletters yet.';
     grid.appendChild(empty);
     return;
   }
@@ -2765,19 +2651,31 @@ function renderSaved(items,isPlaceholder){
     const load=document.createElement('button');
     load.className='tb-btn';load.style.cssText='font-size:10px;padding:6px 10px;';
     load.innerHTML='&#128229; Load';
-    load.onclick=()=>{
-      if(isPlaceholder || !it.html){toast('Not connected to Airtable yet — coming soon.');return;}
-      doImport(it.html,true);closeSaved();
+    load.onclick=async()=>{
+      if(isPlaceholder){toast('Connect GitHub and Reload first.');return;}
+      if(!ghReady()){toast('Connect a GitHub repo first (⚙ GitHub).');return;}
+      load.disabled=true;load.innerHTML='&#128229; Loading…';
+      try{
+        const file=it.file||{path:`${ghDir()}/${(it.id||slugify(it.name))}.json`};
+        const nl=await ghLoadFile(file);
+        if(applyNewsletter(nl)){saveStateLocal();closeSaved();toast('\u2713 Loaded "'+(nl.name||it.name||'newsletter')+'"');}
+      }catch(e){toast('Load failed: '+(e.message||e));}
+      load.disabled=false;load.innerHTML='&#128229; Load';
     };
     row.appendChild(load);
     if(!isPlaceholder){
       const del=document.createElement('button');
       del.className='tb-btn danger';del.style.cssText='font-size:10px;padding:6px 10px;';
       del.innerHTML='&#128465; Delete';
-      del.onclick=()=>{
-        if(!confirm('Remove "'+(it.name||'this')+'" from your saved graphics? (This only removes it from this device.)'))return;
-        const list=getSavedList().filter(r=>(r.name||'').toLowerCase()!==(it.name||'').toLowerCase());
-        setSavedList(list);openSaved();
+      del.onclick=async()=>{
+        if(!confirm('Delete "'+(it.name||'this')+'" from GitHub? This removes the saved file (version history keeps a copy).'))return;
+        const id=it.id||slugify(it.name);
+        if(ghReady()){
+          try{await ghDelete((it.file&&it.file.path)||`${ghDir()}/${id}.json`,(it.file&&it.file.sha)||null);}
+          catch(e){toast('GitHub delete failed: '+(e.message||e));return;}
+        }
+        const list=getSavedList().filter(r=>(r.id||slugify(r.name))!==id);
+        setSavedList(list);openSaved();toast('Deleted');
       };
       row.appendChild(del);
     }
@@ -2789,53 +2687,37 @@ function renderSaved(items,isPlaceholder){
 async function reloadSaved(){
   const status=document.getElementById('savedStatus');
   const btn=document.getElementById('savedReload');
-  status.textContent='Loading from Airtable…';btn.innerHTML='&#8635; Reloading…';
+  if(!ghReady()){status.textContent='No GitHub repo connected. Click \u2699 GitHub to set one up.';openGithubSettings();return;}
+  status.textContent='Loading from GitHub…';btn.innerHTML='&#8635; Reloading…';
   try{
-    const res=await fetch(SAVED_FETCH_WEBHOOK,{method:'GET',cache:'no-store'});
-    const raw=(await res.text())||'';
-    window.__lastReloadRaw=raw;   // inspect in console if needed: __lastReloadRaw
-    let data=null;
-    try{data=JSON.parse(raw);}catch(e){
-      // some Make setups return text; try to salvage a JSON array/object substring
-      const m=raw.match(/[\[{][\s\S]*[\]}]/);
-      if(m){try{data=JSON.parse(m[0]);}catch(e2){data=null;}}
+    const files=await ghList();
+    if(!files.length){
+      savedEverLoaded=true;savedCurrentItems=[];savedCurrentPlaceholder=false;
+      renderSavedFilters();renderSaved([],false);
+      status.textContent='No newsletters in '+ghDir()+'/ yet. Save one to create it.';
+      toast('No saved newsletters found');btn.innerHTML='&#8635; Reload';return;
     }
-    let items=normalizeSavedPayload(data);
-    // fallback: webhook returned plain text (not JSON) — try to recover records
-    if(!items.length){items=parseSavedText(raw);}
-    if(items.length){
-      // merge fetched records into the local list, de-duped by name (fetched wins).
-      // A record deleted locally WILL reappear here because Airtable still has it.
-      const byName={};
-      getSavedList().forEach(r=>{byName[(r.name||'').toLowerCase()]=r;});
-      items.forEach(r=>{byName[(r.name||'').toLowerCase()]=r;});
-      const merged=Object.values(byName);
-      setSavedList(merged);
-      savedEverLoaded=true;
-      savedCurrentItems=merged;savedCurrentPlaceholder=false;
-      renderSavedFilters();
-      renderSaved(merged,false);
-      status.textContent=`Loaded ${items.length} from Airtable (${merged.length} total).`;
-      toast('✓ Reloaded from Airtable');
-    }else{
-      savedEverLoaded=true;
-      const local=getSavedList();
-      savedCurrentItems=local;savedCurrentPlaceholder=false;
-      renderSavedFilters();
-      renderSaved(local,false);
-      // make the failure mode obvious so the webhook can be debugged
-      const preview=raw.trim().slice(0,80).replace(/\s+/g,' ');
-      if(!raw.trim()){
-        status.textContent='Airtable returned an empty response — the Reload webhook isn\u2019t sending records yet.';
-      }else if(data==null){
-        status.textContent='Airtable response wasn\u2019t JSON. Got: '+preview+(raw.length>80?'\u2026':'');
-      }else{
-        status.textContent='Airtable returned 0 usable records. Check the Name/HTML fields in the webhook output.';
-      }
-      toast('Reload: no records returned');
+    // fetch each file's metadata (lightweight: name/tag/status/notes/updatedAt)
+    const items=[];
+    for(const f of files){
+      try{
+        const nl=await ghLoadFile(f);
+        items.push({
+          id:nl.id||f.name.replace(/\.json$/i,''),
+          name:nl.name||f.name.replace(/\.json$/i,''),
+          tag:nl.tag||'',status:nl.status||'',notes:nl.notes||'',
+          updated:nl.updatedAt||'',file:f
+        });
+      }catch(e){/* skip unreadable file */}
     }
+    // mirror metadata into the local registry (GitHub is source of truth)
+    setSavedList(items.map(({file,notes,...m})=>({...m,notes})));
+    savedEverLoaded=true;savedCurrentItems=items;savedCurrentPlaceholder=false;
+    renderSavedFilters();renderSaved(items,false);
+    status.textContent=`Loaded ${items.length} from GitHub.`;
+    toast('\u2713 Reloaded from GitHub');
   }catch(e){
-    status.textContent='Could not reach Airtable. This is often a CORS limit on the GET response from Make.';
+    status.textContent='Could not reach GitHub: '+(e.message||e);
     toast('Reload failed');
   }
   btn.innerHTML='&#8635; Reload';
@@ -2873,26 +2755,10 @@ async function pushHTML(){
 
 async function pullHTML(){
   document.getElementById('syncMenu').classList.remove('show');
-  if(!PULL_WEBHOOK){
-    toast('Pull webhook not set up yet — add the URL in the code (PULL_WEBHOOK).');
-    return;
-  }
-  toast('Pulling HTML from GHL…');
-  try{
-    const res=await fetch(PULL_WEBHOOK,{method:'GET'});
-    let html='';
-    const ct=res.headers.get('content-type')||'';
-    if(ct.includes('application/json')){
-      const data=await res.json();
-      html=data.html||data.body||data.content||'';
-    }else{
-      html=await res.text();
-    }
-    if(!html||!/</.test(html)){toast('No HTML came back from the tag');return;}
-    doImport(html,true);   // replace canvas with the pulled HTML
-  }catch(err){
-    toast('Pull failed — check the webhook URL and connection');
-  }
+  // Pulling HTML back would require parsing exported HTML — which is exactly
+  // what we removed. Newsletters round-trip through Saved Newsletters (JSON)
+  // instead, so this no longer reconstructs the canvas.
+  toast('Pull was removed — load from \u2b50 Saved Newsletters instead.');
 }
 
 /* ═══════════ BUTTON TOOLTIPS ═══════════ */
@@ -2950,22 +2816,19 @@ Hover over any block on the canvas to see its control bar in the top-right corne
 Click <span class="btnrep">👁 Preview</span> in the top toolbar. A window shows exactly how the email will look when it lands in someone's inbox, with <strong>Desktop</strong> and <strong>Mobile</strong> toggles. Read it carefully — check the date, names, times, and links.</div></div>
 
 <div class="bigstep"><div class="num">9</div><div class="stxt"><b>Save your work</b>
-Click <span class="btnrep orange">💾 Save</span>. A small form asks for a <strong>Name</strong> (required), a <strong>Tag</strong> (Newsletter, Graphic, etc.), a <strong>Status</strong> (Draft / In Review / Approved / Sent), and any <strong>Notes</strong>. Click Save and it's stored on this computer <em>and</em> sent to Airtable, where it shows up under <span class="btnrep">⭐ Saved Graphics</span>. Saving again with the <strong>same name</strong> updates that entry instead of making a duplicate.</div></div>
+Click <span class="btnrep orange">💾 Save</span>. A small form asks for a <strong>Name</strong> (required), a <strong>Tag</strong> (Newsletter, Graphic, etc.), a <strong>Status</strong> (Draft / In Review / Approved / Sent), and any <strong>Notes</strong>. Click Save and it's stored on this computer <em>and</em> as a JSON file in GitHub, where it shows up under <span class="btnrep">⭐ Saved Newsletters</span>. Saving again with the <strong>same name</strong> updates that same file instead of making a duplicate — and GitHub keeps the full version history automatically. <em>(Connect a repo once under <span class="btnrep">⚙ GitHub</span> — see step 13.)</em></div></div>
 
-<div class="bigstep"><div class="num">10</div><div class="stxt"><b>Send it to GoHighLevel — the new way (Sync)</b><span class="wip">Work in progress</span>
-At the top there's a <span class="btnrep">🔄 Sync HTML ▾</span> dropdown with two buttons:
-<br>• <span class="btnrep orange">⬆ Push HTML</span> — sends the finished email straight to your GHL tag automatically (through a webhook). One click, done.
-<br>• <span class="btnrep">⬇ Pull HTML</span> — grabs whatever email HTML is currently saved in that GHL tag and loads it back here so you can keep editing it.
-<br><strong>Note:</strong> Push is live. Pull is still being set up — until the webhook is added it will show a friendly "not set up yet" message. Treat these as a work in progress for now.</div></div>
+<div class="bigstep"><div class="num">10</div><div class="stxt"><b>Send it to GoHighLevel — the one-click way (Push)</b>
+At the top, open <span class="btnrep">🔄 Sync HTML ▾</span> and click <span class="btnrep orange">⬆ Push HTML</span> — it sends the finished email straight to your GHL tag automatically through a webhook. One click, done. <em>(To re-open an older newsletter, use <span class="btnrep">⭐ Saved Newsletters</span> instead — see step 13. There's no more "Pull HTML": editing always happens from the structured save, never by re-reading exported HTML.)</em></div></div>
 
 <div class="bigstep"><div class="num">11</div><div class="stxt"><b>Send it to GoHighLevel — the manual way (Copy HTML)</b>
 If you'd rather do it by hand: click <span class="btnrep">📋 Copy HTML</span> (it copies the whole email). Then in GHL go to <strong>Marketing → Emails → Campaigns</strong>, create a campaign, choose the <strong>newsletter campaign template</strong>, and <strong>paste</strong> the HTML into the email body. (Or use <span class="btnrep">↓ Download</span> to save it as a file first.)</div></div>
 
-<div class="bigstep"><div class="num">12</div><div class="stxt"><b>Sharing a draft with someone (Import HTML)</b>
-To hand a draft to someone else: click <span class="btnrep">📋 Copy HTML</span> and send them the code (email, Slack, etc.). They open this tool, click <span class="btnrep">📥 Import HTML</span>, paste it in, and keep working right where you left off. You can also <strong>Pull</strong> a saved version from GHL the same way once that's set up.</div></div>
+<div class="bigstep"><div class="num">12</div><div class="stxt"><b>Sharing a draft with someone</b>
+Everyone who connects the same GitHub repo (step 13) sees the same <span class="btnrep">⭐ Saved Newsletters</span>. To hand a draft off: <span class="btnrep orange">💾 Save</span> it, and the other person clicks <span class="btnrep">⭐ Saved Newsletters → ↻ Reload → 📥 Load</span> — they pick up exactly where you left off, with every section still fully editable. <em>(Copy HTML is still there if you just want to send finished code, but that's for pasting into GHL, not for re-editing.)</em></div></div>
 
-<div class="bigstep"><div class="num">13</div><div class="stxt"><b>Browse your Saved Graphics (Airtable)</b>
-Click <span class="btnrep">⭐ Saved Graphics</span> at the top to see graphics and newsletter templates saved in Airtable. Press <span class="btnrep">↻ Reload</span> to pull the latest from Airtable, then load any one back into the builder to keep editing. Each card shows its Tag, Status, and Notes.</div></div>
+<div class="bigstep"><div class="num">13</div><div class="stxt"><b>Connect GitHub &amp; browse Saved Newsletters</b>
+Newsletters are stored as JSON files in a GitHub repo — that gives you free version history, backups, and keeps the data right next to the builder. <strong>One-time setup:</strong> click <span class="btnrep">⚙ GitHub</span>, enter the repo <strong>Owner</strong> and <strong>Repository</strong> name, set the <strong>Folder</strong> (default <code>saved</code>), and paste a <strong>personal access token</strong> (needed for saving — create a fine-grained token at GitHub → Settings → Developer settings, scoped to just this repo with <em>Contents: Read &amp; write</em>). Hit <span class="btnrep">🔗 Test connection</span> then <strong>Save settings</strong>. After that, <span class="btnrep">⭐ Saved Newsletters → ↻ Reload</span> lists everything in the folder; <span class="btnrep">📥 Load</span> re-opens any one with all sections live and editable. <em>The token is stored only in this browser on this device.</em></div></div>
 
 <div class="bigstep"><div class="num">14</div><div class="stxt"><b>Set up &amp; send the campaign in GoHighLevel</b>
 In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>. Pick the <strong>newsletter campaign template</strong>, write a subject line (e.g. "LNGVTY Hub — Week of [Date]"), choose your audience (the Members smart list for members), click <strong>Review and Send</strong>, confirm, and send. 🎉</div></div>
@@ -2976,16 +2839,15 @@ In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>.
 <p>These are the buttons across the top. <em>(Hover any of them in the app to see the same tip.)</em></p>
 <table>
 <tr><th>Button</th><th>What it does</th></tr>
-<tr><td><span class="btnrep orange">💾 Save</span></td><td>Saves your work in this browser <strong>and</strong> sends it to Airtable. You fill in a <strong>Name, Tag, Status,</strong> and <strong>Notes</strong>, and it appears under Saved Graphics. Re-saving with the same Name updates that entry (no duplicates).</td></tr>
-<tr><td><span class="btnrep">🔄 Sync HTML ▾</span></td><td>Opens the Push / Pull menu for sending to and from your GHL tag. <span class="wip">WIP</span></td></tr>
+<tr><td><span class="btnrep orange">💾 Save</span></td><td>Saves your work in this browser <strong>and</strong> as a JSON file in GitHub. You fill in a <strong>Name, Tag, Status,</strong> and <strong>Notes</strong>, and it appears under Saved Newsletters. Re-saving with the same Name updates that file (no duplicates); GitHub keeps the version history.</td></tr>
+<tr><td><span class="btnrep">🔄 Sync HTML ▾</span></td><td>Opens the menu for pushing the finished HTML to your GHL tag.</td></tr>
 <tr><td><span class="btnrep orange">⬆ Push HTML</span></td><td>Sends the finished HTML to your GHL tag automatically via webhook.</td></tr>
-<tr><td><span class="btnrep">⬇ Pull HTML</span></td><td>Loads the HTML stored in your GHL tag back into the builder. <span class="wip">Webhook not added yet</span></td></tr>
 <tr><td><span class="btnrep">👁 Preview</span></td><td>Shows the finished email exactly as it will look, with Desktop / Mobile toggles.</td></tr>
 <tr><td><span class="btnrep">📋 Copy HTML</span></td><td>Copies the finished email HTML to your clipboard (paste this into GHL). The exported code is <strong>email-safe</strong> — colors are baked to hex and layouts use tables, so it renders the same in Gmail, Outlook, and Apple Mail as it does in the preview.</td></tr>
 <tr><td><span class="btnrep">↓ Download</span></td><td>Saves the finished email HTML as a file on your computer.</td></tr>
 <tr><td><span class="btnrep">⟨⟩ View HTML</span></td><td>Opens the finished HTML in a window so you can read or copy it.</td></tr>
-<tr><td><span class="btnrep">📥 Import HTML</span></td><td>Paste HTML you saved earlier (a template) to keep editing it. It now recognizes each block and keeps everything editable, even text with custom colors.</td></tr>
-<tr><td><span class="btnrep">⭐ Saved Graphics</span></td><td>Browse graphics &amp; templates saved to Airtable. Hit <span class="btnrep">↻ Reload</span> to fetch the latest from Airtable, then load one back in to edit.</td></tr>
+<tr><td><span class="btnrep">⚙ GitHub</span></td><td>One-time setup for where newsletters are stored: repo owner, name, folder, and a personal access token (needed to save). Test the connection here.</td></tr>
+<tr><td><span class="btnrep">⭐ Saved Newsletters</span></td><td>Browse newsletters saved to GitHub. Hit <span class="btnrep">↻ Reload</span> to fetch the latest, then <span class="btnrep">📥 Load</span> one back in — every section stays fully editable (no "Imported" blocks).</td></tr>
 <tr><td><span class="btnrep">➕ New Section</span></td><td>Make your own custom block by pasting in HTML.</td></tr>
 <tr><td><span class="btnrep">📖 Docs</span></td><td>Opens this guide. Use the <span class="btnrep">✎ Edit</span> button at the top to change it.</td></tr>
 <tr><td><span class="btnrep red">🗑 Clear</span></td><td>Removes everything from the canvas (it asks you first).</td></tr>
@@ -3208,22 +3070,266 @@ function renderAddGuide(){
 
 /* ═══════════ SAVE / LOAD ═══════════ */
 let MEM=null;
-const SAVE_WEBHOOK='https://hook.us2.make.com/cudsz3hhavx7uf9vz9cn2x866hdrc9e3';
 
-/* client-side save (canvas + theme) to localStorage — silent */
-function saveStateLocal(){
-  const secs=[...frame.querySelectorAll('.sec')].map(s=>{
+/* ═══════════════════════════════════════════════════════════════════════
+   CANONICAL NEWSLETTER MODEL  (structured section data — no HTML parsing)
+
+   Every newsletter is described by this shape, which is exactly what the
+   editor already knows before export. Saving writes this object; loading
+   rebuilds the editor from it. Exported HTML is GENERATED from it on demand
+   (buildExport) and is never the stored source of truth.
+
+     {
+       schema:    "lngvty.newsletter/v1",
+       id:        "tip-tuesday-week-3",   // slug, also the filename in /saved
+       name:      "Tip Tuesday – Week 3",
+       tag:       "Newsletter",
+       status:    "Draft",
+       notes:     "...",
+       updatedAt: "2026-…Z",
+       theme:     { "--accent":"#e05a1b", … },   // global CSS theme vars
+       sections:  [ { key, theme, html }, … ]     // one per canvas block
+     }
+
+   sections[].key   = the section TYPE (hero, calendar, recipe, …). This is
+                      the identity that makes "Add Event" etc. keep working —
+                      loadSections() rebuilds the live DOM and re-wires it,
+                      so dynamic controls are never lost. No "Imported" blocks.
+   sections[].html  = the edited inner HTML of that block (text, links, media).
+   ════════════════════════════════════════════════════════════════════════ */
+const NEWSLETTER_SCHEMA='lngvty.newsletter/v1';
+
+/* slugify a name into a safe, stable file id */
+function slugify(name){
+  return String(name||'').toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80) || 'newsletter';
+}
+
+/* read the canvas into the structured section list (no controls/tags) */
+function serializeSections(){
+  return [...frame.querySelectorAll('.sec')].map(s=>{
     const c=s.cloneNode(true);
     c.querySelectorAll('.sec-controls,.sec-tag').forEach(e=>e.remove());
     return {key:s.dataset.key,theme:s.dataset.theme||'white',html:c.innerHTML};
   });
+}
+
+/* read the current global theme vars */
+function serializeTheme(){
   const cs=getComputedStyle(document.documentElement);const theme={};
   Object.values(THEME_VARMAP).forEach(cv=>theme[cv]=cs.getPropertyValue(cv).trim());
-  const data=JSON.stringify({secs,theme});
+  return theme;
+}
+
+/* build a full canonical newsletter object from the current editor + metadata */
+function serializeNewsletter(meta){
+  meta=meta||{};
+  return {
+    schema:NEWSLETTER_SCHEMA,
+    id:meta.id||slugify(meta.name),
+    name:meta.name||'',
+    tag:meta.tag||'',
+    status:meta.status||'',
+    notes:meta.notes||'',
+    updatedAt:meta.updatedAt||new Date().toISOString(),
+    theme:serializeTheme(),
+    sections:serializeSections()
+  };
+}
+
+/* apply a saved theme-vars object to the document + colour inputs */
+function applyThemeVars(theme){
+  if(!theme)return;
+  Object.entries(theme).forEach(([cv,val])=>{
+    if(!val)return;
+    document.documentElement.style.setProperty(cv,val);
+    const key=Object.keys(THEME_VARMAP).find(k=>THEME_VARMAP[k]===cv);
+    if(key){const inp=document.getElementById('col-'+key);if(inp)inp.value=val;const hx=document.getElementById('hex-'+key);if(hx)hx.textContent=val;}
+  });
+}
+
+/* rebuild the canvas from a structured section list (replaces current canvas).
+   This is the SINGLE load path — identical for localStorage and GitHub. */
+function loadSections(sections){
+  const S=allSections();
+  frame.querySelectorAll('.sec').forEach(s=>s.remove());
+  (sections||[]).forEach(s=>{
+    const sec=document.createElement('div');sec.className='sec';sec.dataset.key=s.key;
+    sec.innerHTML=s.html+controlsHTML();
+    const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=S[s.key]?.name||'';
+    applySecTheme(sec,s.theme);wireSec(sec);frame.appendChild(sec);
+  });
+  refreshState();
+}
+
+/* load an entire canonical newsletter object into the editor */
+function applyNewsletter(nl){
+  if(!nl||typeof nl!=='object'){toast('That file isn\u2019t a valid newsletter');return false;}
+  if(nl.schema && nl.schema!==NEWSLETTER_SCHEMA){
+    // tolerate future minor versions but warn on a totally foreign shape
+    if(!Array.isArray(nl.sections)){toast('Unrecognised file format');return false;}
+  }
+  applyThemeVars(nl.theme);
+  loadSections(nl.sections||[]);
+  return true;
+}
+
+/* client-side autosave (canvas + theme) to localStorage — silent.
+   Stored in the legacy {secs,theme} shape that loadState() reads. */
+function saveStateLocal(){
+  const data=JSON.stringify({secs:serializeSections(),theme:serializeTheme()});
   try{localStorage.setItem('lngvty_builder',data);}catch(e){MEM=data;}
 }
 
-/* Save button -> open the modal to collect Airtable fields */
+/* ═══════════════════════════════════════════════════════════════════════
+   GITHUB STORAGE  (replaces Airtable)
+
+   Saved newsletters live as JSON files in a repo folder (default: /saved).
+   Uses the GitHub REST Contents API — no extra service, free version
+   history + backups, and everything lives next to the builder.
+
+     SAVE  : PUT  /repos/{owner}/{repo}/contents/{dir}/{id}.json
+     LIST  : GET  /repos/{owner}/{repo}/contents/{dir}
+     LOAD  : GET  a file's download_url (raw JSON)
+
+   Reads from a PUBLIC repo work with no token. WRITES (save/delete) always
+   require a fine-grained personal-access token with Contents:read+write on
+   the repo. A static page cannot hide a secret, so the token is entered once
+   and kept in this browser's localStorage (see the GitHub Settings modal).
+   ════════════════════════════════════════════════════════════════════════ */
+const GH_API='https://api.github.com';
+function ghConfig(){
+  try{return JSON.parse(localStorage.getItem('lngvty_github')||'{}');}catch(e){return {};}
+}
+function setGhConfig(cfg){
+  try{localStorage.setItem('lngvty_github',JSON.stringify(cfg||{}));}catch(e){}
+}
+function ghReady(){const c=ghConfig();return !!(c.owner&&c.repo);}
+function ghDir(){const c=ghConfig();return (c.dir||'saved').replace(/^\/+|\/+$/g,'')||'saved';}
+function ghHeaders(needWrite){
+  const c=ghConfig();const h={'Accept':'application/vnd.github+json'};
+  if(c.token)h['Authorization']='Bearer '+c.token;
+  return h;
+}
+function ghContentsURL(path){
+  const c=ghConfig();
+  const branch=c.branch?('?ref='+encodeURIComponent(c.branch)):'';
+  return `${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}${branch}`;
+}
+/* base64-encode UTF-8 safely (handles emoji / non-Latin1) */
+function b64encode(str){return btoa(unescape(encodeURIComponent(str)));}
+function b64decode(str){try{return decodeURIComponent(escape(atob(str.replace(/\s/g,''))));}catch(e){return atob(str.replace(/\s/g,''));}}
+
+/* list newsletter JSON files in the saved/ folder */
+async function ghList(){
+  if(!ghReady())throw new Error('GitHub not configured');
+  const res=await fetch(ghContentsURL(ghDir()),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404)return [];               // folder doesn't exist yet
+  if(!res.ok)throw new Error('GitHub list failed ('+res.status+')');
+  const arr=await res.json();
+  return (Array.isArray(arr)?arr:[]).filter(f=>f.type==='file'&&/\.json$/i.test(f.name))
+    .map(f=>({name:f.name,path:f.path,sha:f.sha,download_url:f.download_url}));
+}
+/* fetch + parse one newsletter file by its raw download url */
+async function ghLoadFile(file){
+  const url=file.download_url||ghContentsURL(file.path);
+  const res=await fetch(url,{headers:file.download_url?{}:ghHeaders(),cache:'no-store'});
+  if(!res.ok)throw new Error('GitHub load failed ('+res.status+')');
+  return await res.json();
+}
+/* look up the current sha for a path (needed to UPDATE an existing file) */
+async function ghGetSha(path){
+  const res=await fetch(ghContentsURL(path),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404)return null;
+  if(!res.ok)throw new Error('GitHub stat failed ('+res.status+')');
+  const j=await res.json();return j.sha||null;
+}
+/* create or update a newsletter file; returns the API response */
+async function ghPut(nl){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to save.');
+  const path=`${ghDir()}/${nl.id}.json`;
+  const body={
+    message:`builder: save "${nl.name||nl.id}"`,
+    content:b64encode(JSON.stringify(nl,null,2))
+  };
+  if(c.branch)body.branch=c.branch;
+  const existing=await ghGetSha(path);
+  if(existing)body.sha=existing;            // update in place (no duplicate)
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let msg='';try{msg=(await res.json()).message||'';}catch(e){}throw new Error('GitHub save failed ('+res.status+') '+msg);}
+  return await res.json();
+}
+/* delete a newsletter file */
+async function ghDelete(path,sha){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to delete.');
+  if(!sha)sha=await ghGetSha(path);
+  const body={message:`builder: delete ${path}`,sha};
+  if(c.branch)body.branch=c.branch;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'DELETE',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let msg='';try{msg=(await res.json()).message||'';}catch(e){}throw new Error('GitHub delete failed ('+res.status+') '+msg);}
+  return await res.json();
+}
+
+/* ── GitHub settings modal ── */
+function openGithubSettings(note){
+  const c=ghConfig();
+  document.getElementById('ghOwner').value=c.owner||'';
+  document.getElementById('ghRepo').value=c.repo||'';
+  document.getElementById('ghDir').value=c.dir||'saved';
+  document.getElementById('ghBranch').value=c.branch||'';
+  document.getElementById('ghToken').value=c.token||'';
+  document.getElementById('ghTestStatus').textContent=note||'';
+  document.getElementById('githubBg').classList.add('show');
+  setTimeout(()=>document.getElementById('ghOwner').focus(),30);
+}
+function closeGithubSettings(){document.getElementById('githubBg').classList.remove('show');}
+function readGhForm(){
+  return {
+    owner:document.getElementById('ghOwner').value.trim(),
+    repo:document.getElementById('ghRepo').value.trim(),
+    dir:(document.getElementById('ghDir').value.trim()||'saved').replace(/^\/+|\/+$/g,''),
+    branch:document.getElementById('ghBranch').value.trim(),
+    token:document.getElementById('ghToken').value.trim()
+  };
+}
+function saveGithubSettings(){
+  const cfg=readGhForm();
+  if(!cfg.owner||!cfg.repo){document.getElementById('ghTestStatus').textContent='Owner and Repository are required.';return;}
+  setGhConfig(cfg);
+  closeGithubSettings();
+  toast('\u2713 GitHub settings saved');
+}
+async function testGithub(){
+  const cfg=readGhForm();
+  const el=document.getElementById('ghTestStatus');
+  if(!cfg.owner||!cfg.repo){el.textContent='Enter owner and repository first.';return;}
+  setGhConfig(cfg);            // apply so the helpers use these values
+  el.textContent='Testing…';
+  try{
+    const files=await ghList();
+    let msg=`\u2713 Connected. Found ${files.length} newsletter file(s) in ${ghDir()}/.`;
+    if(cfg.token){
+      // verify the token actually has write scope by reading repo perms
+      try{
+        const r=await fetch(`${GH_API}/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}`,{headers:ghHeaders()});
+        if(r.ok){const j=await r.json();const p=j.permissions||{};msg+=p.push?' Token can write \u2713':' (token present but no write permission — saving may fail)';}
+      }catch(e){}
+    }else{
+      msg+=' No token set — read-only (can browse + load, not save).';
+    }
+    el.textContent=msg;
+  }catch(e){
+    el.textContent='\u2717 '+(e.message||e)+' — check owner/repo'+(cfg.token?'/token':' (private repos need a token)');
+  }
+}
+
+/* Save button -> open the modal to collect Name/Tag/Status/Notes */
 function saveState(){
   if(!frame.querySelector('.sec')){saveStateLocal();toast('Saved (empty canvas)');return;}
   document.getElementById('saveModalStatus').textContent='';
@@ -3233,7 +3339,8 @@ function saveState(){
 }
 function closeSaveModal(){document.getElementById('saveBg').classList.remove('show');}
 
-/* local registry of saved graphics (also feeds the Saved Graphics modal) */
+/* local registry of saved newsletters (mirrors GitHub, enables offline browse).
+   Stores metadata only — the full structured doc lives in /saved on GitHub. */
 function getSavedList(){try{return JSON.parse(localStorage.getItem('lngvty_saved')||'[]');}catch(e){return [];}}
 function setSavedList(arr){try{localStorage.setItem('lngvty_saved',JSON.stringify(arr));}catch(e){}}
 
@@ -3243,35 +3350,43 @@ async function confirmSave(){
   const tag=document.getElementById('saveTag').value;
   const status=document.getElementById('saveStatus').value;
   const notes=document.getElementById('saveNotes').value.trim();
-  const html=buildExport();
 
-  // 1) always save client-side
+  // 1) always autosave the working canvas locally
   saveStateLocal();
 
-  // 2) update local saved registry — NO DUPLICATES (match by name, case-insensitive)
+  // 2) build the canonical structured newsletter (no exported HTML stored)
+  const nl=serializeNewsletter({name,tag,status,notes});
+
+  // 3) update local registry — NO DUPLICATES (match by id/slug)
   const list=getSavedList();
-  const idx=list.findIndex(r=>(r.name||'').toLowerCase()===name.toLowerCase());
-  const record={name,tag,status,notes,html,updated:new Date().toISOString()};
-  if(idx>=0)list[idx]=record;else list.unshift(record);
+  const idx=list.findIndex(r=>(r.id||slugify(r.name))===nl.id);
+  const meta={id:nl.id,name:nl.name,tag,status,notes,updated:nl.updatedAt};
+  if(idx>=0)list[idx]=meta;else list.unshift(meta);
   setSavedList(list);
 
-  // 3) send to Airtable via webhook
+  // 4) push the JSON file to GitHub
   const btn=document.getElementById('saveConfirmBtn');
   const statusEl=document.getElementById('saveModalStatus');
-  btn.disabled=true;btn.innerHTML='&#128190; Saving…';statusEl.textContent='Sending to Airtable…';
-  const payload={name,notes,status,tag,html,updatedAt:record.updated,source:'LNGVTY-builder'};
-  let ok=false;
-  try{
-    const res=await fetch(SAVE_WEBHOOK,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    ok=true;
-  }catch(e){
-    // CORS-safe fallback so the webhook still fires
-    try{await fetch(SAVE_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});ok=true;}catch(e2){ok=false;}
+  if(!ghReady()){
+    closeSaveModal();
+    toast('Saved locally — connect GitHub to sync');
+    statusEl.textContent='';
+    openGithubSettings('Connect a repo to store newsletters in GitHub.');
+    if(document.getElementById('savedBg').classList.contains('show'))openSaved();
+    return;
   }
+  btn.disabled=true;btn.innerHTML='&#128190; Saving…';statusEl.textContent='Saving to GitHub…';
+  let ok=false,errMsg='';
+  try{await ghPut(nl);ok=true;}
+  catch(e){ok=false;errMsg=e.message||String(e);}
   btn.disabled=false;btn.innerHTML='&#128190; Save';
-  closeSaveModal();
-  toast(ok?'✓ Saved & sent to Airtable':'Saved locally (Airtable send failed)');
-  // refresh Saved Graphics if it's open
+  if(ok){
+    closeSaveModal();
+    toast('\u2713 Saved to GitHub');
+  }else{
+    statusEl.textContent=errMsg;
+    toast('Saved locally (GitHub save failed)');
+  }
   if(document.getElementById('savedBg').classList.contains('show'))openSaved();
 }
 
@@ -3280,16 +3395,8 @@ function loadState(){
   if(!data)return;
   try{
     const {secs,theme}=JSON.parse(data);
-    Object.entries(theme).forEach(([cv,val])=>{if(val){document.documentElement.style.setProperty(cv,val);const key=Object.keys(THEME_VARMAP).find(k=>THEME_VARMAP[k]===cv);if(key){const inp=document.getElementById('col-'+key);if(inp)inp.value=val;const hx=document.getElementById('hex-'+key);if(hx)hx.textContent=val;}}});
-    frame.querySelectorAll('.sec').forEach(s=>s.remove());
-    const S=allSections();
-    secs.forEach(s=>{
-      const sec=document.createElement('div');sec.className='sec';sec.dataset.key=s.key;
-      sec.innerHTML=s.html+controlsHTML();
-      const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=S[s.key]?.name||'';
-      applySecTheme(sec,s.theme);wireSec(sec);frame.appendChild(sec);
-    });
-    refreshState();
+    applyThemeVars(theme);
+    loadSections(secs||[]);
   }catch(e){console.warn('load failed',e);}
 }
 
@@ -3298,7 +3405,7 @@ let toastTimer;
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1900);}
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();saveState();}
-  if(e.key==='Escape'){closeModal();closeLinkModal();closeAddSection();closePreview();closeImport();closeDocs();closeSaved();closeSaveModal();closeTextLink();closeEmbedModal&&closeEmbedModal();closeMediaModal&&closeMediaModal();}
+  if(e.key==='Escape'){closeModal();closeLinkModal();closeAddSection();closePreview();closeImport();closeDocs();closeSaved();closeSaveModal();closeGithubSettings();closeTextLink();closeEmbedModal&&closeEmbedModal();closeMediaModal&&closeMediaModal();}
 });
 
 /* INIT */
