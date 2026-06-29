@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LNGVTY Email Section Builder</title>
@@ -29,9 +28,10 @@
   .bt-slider:before{content:'';position:absolute;height:15px;width:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.18s;}
   .bt-switch input:checked + .bt-slider{background:var(--accent);}
   .bt-switch input:checked + .bt-slider:before{transform:translateX(19px);}
-  .bt-hint{text-align:center;font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#777;padding:0 12px 9px;background:#202126;border-bottom:1px solid #34353a;}  .rail-sublabel{padding:10px 14px 2px;font-family:'Montserrat';font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);flex-shrink:0;}
-  .rail-mode{flex:1;text-align:center;padding:13px 2px;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
-  .rail-mode:hover{color:#bbb;}
+  .bt-hint{text-align:center;font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#777;padding:0 12px 9px;background:#202126;border-bottom:1px solid #34353a;}
+  .rail-sublabel{padding:10px 14px 2px;font-family:'Montserrat';font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);flex-shrink:0;}
+  .rail-mode{flex:1;text-align:center;padding:12px 4px;font-family:'Montserrat';font-size:10.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
+  .rail-mode:hover{color:#bbb;background:#26272c;}
   .rail-mode.active{color:#fff;border-bottom-color:var(--accent);}
   /* scroll body holding search + accordions */
   .rail-body{flex:1;overflow-y:auto;display:none;}
@@ -171,6 +171,10 @@
   .link-edit:hover{background:var(--accent);}
   .btn-del{position:absolute;top:-9px;left:-8px;z-index:36;width:18px;height:18px;border-radius:4px;border:none;background:rgba(192,57,43,.95);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:none;padding:0;}
   .editable-link:hover > .btn-del{display:block;}
+  /* nav links: put the edit pill BELOW the link and the × ABOVE-LEFT,
+     so neither collides with the section controls in the top-right. */
+  .link-edit-btm{top:auto!important;right:auto!important;left:50%!important;bottom:-11px!important;transform:translateX(-50%);}
+  .btn-del-btm{top:-9px!important;right:auto!important;left:-7px!important;}
   .btn-del:hover{background:#e74c3c;}
 
   .panel{width:250px;background:#fff;border-left:1px solid #d5d5d8;display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
@@ -211,6 +215,10 @@
   .modal textarea{flex:1;border:none;padding:16px 18px;font-family:monospace;font-size:11px;line-height:1.5;resize:none;color:#333;background:#fafafa;min-height:400px;}
   .modal-foot{padding:12px 18px;border-top:1px solid #eee;display:flex;gap:8px;justify-content:flex-end;}
   .modal-scroll{flex:1;overflow-y:auto;padding:16px 18px;}
+  /* saved-graphics tag filter chips */
+  .saved-chip{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:6px 12px;border-radius:20px;border:1px solid #d8d8d8;background:#fff;color:#666;cursor:pointer;transition:.12s;}
+  .saved-chip:hover{border-color:var(--accent);color:var(--accent);}
+  .saved-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;}
 
   /* docs */
   .docs-body{font-family:'Open Sans',sans-serif;color:#333;font-size:13px;line-height:1.7;}
@@ -296,7 +304,7 @@
     <div class="rail-mode" id="mode-newsletter" onclick="setRailMode('newsletter')">Newsletter</div>
     <div class="rail-mode active" id="mode-graphics" onclick="setRailMode('graphics')">Graphics</div>
     <div class="rail-mode" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
-  </div>x
+  </div>
   <div class="rail-body active" id="railSections">
     <div class="rail-sublabel" id="railSubLabel">Graphics Sections</div>
     <div class="rail-search"><input type="text" id="palSearch" placeholder="Search sections..." oninput="renderRail(this.value)"></div>
@@ -415,6 +423,13 @@
         <label>Destination URL (href)</label>
         <input type="text" id="linkHrefInput" placeholder="https://your-link.com or {{merge_tag}}"/>
       </div>
+      <div class="field-row" id="linkStyleRow" style="display:none;">
+        <label>Button style</label>
+        <div style="display:flex;gap:8px;">
+          <button type="button" id="linkStyleFilled" class="tb-btn" onclick="setLinkStyle(true)" style="flex:1;">&#9632; Orange Button</button>
+          <button type="button" id="linkStylePlain" class="tb-btn" onclick="setLinkStyle(false)" style="flex:1;">&#9633; Plain Text</button>
+        </div>
+      </div>
       <div class="panel-note" style="margin-top:0;">This sets where the button / link sends people. Works with full URLs, mailto:, tel:, or merge tags.</div>
     </div>
     <div class="modal-foot">
@@ -436,13 +451,21 @@
       </div>
       <div class="field-2">
         <div class="field-row">
-          <label>Put under tab</label>
-          <select id="addTab"></select>
+          <label>Main section</label>
+          <select id="addMode" onchange="onAddModeChange()">
+            <option value="graphics">Graphics (email)</option>
+            <option value="newsletter">Newsletter</option>
+            <option value="blog">Webpage</option>
+          </select>
         </div>
         <div class="field-row">
-          <label>&hellip; or create a new tab</label>
-          <input type="text" id="addNewTab" placeholder="New tab name (optional)"/>
+          <label>Put under subsection</label>
+          <select id="addTab"></select>
         </div>
+      </div>
+      <div class="field-row">
+        <label>&hellip; or create a new subsection</label>
+        <input type="text" id="addNewTab" placeholder="New subsection name (optional)"/>
       </div>
       <div class="field-row">
         <label>Default block theme</label>
@@ -544,9 +567,8 @@
       <div class="field-row">
         <label>Tag</label>
         <select id="saveTag" style="width:100%;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;background:#fff;">
-          <option value="Graphic">Graphic</option>
           <option value="Newsletter">Newsletter</option>
-          <option value="Webpage">Webpage</option>
+          <option value="Graphic">Graphic</option>
           <option value="Promo">Promo</option>
           <option value="Announcement">Announcement</option>
           <option value="Other">Other</option>
@@ -586,6 +608,9 @@
     </div>
     <div class="modal-scroll">
       <div class="panel-note" style="margin-top:0;">This is where your saved graphics &amp; newsletter templates from Airtable will appear. Click <strong>Reload</strong> to pull the latest, then load any one back into the builder to keep editing. <em>Connection is being set up — the items below are placeholders for now.</em></div>
+      <div id="savedFilterBar" style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin-top:14px;">
+        <span style="font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#999;margin-right:2px;">Filter:</span>
+      </div>
       <div id="savedGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:14px;"></div>
     </div>
     <div class="modal-foot">
@@ -650,6 +675,21 @@ function btn(text,style,href,block){
     + `<button class="btn-del" type="button" onclick="removeBtn(this)" title="Remove this button">&times;</button>`
     + `</span>`;
 }
+/* nav-style link: editable label + link, with a style toggle (filled vs plain).
+   The edit pill sits at the BOTTOM so it never collides with the section controls
+   in the top-right corner. filled=true => orange button; filled=false => plain text. */
+const NAV_FILLED="display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:11px 22px;border-radius:4px;";
+const NAV_PLAIN="display:inline-block;background:transparent;color:#d6d6d6;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:0;";
+function navLink(text,filled,href,accentText){
+  href=href||'#';
+  let style=filled?NAV_FILLED:NAV_PLAIN;
+  if(!filled&&accentText)style=style.replace('color:#d6d6d6','color:var(--accent)');
+  return `<span class="editable-link nav-link" data-href="${esc(href)}" data-filled="${filled?'1':'0'}" style="display:inline-block;position:relative;">`
+    + ph(text,style,'a')
+    + `<button class="link-edit link-edit-btm" type="button" onclick="openLinkModal(this)">&#128279; link</button>`
+    + `<button class="btn-del btn-del-btm" type="button" onclick="removeBtn(this)" title="Remove this link">&times;</button>`
+    + `</span>`;
+}
 /* like btn() but the label is real (persisted) content, not ghost text —
    use where the label must survive export even if untouched (e.g. footer). */
 function realBtn(text,style,href){
@@ -699,10 +739,10 @@ function ekgGlyph(stroke,w){
 }
 /* an add/removable blog tip card (icon + heading + text), 2-up via flex-basis 45% */
 function blogTipCard(icon,title,text){
-  return `<div class="li-wrap" style="flex:1 1 45%;min-width:200px;border:1px solid #ececec;border-top:3px solid var(--accent);border-radius:8px;padding:22px 22px 24px;background:#faf8f6;">`
+  return `<div class="li-wrap" style="flex:1 1 45%;min-width:200px;border:1px solid rgba(127,127,127,.22);border-top:3px solid var(--accent);border-radius:8px;padding:22px 22px 24px;background:rgba(127,127,127,.06);">`
     +`<div style="font-size:24px;margin-bottom:10px;">${icon}</div>`
     +ph(title,"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;line-height:1.3;")
-    +ph(text,"font-size:15px;line-height:1.6;color:var(--body-text);font-weight:300;",'p')
+    +ph(text,"font-size:15px;line-height:1.6;color:var(--secmuted);font-weight:300;",'p')
     +liMoves()
     +`<button class="li-del" onclick="delLi(this)">×</button></div>`;
 }
@@ -1248,30 +1288,30 @@ const SECTIONS = {
   /* ═══════════ BLOG / WEBPAGE SECTIONS (mode:'blog') ═══════════ */
 
   blognav:{group:'Header',icon:'▤',name:'Site Nav Bar',theme:'dark',mode:'blog',
-    html:()=>`<div style="background:var(--dark);padding:18px 7%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
-      <span style="display:flex;align-items:center;gap:10px;">${ekgGlyph('var(--accent)',32)}${ph('LNGVTY',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;letter-spacing:1.5px;color:#fff;",'span')}</span>
+    html:()=>`<div style="background:var(--secbg);padding:18px 7%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+      <span style="display:flex;align-items:center;gap:10px;">${ekgGlyph('var(--accent)',32)}${ph('LNGVTY',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;letter-spacing:1.5px;color:var(--sectext);",'span')}</span>
       <div style="display:flex;align-items:center;gap:26px;flex-wrap:wrap;">
-        ${ph('Get Started',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d6d6d6;",'span')}
-        ${ph('Pricing',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d6d6d6;",'span')}
-        ${ph('Schedule',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#d6d6d6;",'span')}
-        ${ph('Blog',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent);",'span')}
-        ${btn('Get Started »',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:11px 22px;border-radius:4px;",'#')}
+        ${navLink('Get Started',false,'#')}
+        ${navLink('Pricing',false,'#')}
+        ${navLink('Schedule',false,'#')}
+        ${navLink('Blog',false,'#',true)}
+        ${navLink('Get Started »',true,'#')}
       </div>
     </div>`},
 
   bloghero:{group:'Header',icon:'★',name:'Blog Hero (EKG)',theme:'dark',mode:'blog',
-    html:()=>`<div style="background:var(--dark);padding:84px 7% 92px;text-align:center;position:relative;overflow:hidden;">
+    html:()=>`<div style="background:var(--secbg);padding:84px 7% 92px;text-align:center;position:relative;overflow:hidden;">
       ${ekg('var(--accent)',0.10,'left:0;right:0;bottom:34px;')}
       <div style="position:relative;z-index:1;">
         ${tagBlock(['Recovery'],"display:inline-flex;align-items:center;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;background:rgba(224,90,27,.12);color:var(--accent);padding:7px 15px;border-radius:3px;","display:inline-block;margin-bottom:26px;")}
-        ${ph("The One Habit That's Wrecking Your Results","font-family:'Montserrat',sans-serif;font-weight:900;font-size:56px;line-height:1.04;letter-spacing:-.5px;color:#fff;text-transform:uppercase;max-width:880px;margin:0 auto 22px;")}
-        ${ph("It's not your diet. It's not your program. It's the eight hours you keep treating as optional.","font-size:20px;line-height:1.6;color:#b9b9bd;font-weight:300;max-width:600px;margin:0 auto;",'p')}
+        ${ph("The One Habit That's Wrecking Your Results","font-family:'Montserrat',sans-serif;font-weight:900;font-size:56px;line-height:1.04;letter-spacing:-.5px;color:var(--sectext);text-transform:uppercase;max-width:880px;margin:0 auto 22px;")}
+        ${ph("It's not your diet. It's not your program. It's the eight hours you keep treating as optional.","font-size:20px;line-height:1.6;color:var(--secmuted);font-weight:300;max-width:600px;margin:0 auto;",'p')}
         <div style="margin-top:30px;display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;">
-          ${ph('By the LNGVTY Team',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#fff;",'span')}
+          ${ph('By the LNGVTY Team',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--sectext);",'span')}
           <span style="color:var(--accent);">|</span>
-          ${ph('June 2026',"font-size:13px;color:#9a9a9e;",'span')}
+          ${ph('June 2026',"font-size:13px;color:var(--secmuted);",'span')}
           <span style="color:var(--accent);">|</span>
-          ${ph('5 min read',"font-size:13px;color:#9a9a9e;",'span')}
+          ${ph('5 min read',"font-size:13px;color:var(--secmuted);",'span')}
         </div>
       </div>
     </div>`},
@@ -1291,31 +1331,31 @@ const SECTIONS = {
     </div>`},
 
   blogintro:{group:'Content',icon:'¶',name:'Lead Paragraph (Drop Cap)',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#fff;padding:46px 7% 6px;">
+    html:()=>`<div style="background:var(--secbg);padding:46px 7% 6px;">
       <div style="max-width:760px;margin:0 auto;">
-        <p class="dropcap" contenteditable="true" data-ph="Showing up fully — for your training, your work, your family, and yourself — starts the night before. Good sleep isn't about feeling rested. It's the single biggest lever most people never pull, and it quietly decides how every other habit pays off." style="font-size:21px;line-height:1.7;color:var(--heading);font-weight:400;margin:0;"></p>
+        <p class="dropcap" contenteditable="true" data-ph="Showing up fully — for your training, your work, your family, and yourself — starts the night before. Good sleep isn't about feeling rested. It's the single biggest lever most people never pull, and it quietly decides how every other habit pays off." style="font-size:21px;line-height:1.7;color:var(--sectext);font-weight:400;margin:0;"></p>
       </div>
     </div>`},
 
   blogbody:{group:'Content',icon:'¶',name:'Article Text',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#fff;padding:18px 7%;">
+    html:()=>`<div style="background:var(--secbg);padding:18px 7%;">
       <div style="max-width:760px;margin:0 auto;">
-        ${ph('Why It Hits Harder Than You Think',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:31px;line-height:1.18;color:var(--heading);text-transform:uppercase;letter-spacing:.3px;margin:28px 0 18px;")}
-        ${ph("Write your article here. This is a full paragraph of body text — click to edit it. You can select any words to color them or turn them into a link using the floating bar. Keep paragraphs readable and let the content breathe.","font-size:18px;line-height:1.8;color:var(--body-text);margin-bottom:24px;font-weight:300;",'p')}
-        ${ph("Add a second paragraph to keep developing the idea. Short, clear sentences land best. When you want to emphasize something, select it and color it your brand orange.","font-size:18px;line-height:1.8;color:var(--body-text);font-weight:300;",'p')}
+        ${ph('Why It Hits Harder Than You Think',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:31px;line-height:1.18;color:var(--sectext);text-transform:uppercase;letter-spacing:.3px;margin:28px 0 18px;")}
+        ${ph("Write your article here. This is a full paragraph of body text — click to edit it. You can select any words to color them or turn them into a link using the floating bar. Keep paragraphs readable and let the content breathe.","font-size:18px;line-height:1.8;color:var(--secmuted);margin-bottom:24px;font-weight:300;",'p')}
+        ${ph("Add a second paragraph to keep developing the idea. Short, clear sentences land best. When you want to emphasize something, select it and color it your brand orange.","font-size:18px;line-height:1.8;color:var(--secmuted);font-weight:300;",'p')}
       </div>
     </div>`},
 
   blogquote:{group:'Content',icon:'❝',name:'Pull Quote',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#fff;padding:30px 7%;">
+    html:()=>`<div style="background:var(--secbg);padding:30px 7%;">
       <div style="max-width:760px;margin:0 auto;border-left:5px solid var(--accent);padding:6px 0 6px 30px;">
-        ${ph('"You don’t get stronger in the gym. You get stronger when you recover from it."',"font-family:'Montserrat',sans-serif;font-weight:700;font-style:italic;font-size:28px;line-height:1.38;color:var(--heading);margin-bottom:12px;",'p')}
+        ${ph('"You don’t get stronger in the gym. You get stronger when you recover from it."',"font-family:'Montserrat',sans-serif;font-weight:700;font-style:italic;font-size:28px;line-height:1.38;color:var(--sectext);margin-bottom:12px;",'p')}
         ${ph('— Coach Tim, LNGVTY Hub',"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);",'span')}
       </div>
     </div>`},
 
   blogtips:{group:'Content',icon:'▥',name:'Tip Card Grid',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#fff;padding:24px 7%;">
+    html:()=>`<div style="background:var(--secbg);padding:24px 7%;">
       <div style="max-width:760px;margin:0 auto;">
         ${listBlock([
           blogTipCard('🧊','Keep Your Bedroom Cool','66–68°F is the sweet spot for deep sleep — a cooler room helps your core temperature drop.'),
@@ -1327,7 +1367,7 @@ const SECTIONS = {
     </div>`},
 
   blogtakeaway:{group:'Content',icon:'◆',name:'Takeaway Box',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#fff;padding:24px 7%;">
+    html:()=>`<div style="background:var(--secbg);padding:24px 7%;">
       <div style="max-width:760px;margin:0 auto;background:var(--dark);border-radius:12px;padding:34px 38px;position:relative;overflow:hidden;border-left:5px solid var(--accent);">
         ${ph('The Takeaway',"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;")}
         ${ph('Treat sleep like a training variable, not an afterthought. Protect it the way you’d protect a hard session — and watch everything else you’re already doing finally pay off.',"font-size:18px;line-height:1.7;color:#e7e7e7;font-weight:300;",'p')}
@@ -1335,14 +1375,14 @@ const SECTIONS = {
     </div>`},
 
   blogdivider:{group:'Content',icon:'—',name:'Divider Rule',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#fff;padding:14px 7%;"><div style="max-width:760px;margin:0 auto;height:1px;background:#ececec;"></div></div>`},
+    html:()=>`<div style="background:var(--secbg);padding:14px 7%;"><div style="max-width:760px;margin:0 auto;height:1px;background:rgba(127,127,127,.25);"></div></div>`},
 
-  blognewsletter:{group:'Embed',icon:'✉',name:'Newsletter Embed',theme:'white',mode:'blog',
-    html:()=>`<div style="background:#faf8f6;padding:60px 7%;border-top:1px solid #ececec;border-bottom:1px solid #ececec;">
+  blognewsletter:{group:'Embed',icon:'✉',name:'Newsletter Embed',theme:'gray',mode:'blog',
+    html:()=>`<div style="background:var(--secbg);padding:60px 7%;border-top:1px solid rgba(127,127,127,.2);border-bottom:1px solid rgba(127,127,127,.2);">
       <div style="max-width:880px;margin:0 auto;">
-        ${ph('This Week at LNGVTY',"font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:#7a7a7e;margin-bottom:8px;text-align:center;")}
-        ${ph('The Weekly Newsletter',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:32px;color:var(--heading);text-transform:uppercase;margin-bottom:6px;text-align:center;")}
-        ${ph('Everything happening at the Hub — schedule, events, recipes, and tips.',"font-size:15px;color:#7a7a7e;font-weight:300;text-align:center;margin-bottom:26px;",'p')}
+        ${ph('This Week at LNGVTY',"font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--secmuted);margin-bottom:8px;text-align:center;")}
+        ${ph('The Weekly Newsletter',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:32px;color:var(--sectext);text-transform:uppercase;margin-bottom:6px;text-align:center;")}
+        ${ph('Everything happening at the Hub — schedule, events, recipes, and tips.',"font-size:15px;color:var(--secmuted);font-weight:300;text-align:center;margin-bottom:26px;",'p')}
         <div class="embed-host" data-embed="" style="border:2px dashed var(--accent);background:#fff;padding:0;min-height:140px;border-radius:12px;">
           <div class="embed-empty" style="padding:56px 24px;text-align:center;">
             <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">&#9993; Newsletter Embed Slot</div>
@@ -1353,12 +1393,12 @@ const SECTIONS = {
       </div>
     </div>`},
 
-  blogcta:{group:'CTA',icon:'▶',name:'Blog CTA Banner (EKG)',theme:'dark',mode:'blog',
-    html:()=>`<div style="background:var(--accent);padding:66px 7%;text-align:center;position:relative;overflow:hidden;">
+  blogcta:{group:'CTA',icon:'▶',name:'Blog CTA Banner (EKG)',theme:'orange',mode:'blog',
+    html:()=>`<div style="background:var(--secbg);padding:66px 7%;text-align:center;position:relative;overflow:hidden;">
       ${ekg('#1a1a1a',0.16,'left:0;right:0;top:50%;transform:translateY(-50%);')}
       <div style="position:relative;z-index:1;max-width:640px;margin:0 auto;">
-        ${ph('Ready to Start Your Journey?',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:#fff;text-transform:uppercase;margin-bottom:14px;line-height:1.08;")}
-        ${ph("Join Carrboro's longevity & performance hub — diagnostics, fitness, recovery.","font-size:18px;color:rgba(255,255,255,.92);margin-bottom:30px;font-weight:300;",'p')}
+        ${ph('Ready to Start Your Journey?',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:var(--sectext);text-transform:uppercase;margin-bottom:14px;line-height:1.08;")}
+        ${ph("Join Carrboro's longevity & performance hub — diagnostics, fitness, recovery.","font-size:18px;color:var(--secmuted);margin-bottom:30px;font-weight:300;",'p')}
         ${btn('Get Started »',"display:inline-block;background:#1a1a1a;color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;letter-spacing:1.6px;text-transform:uppercase;text-decoration:none;padding:18px 46px;border-radius:5px;",'#')}
       </div>
     </div>`},
@@ -1385,14 +1425,18 @@ const SECTIONS = {
 };
 </script>
 <script>
-/* ═══════════ PER-SECTION THEME ═══════════ */
+/* ═══════════ PER-SECTION THEME ═══════════
+   Each theme sets three vars the sections read: --secbg (background),
+   --sectext (headings / strong text) and --secmuted (secondary text).
+   Sections that paint with these vars flip cleanly when you cycle the theme. */
 const SEC_THEMES={
-  dark :{'--secbg':'var(--dark)','--sectext':'#ffffff','--secmuted':'#999999'},
-  gray :{'--secbg':'var(--gray)','--sectext':'#ffffff','--secmuted':'#aaaaaa'},
-  white:{'--secbg':'#ffffff','--sectext':'var(--heading)','--secmuted':'#aaaaaa'}
+  white :{'--secbg':'#ffffff','--sectext':'var(--heading)','--secmuted':'#888888'},
+  gray  :{'--secbg':'var(--gray)','--sectext':'#ffffff','--secmuted':'#b8b8b8'},
+  dark  :{'--secbg':'var(--dark)','--sectext':'#ffffff','--secmuted':'#aaaaaa'},
+  orange:{'--secbg':'var(--accent)','--sectext':'#ffffff','--secmuted':'rgba(255,255,255,0.85)'}
 };
-const THEME_CYCLE=['dark','gray','white'];
-const THEME_GLYPH={dark:'● Black',gray:'◐ Gray',white:'○ White'};
+const THEME_CYCLE=['white','gray','dark','orange'];
+const THEME_GLYPH={white:'○ White',gray:'◐ Gray',dark:'● Black',orange:'◆ Orange'};
 
 /* ═══════════ SECTION DESCRIPTIONS (hover preview) ═══════════ */
 const DEFAULT_DESC={
@@ -1802,8 +1846,30 @@ function openLinkModal(btn){
   linkTargetWrap=btn.closest('.editable-link');
   const cur=linkTargetWrap?linkTargetWrap.dataset.href||'':'';
   document.getElementById('linkHrefInput').value=(cur==='#'?'':cur);
+  // style toggle only applies to nav-style links
+  const isNav=linkTargetWrap&&linkTargetWrap.classList.contains('nav-link');
+  document.getElementById('linkStyleRow').style.display=isNav?'':'none';
+  if(isNav)reflectLinkStyle(linkTargetWrap.dataset.filled==='1');
   document.getElementById('linkModalBg').classList.add('show');
   setTimeout(()=>document.getElementById('linkHrefInput').focus(),50);
+}
+function reflectLinkStyle(filled){
+  const f=document.getElementById('linkStyleFilled'),p=document.getElementById('linkStylePlain');
+  if(!f||!p)return;
+  f.classList.toggle('primary',filled);p.classList.toggle('primary',!filled);
+}
+function setLinkStyle(filled){
+  if(!linkTargetWrap)return;
+  linkTargetWrap.dataset.filled=filled?'1':'0';
+  const a=linkTargetWrap.querySelector('a');
+  if(a){
+    // keep accent-text variant for the "Blog"-style plain link if it was accent
+    const wasAccent=/color:var\(--accent\)/.test(a.getAttribute('style')||'')&&!filled;
+    let style=filled?NAV_FILLED:NAV_PLAIN;
+    if(!filled&&wasAccent)style=style.replace('color:#d6d6d6','color:var(--accent)');
+    a.setAttribute('style',style);
+  }
+  reflectLinkStyle(filled);
 }
 function closeLinkModal(){document.getElementById('linkModalBg').classList.remove('show');linkTargetWrap=null;}
 function saveLinkHref(){
@@ -2630,21 +2696,63 @@ function parseSavedText(raw){
 }
 
 let savedEverLoaded=false;
+let savedActiveTag='All';                 // current filter
+let savedCurrentItems=[];                 // full (unfiltered) list currently shown
+let savedCurrentPlaceholder=false;
+// tags we always offer as filters even if nothing is saved under them yet
+const SAVED_STD_TAGS=['Graphic','Newsletter','Webpage','Promo','Announcement','Other'];
+
 function openSaved(){
   const list=getSavedList();
-  if(list.length){renderSaved(list,false);document.getElementById('savedStatus').textContent=list.length+' saved graphic(s) available.';}
-  else if(savedEverLoaded){renderSaved([],false);document.getElementById('savedStatus').textContent='No saved graphics found. Hit Reload to check Airtable.';}
-  else{renderSaved(SAVED_PLACEHOLDERS,true);document.getElementById('savedStatus').textContent='Hit Reload to pull your saved graphics from Airtable.';}
+  if(list.length){savedCurrentItems=list;savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent=list.length+' saved graphic(s) available.';}
+  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved graphics found. Hit Reload to check Airtable.';}
+  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent='Hit Reload to pull your saved graphics from Airtable.';}
+  savedActiveTag='All';
+  renderSavedFilters();
+  renderSaved(savedCurrentItems,savedCurrentPlaceholder);
   document.getElementById('savedBg').classList.add('show');
 }
 function closeSaved(){document.getElementById('savedBg').classList.remove('show');}
 
+/* build the filter chips from the standard tags + whatever tags exist in the data */
+function renderSavedFilters(){
+  const bar=document.getElementById('savedFilterBar');if(!bar)return;
+  // keep the leading "Filter:" label, clear any old chips
+  bar.querySelectorAll('.saved-chip').forEach(c=>c.remove());
+  // collect tags: standard set first, then any extra tags found in the data
+  const present=new Set();
+  (savedCurrentItems||[]).forEach(it=>{const t=(it.tag||'').trim();if(t)present.add(t);});
+  const tags=['All'];
+  SAVED_STD_TAGS.forEach(t=>{if(!tags.includes(t))tags.push(t);});
+  [...present].forEach(t=>{if(!tags.some(x=>x.toLowerCase()===t.toLowerCase()))tags.push(t);});
+  tags.forEach(t=>{
+    const count=(t==='All')?(savedCurrentItems||[]).length:(savedCurrentItems||[]).filter(it=>(it.tag||'').toLowerCase()===t.toLowerCase()).length;
+    const chip=document.createElement('button');
+    chip.className='saved-chip'+(savedActiveTag.toLowerCase()===t.toLowerCase()?' active':'');
+    chip.textContent=t+(t!=='All'?` (${count})`:'');
+    chip.onclick=()=>{savedActiveTag=t;renderSavedFilters();renderSaved(savedCurrentItems,savedCurrentPlaceholder);};
+    bar.appendChild(chip);
+  });
+}
+
 function renderSaved(items,isPlaceholder){
   const grid=document.getElementById('savedGrid');grid.innerHTML='';
-  (items||[]).forEach(it=>{
+  // apply the active tag filter
+  let view=items||[];
+  if(savedActiveTag&&savedActiveTag!=='All'){
+    view=view.filter(it=>(it.tag||'').toLowerCase()===savedActiveTag.toLowerCase());
+  }
+  if(!view.length){
+    const empty=document.createElement('div');
+    empty.style.cssText='grid-column:1/-1;padding:30px 10px;text-align:center;color:#aaa;font-size:13px;';
+    empty.textContent=(savedActiveTag&&savedActiveTag!=='All')?`No saved items tagged “${savedActiveTag}”.`:'No saved graphics yet.';
+    grid.appendChild(empty);
+    return;
+  }
+  view.forEach(it=>{
     const card=document.createElement('div');
     card.style.cssText='border:1px solid #e3e3e6;border-radius:9px;padding:13px;background:#fff;display:flex;flex-direction:column;gap:7px;'+(isPlaceholder?'opacity:.7;':'');
-    const badge=(/newsletter/i.test(it.tag||''))?'#e05a1b':'#1a1a1a';
+    const badge=(/newsletter/i.test(it.tag||''))?'#e05a1b':(/webpage/i.test(it.tag||'')?'#2a6cb0':'#1a1a1a');
     const when=it.updated?new Date(it.updated):null;
     const whenStr=when&&!isNaN(when)?when.toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):(it.updated||'');
     card.innerHTML=`<div style="display:flex;gap:6px;align-items:center;">
@@ -2704,12 +2812,16 @@ async function reloadSaved(){
       const merged=Object.values(byName);
       setSavedList(merged);
       savedEverLoaded=true;
+      savedCurrentItems=merged;savedCurrentPlaceholder=false;
+      renderSavedFilters();
       renderSaved(merged,false);
       status.textContent=`Loaded ${items.length} from Airtable (${merged.length} total).`;
       toast('✓ Reloaded from Airtable');
     }else{
       savedEverLoaded=true;
       const local=getSavedList();
+      savedCurrentItems=local;savedCurrentPlaceholder=false;
+      renderSavedFilters();
       renderSaved(local,false);
       // make the failure mode obvious so the webhook can be debugged
       const preview=raw.trim().slice(0,80).replace(/\s+/g,' ');
@@ -2975,6 +3087,9 @@ function resetDocs(){
 
 /* ═══════════ ADD CUSTOM SECTION ═══════════ */
 function openAddSection(){
+  // default the main-section dropdown to whatever tab the user is on
+  const modeSel=document.getElementById('addMode');
+  if(modeSel)modeSel.value=(railMode==='newsletter'||railMode==='blog')?railMode:'graphics';
   populateAddTabs();
   document.getElementById('addName').value='';
   document.getElementById('addNewTab').value='';
@@ -2983,12 +3098,28 @@ function openAddSection(){
   document.getElementById('addBg').classList.add('show');
 }
 function closeAddSection(){document.getElementById('addBg').classList.remove('show');}
-function populateAddTabs(){
-  computeTabs();
-  const sel=document.getElementById('addTab');sel.innerHTML='';
-  TABS.forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;sel.appendChild(o);});
-  const o=document.createElement('option');o.value='Embed';o.textContent='Embed';if(!TABS.includes('Embed'))sel.appendChild(o);
+/* the subsection (group) names that belong to each main section */
+function groupsForMode(mode){
+  const set=new Set();
+  Object.values(allSections()).forEach(s=>{if((s.mode||'graphics')===mode)set.add(s.group);});
+  // 'both'-mode sections (e.g. 90-day) appear under graphics + newsletter
+  if(mode==='graphics'||mode==='newsletter'){
+    Object.values(allSections()).forEach(s=>{if((s.mode||'graphics')==='both')set.add(s.group);});
+  }
+  // order using the known order lists, then any extras
+  const order=(mode==='newsletter')?NEWSLETTER_GROUP_ORDER:(mode==='blog')?BLOG_GROUP_ORDER:DEFAULT_GROUP_ORDER;
+  const ordered=[];
+  order.forEach(g=>{if(set.has(g)){ordered.push(g);set.delete(g);}});
+  set.forEach(g=>ordered.push(g));
+  return ordered;
 }
+function populateAddTabs(){
+  const mode=document.getElementById('addMode')?.value||'graphics';
+  const sel=document.getElementById('addTab');sel.innerHTML='';
+  groupsForMode(mode).forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;sel.appendChild(o);});
+  if(!sel.options.length){const o=document.createElement('option');o.value='Custom';o.textContent='Custom';sel.appendChild(o);}
+}
+function onAddModeChange(){populateAddTabs();}
 function resolveAddTab(){
   const nw=document.getElementById('addNewTab').value.trim();
   if(nw)return nw;
@@ -3002,8 +3133,8 @@ function saveCustomSection(){
   if(!raw){toast('Paste some HTML first');return;}
   const tab=resolveAddTab();
   const theme=document.getElementById('addTheme').value;
+  const cmode=document.getElementById('addMode')?.value||'graphics';
   const key=customKey(name);
-  const cmode=(railMode==='newsletter')?'newsletter':'graphics';
   CUSTOM[key]={group:tab,name:name,icon:'◧',theme:theme,raw:raw,mode:cmode};
   if(!TABS.includes(tab))TABS.push(tab);
   persistCustom();
