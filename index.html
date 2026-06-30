@@ -21,13 +21,15 @@
   .rail-head p{font-size:11px;color:#888;margin-top:4px;line-height:1.4;}
   /* top mode toggle: SECTIONS | MERGE TAGS */
   .rail-modes{display:flex;align-items:stretch;border-bottom:1px solid #34353a;flex-shrink:0;}
-  .rail-modes-scroll{display:flex;flex:1;min-width:0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#45464c transparent;}
-  .rail-modes-scroll::-webkit-scrollbar{height:4px;}
-  .rail-modes-scroll::-webkit-scrollbar-thumb{background:#45464c;border-radius:4px;}
-  .rail-modes-scroll::-webkit-scrollbar-track{background:transparent;}
-  .rail-mode{flex:0 0 auto;text-align:center;padding:12px 16px;font-family:'Montserrat';font-size:10.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
+  .rail-modes-select-wrap{position:relative;flex:1;min-width:0;display:flex;align-items:center;}
+  .rail-modes-select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--accent);font-size:11px;pointer-events:none;}
+  .rail-mode-select{appearance:none;-webkit-appearance:none;width:100%;background:transparent;border:none;border-bottom:2px solid var(--accent);color:#fff;font-family:'Montserrat';font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:12px 30px 12px 16px;cursor:pointer;outline:none;}
+  .rail-mode-select option{background:#26272c;color:#fff;}
+  .rail-mode{flex:0 0 auto;text-align:center;padding:12px 16px;font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#888;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.12s;}
   .rail-mode:hover{color:#bbb;background:#26272c;}
   .rail-mode.active{color:#fff;border-bottom-color:var(--accent);}
+  .rail-modes-select-wrap.muted::after{color:#666;}
+  .rail-modes-select-wrap.muted .rail-mode-select{border-bottom-color:#34353a;color:#888;}
   .rail-mode-pinned{flex:0 0 auto;border-left:1px solid #34353a;background:#202126;}
   .builder-toggle{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 12px;border-bottom:1px solid #34353a;background:#202126;}
   .builder-toggle .bt-label{font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;transition:.15s;}
@@ -103,11 +105,6 @@
   .tb-btn.primary:hover{background:#c44e16;color:#fff;}
   .tb-btn.danger:hover{border-color:#c0392b;color:#c0392b;}
   /* toolbar dropdown */
-  .tb-dd{position:relative;display:inline-block;}
-  .tb-dd-menu{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid #ccc;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:6px;display:none;z-index:120;min-width:170px;}
-  .tb-dd-menu.show{display:block;}
-  .tb-dd-item{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:none;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#444;padding:9px 10px;border-radius:5px;cursor:pointer;}
-  .tb-dd-item:hover{background:#f3f0ee;color:var(--accent);}
   /* custom button tooltip */
   #tipBox{position:fixed;z-index:1300;background:#1a1a1a;color:#fff;font-family:'Open Sans',sans-serif;font-size:11.5px;line-height:1.45;padding:8px 11px;border-radius:6px;max-width:240px;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none;display:none;}
   #tipBox::after{content:'';position:absolute;top:-5px;left:16px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:5px solid #1a1a1a;}
@@ -307,10 +304,12 @@
   </div>
   <div class="bt-hint" id="btHint">Page format: narrow email/graphic</div>
   <div class="rail-modes" id="railModes">
-    <div class="rail-modes-scroll">
-      <div class="rail-mode" id="mode-blog" onclick="setRailMode('blog')">Webpage</div>
-      <div class="rail-mode" id="mode-newsletter" onclick="setRailMode('newsletter')">Newsletter</div>
-      <div class="rail-mode active" id="mode-graphics" onclick="setRailMode('graphics')">Graphics</div>
+    <div class="rail-modes-select-wrap">
+      <select id="railModeSelect" class="rail-mode-select" onchange="setRailMode(this.value)">
+        <option value="graphics">Graphics</option>
+        <option value="newsletter">Newsletter</option>
+        <option value="blog">Webpage</option>
+      </select>
     </div>
     <div class="rail-mode rail-mode-pinned" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
   </div>
@@ -570,7 +569,7 @@
       </div>
       <div class="field-row">
         <label>Tag</label>
-        <select id="saveTag" style="width:100%;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;background:#fff;">
+        <select id="saveTag" onchange="onSaveTagChange(this)" style="width:100%;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;background:#fff;">
           <option value="Newsletter">Newsletter</option>
           <option value="Graphic">Graphic</option>
           <option value="Promo">Promo</option>
@@ -641,7 +640,7 @@
       <div style="display:flex;gap:10px;margin-top:10px;">
         <div class="field-row" style="flex:1;">
           <label>Folder</label>
-          <input type="text" id="ghDir" placeholder="saved" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
+          <input type="text" id="ghDir" placeholder="templates" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
         </div>
         <div class="field-row" style="flex:1;">
           <label>Branch (optional)</label>
@@ -1608,10 +1607,12 @@ function setBuilderMode(mode){
 function setRailMode(m){
   railMode=m;
   const isSections=(m==='graphics'||m==='newsletter'||m==='blog');
-  document.getElementById('mode-graphics').classList.toggle('active',m==='graphics');
-  document.getElementById('mode-newsletter').classList.toggle('active',m==='newsletter');
-  document.getElementById('mode-blog').classList.toggle('active',m==='blog');
+  // keep the dropdown showing the active content mode (Tags is a separate pin)
+  const sel=document.getElementById('railModeSelect');
+  if(sel&&isSections)sel.value=m;
   document.getElementById('mode-hotkeys').classList.toggle('active',m==='hotkeys');
+  // dim the dropdown's underline when Tags is the active pane
+  document.getElementById('railModeSelect')?.parentElement?.classList.toggle('muted',m==='hotkeys');
   document.getElementById('railSections').classList.toggle('active',isSections);
   document.getElementById('pane-hotkeys').classList.toggle('active',m==='hotkeys');
   const sl=document.getElementById('railSubLabel');
@@ -2680,7 +2681,6 @@ function doImport(){
 }
 
 
-/* ═══════════ PUSH HTML (GHL via webhook) ═══════════ */
 
 /* ═══════════ SAVED NEWSLETTERS (GitHub) ═══════════ */
 // Browses structured newsletter JSON files stored in the repo's /saved folder.
@@ -3259,6 +3259,11 @@ function loadSections(sections,append){
 }
 
 /* load an entire canonical newsletter object into the editor */
+/* Metadata of the newsletter currently loaded into the editor (name/tag/status/
+   notes). Captured on load so the Save modal pre-fills them — this is what makes
+   Tag & Status survive a delete-and-reload (they ride along in the GitHub JSON). */
+let currentMeta={name:'',tag:'',status:'',notes:''};
+
 function applyNewsletter(nl){
   if(!nl||typeof nl!=='object'){toast('That file isn\u2019t a valid newsletter');return false;}
   if(nl.schema && nl.schema!==NEWSLETTER_SCHEMA){
@@ -3267,6 +3272,9 @@ function applyNewsletter(nl){
   }
   applyThemeVars(nl.theme);
   loadSections(nl.sections||[]);
+  // remember this newsletter's metadata so re-saving keeps Tag/Status/Notes
+  currentMeta={name:nl.name||'',tag:nl.tag||'',status:nl.status||'',notes:nl.notes||''};
+  try{localStorage.setItem('lngvty_current_meta',JSON.stringify(currentMeta));}catch(e){}
   return true;
 }
 
@@ -3278,7 +3286,7 @@ function saveStateLocal(){
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   GITHUB STORAGE  (replaces Airtable)
+   GITHUB STORAGE
 
    Saved newsletters live as JSON files in a repo folder (default: /saved).
    Uses the GitHub REST Contents API — no extra service, free version
@@ -3294,8 +3302,14 @@ function saveStateLocal(){
    and kept in this browser's localStorage (see the GitHub Settings modal).
    ════════════════════════════════════════════════════════════════════════ */
 const GH_API='https://api.github.com';
+/* Default GitHub storage target. Newsletters are stored as JSON files in
+   github.com/senviskyec/LNGVTY-HTML-Builder under /templates. Anything saved
+   in the GitHub settings modal (especially the token) overrides these. */
+const GH_DEFAULTS={owner:'senviskyec',repo:'LNGVTY-HTML-Builder',dir:'templates',branch:''};
 function ghConfig(){
-  try{return JSON.parse(localStorage.getItem('lngvty_github')||'{}');}catch(e){return {};}
+  let saved={};
+  try{saved=JSON.parse(localStorage.getItem('lngvty_github')||'{}');}catch(e){saved={};}
+  return Object.assign({},GH_DEFAULTS,saved);
 }
 function setGhConfig(cfg){
   try{localStorage.setItem('lngvty_github',JSON.stringify(cfg||{}));}catch(e){}
@@ -3429,9 +3443,44 @@ async function testGithub(){
 function saveState(){
   if(!frame.querySelector('.sec')){saveStateLocal();toast('Saved (empty canvas)');return;}
   document.getElementById('saveModalStatus').textContent='';
-  // prefill name from last save if present
+  // restore last-known metadata (survives a page reload too)
+  if(!currentMeta.tag && !currentMeta.status){
+    try{const m=JSON.parse(localStorage.getItem('lngvty_current_meta')||'null');if(m)currentMeta=m;}catch(e){}
+  }
+  // (re)build the Tag dropdown so any custom tags persist, then preselect
+  rebuildSaveTagOptions(currentMeta.tag);
+  // prefill the rest from the currently-loaded newsletter
+  const nameEl=document.getElementById('saveName');
+  if(currentMeta.name && !nameEl.value)nameEl.value=currentMeta.name;
+  if(currentMeta.status)document.getElementById('saveStatus').value=currentMeta.status;
+  if(currentMeta.notes)document.getElementById('saveNotes').value=currentMeta.notes;
   document.getElementById('saveBg').classList.add('show');
-  setTimeout(()=>document.getElementById('saveName').focus(),30);
+  setTimeout(()=>nameEl.focus(),30);
+}
+
+/* persistent custom tags the user has added in the Save modal */
+function getCustomTags(){try{return JSON.parse(localStorage.getItem('lngvty_custom_tags')||'[]');}catch(e){return [];}}
+function addCustomTag(t){const list=getCustomTags();if(!list.includes(t)){list.push(t);try{localStorage.setItem('lngvty_custom_tags',JSON.stringify(list));}catch(e){}}}
+
+/* rebuild the Save-modal Tag <select> with the standard tags, any custom tags,
+   and a trailing "＋ Add new tag…" entry. Preselects `selected` if given. */
+function rebuildSaveTagOptions(selected){
+  const sel=document.getElementById('saveTag');if(!sel)return;
+  const std=['Newsletter','Graphic','Promo','Announcement','Other'];
+  const tags=[...std];
+  getCustomTags().forEach(t=>{if(!tags.includes(t))tags.push(t);});
+  if(selected && !tags.includes(selected))tags.push(selected);   // a loaded tag we've never seen
+  sel.innerHTML=tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('')
+    +'<option value="__add__">＋ Add new tag…</option>';
+  sel.value=selected && tags.includes(selected)?selected:tags[0];
+}
+
+/* when the user picks "Add new tag…", prompt for it and add it */
+function onSaveTagChange(sel){
+  if(sel.value!=='__add__')return;
+  const t=(prompt('New tag name:')||'').trim();
+  if(t){addCustomTag(t);rebuildSaveTagOptions(t);}
+  else{rebuildSaveTagOptions(getCustomTags()[0]||'Newsletter');}
 }
 function closeSaveModal(){document.getElementById('saveBg').classList.remove('show');}
 
@@ -3443,9 +3492,14 @@ function setSavedList(arr){try{localStorage.setItem('lngvty_saved',JSON.stringif
 async function confirmSave(){
   const name=document.getElementById('saveName').value.trim();
   if(!name){toast('Please enter a Name');document.getElementById('saveName').focus();return;}
-  const tag=document.getElementById('saveTag').value;
+  let tag=document.getElementById('saveTag').value;
+  if(tag==='__add__')tag='';   // never save the "Add new tag…" sentinel
   const status=document.getElementById('saveStatus').value;
   const notes=document.getElementById('saveNotes').value.trim();
+
+  // remember this metadata so the next Save (and a delete/reload) keeps it
+  currentMeta={name,tag,status,notes};
+  try{localStorage.setItem('lngvty_current_meta',JSON.stringify(currentMeta));}catch(e){}
 
   // 1) always autosave the working canvas locally
   saveStateLocal();
