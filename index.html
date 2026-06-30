@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>LNGVTY Email Section Builder</title>
@@ -135,17 +134,17 @@
 
   .li-wrap{position:relative;}
   .li-del{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:4px;border:none;background:rgba(192,57,43,.9);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:none;z-index:30;padding:0;}
-  .li-wrap:hover > .li-del{display:block;}
+  .li-wrap:hover > .li-del,.li-wrap:hover .li-ctrls > .li-del,.li-wrap:hover .li-ctrls .li-del{display:block;}
   .li-add{margin-top:8px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;}
   .tl-toggle{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:4px;border:none;background:rgba(26,26,26,.85);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:none;z-index:30;padding:0;}
-  .li-wrap:hover > .tl-toggle{display:block;}
+  .li-wrap:hover > .tl-toggle,.li-wrap:hover .li-ctrls > .tl-toggle{display:block;}
   .tl-toggle:hover{background:var(--accent);}
   .li-add:hover{background:rgba(224,90,27,.14);}
   /* reorder buttons on list items */
   .li-move{position:absolute;width:17px;height:17px;border-radius:4px;border:none;background:rgba(26,26,26,.78);color:#fff;font-size:10px;line-height:1;cursor:pointer;display:none;z-index:31;padding:0;}
   .li-move.up{top:2px;right:40px;}
   .li-move.dn{top:2px;right:21px;}
-  .li-wrap:hover > .li-move{display:block;}
+  .li-wrap:hover > .li-move,.li-wrap:hover .li-ctrls > .li-move,.li-wrap:hover .li-ctrls .li-move{display:block;}
   .li-move:hover{background:var(--accent);}
   /* addable inline tags (translucent orange pills) */
   .tag-wrap{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;}
@@ -161,7 +160,7 @@
   .evt-time{display:inline-block;background:rgba(224,90,27,.18);color:var(--accent);font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.5px;padding:3px 10px;border-radius:4px;}
   /* schedule same-day add */
   .sched-addsub{position:absolute;bottom:2px;right:21px;background:rgba(224,90,27,.9);color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;z-index:31;}
-  .li-wrap:hover > .sched-addsub{display:block;}
+  .li-wrap:hover > .sched-addsub,.li-wrap:hover .li-ctrls > .sched-addsub{display:block;}
   .sched-addsub:hover{background:var(--accent);}
   .sched-sub + .sched-sub{border-top:1px dashed #eee;}
 
@@ -328,16 +327,12 @@
 <div class="canvas-wrap">
   <div class="toolbar">
     <button class="tb-btn primary" onclick="saveState()" data-tip="Saves your work in this browser AND to GitHub (you'll fill in Name, Tag, Status, Notes).">&#128190; Save</button>
-    <div class="tb-dd" id="syncDD">
-      <button class="tb-btn" onclick="toggleSyncDD(event)" data-tip="Push the email HTML to your GoHighLevel tag.">&#128260; Sync HTML ▾</button>
-      <div class="tb-dd-menu" id="syncMenu">
-        <button class="tb-dd-item" onclick="pushHTML()" data-tip="Sends the current HTML to your GHL tag via webhook.">&#11014; Push HTML</button>
-      </div>
-    </div>
     <button class="tb-btn" onclick="openPreview()" data-tip="See exactly how the finished email looks, with desktop/mobile toggles.">&#128065; Preview</button>
     <button class="tb-btn" onclick="copyHTML()" data-tip="Copies the finished email HTML to your clipboard (paste this into GHL).">&#128203; Copy HTML</button>
+    <button class="tb-btn" onclick="copyCSS()" data-tip="Copies the finished HTML plus the structured section JSON (the same data saved to GitHub). For testing / re-import.">&#129521; Copy CSS</button>
     <button class="tb-btn" onclick="downloadHTML()" data-tip="Saves the finished email HTML as a file.">&#8595; Download</button>
     <button class="tb-btn" onclick="viewHTML()" data-tip="Opens the finished HTML in a window so you can read or copy it.">&#10216;&#10217; View HTML</button>
+    <button class="tb-btn" onclick="openImport()" data-tip="Import a newsletter JSON (from Copy CSS) back into the builder, keeping every section editable.">&#128229; Import</button>
     <button class="tb-btn" onclick="openAddSection()" data-tip="Create your own section by pasting in HTML.">&#10010; New Section</button>
     <button class="tb-btn" onclick="openSaved()" data-tip="Browse newsletters saved to GitHub. Reload to fetch the latest, then load one to keep editing.">&#9733; Saved Newsletters</button>
     <button class="tb-btn" onclick="openGithubSettings()" data-tip="Connect the GitHub repo where newsletters are stored.">&#9881; GitHub</button>
@@ -656,6 +651,26 @@
       <div style="flex:1;"></div>
       <button class="tb-btn" onclick="closeGithubSettings()">Cancel</button>
       <button class="tb-btn primary" onclick="saveGithubSettings()">&#128190; Save settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT modal (structured section JSON) -->
+<div class="modal-bg" id="importBg">
+  <div class="modal" style="width:620px;">
+    <div class="modal-head"><h3>&#128229; Import Newsletter</h3><button onclick="closeImport()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="panel-note" style="margin-top:0;">Paste a newsletter's <strong>section JSON</strong> here to rebuild it in the editor with every section fully editable. You can paste either the raw JSON, or the whole <strong>&#129521; Copy CSS</strong> output (the JSON is pulled out of it automatically). This is the structured data — not exported HTML — so nothing becomes an "Imported" block.</div>
+      <div class="field-row" style="margin-top:14px;">
+        <label>Section JSON (or full Copy CSS bundle)</label>
+        <textarea id="importText" placeholder='Paste the JSON, e.g. {"schema":"lngvty.newsletter/v1","sections":[…]}  — or the entire Copy CSS output' style="width:100%;box-sizing:border-box;min-height:240px;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:monospace;font-size:12px;line-height:1.5;"></textarea>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#555;margin-top:6px;cursor:pointer;"><input type="checkbox" id="importReplace" checked/> Replace what's currently on the canvas (uncheck to append the imported sections)</label>
+      <div id="importStatus" style="font-size:12px;color:#666;margin-top:10px;min-height:16px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="closeImport()">Cancel</button>
+      <button class="tb-btn primary" onclick="doImport()">&#128229; Import</button>
     </div>
   </div>
 </div>
@@ -1156,17 +1171,29 @@ const SECTIONS = {
 
   nlschedule:{group:'Newsletter',icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
     html:()=>{
-      const sub=(name,time)=>`<div class="sched-sub" style="display:flex;gap:14px;align-items:flex-start;position:relative;padding:4px 0;">
-          <div style="flex:1;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;")}${ph(time,"font-size:11px;color:#999;font-weight:300;line-height:1.5;")}</div>
+      // Each sub-event (a day can hold more than one). Plain block layout — no flex.
+      const sub=(name,time)=>`<div class="sched-sub" style="position:relative;padding:4px 0;">
+          ${ph(name,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;")}${ph(time,"font-size:11px;color:#999;font-weight:300;line-height:1.5;")}
           <button class="li-del" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
-      const mk=(day,date,name,time)=>`<div class="li-wrap" style="margin-bottom:10px;display:flex;gap:0;align-items:stretch;position:relative;">
-        <div style="width:5px;background:var(--accent);flex-shrink:0;"></div>
-        <div style="flex:1;background:#fff;padding:10px 14px;display:flex;gap:14px;align-items:flex-start;">
-          <div style="width:80px;flex-shrink:0;">${ph(day,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);")}${ph(date,"font-size:9px;color:#bbb;font-weight:300;margin-top:2px;")}</div>
-          <div class="sched-subs" style="flex:1;">${sub(name,time)}</div>
-        </div>
-        <button class="sched-addsub" onclick="addSchedSub(this)" title="Add another event on this day">＋ event</button>
-        ${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      // A day row built as a TABLE so the orange bar + white card always fill the
+      // full row height/width identically in every email client (no flex→table
+      // guessing). Outer table = li-wrap; cell 1 = 5px accent bar, cell 2 = white
+      // card holding an inner 2-col table (day/date | events).
+      const mk=(day,date,name,time)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:10px;position:relative;">
+        <tr>
+          <td width="5" valign="top" style="width:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
+          <td valign="top" style="background:#fff;padding:10px 14px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr>
+              <td width="80" valign="top" style="width:80px;">${ph(day,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);")}${ph(date,"font-size:9px;color:#bbb;font-weight:300;margin-top:2px;")}</td>
+              <td valign="top" class="sched-subs">${sub(name,time)}</td>
+            </tr></table>
+          </td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">
+            <button class="sched-addsub" onclick="addSchedSub(this)" title="Add another event on this day">＋ event</button>
+            ${liMoves()}<button class="li-del" onclick="delLi(this)">×</button>
+          </td>
+        </tr>
+      </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Every Week at LNGVTY',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Upcoming Schedule',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
@@ -1258,14 +1285,20 @@ const SECTIONS = {
 
   nlevents:{group:'Events',icon:'📅',name:'Special Events',theme:'white',mode:'newsletter',
     html:()=>{
-      const ev=(month,day,name,time,desc,tag)=>`<div class="li-wrap" style="border-bottom:1px solid #f0f0f0;margin-bottom:2px;display:flex;align-items:stretch;position:relative;">
-        <div style="background:var(--gray);width:64px;flex-shrink:0;text-align:center;padding:10px 8px;display:flex;flex-direction:column;justify-content:center;">${ph(month,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;opacity:.7;")}${ph(day,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1.1;")}</div>
-        <div style="padding:14px 16px;flex:1;">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;")}<span class="evt-time" contenteditable="true" data-ph="${esc(time)}"></span></div>
-          ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
-          <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
-        </div>
-        ${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      // Table-based row: gray date box (left, full height) + content card (right,
+      // full width). Built directly as a table so it renders identically in every
+      // email client with no flex→table conversion.
+      const ev=(month,day,name,time,desc,tag)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;border-bottom:1px solid #f0f0f0;margin-bottom:2px;position:relative;">
+        <tr>
+          <td width="64" valign="middle" align="center" style="width:64px;background:var(--gray);padding:10px 8px;text-align:center;">${ph(month,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;opacity:.7;")}${ph(day,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1.1;")}</td>
+          <td valign="top" style="padding:14px 16px;">
+            <div style="margin-bottom:4px;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;display:inline;")} <span class="evt-time" contenteditable="true" data-ph="${esc(time)}"></span></div>
+            ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
+            <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
+          </td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+        </tr>
+      </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Special Events',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Mark Your Calendar',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:20px;line-height:1.1;")}
@@ -1274,14 +1307,17 @@ const SECTIONS = {
 
   nlupcoming:{group:'Events',icon:'🗓',name:'Upcoming Events (This Week)',theme:'white',mode:'newsletter',
     html:()=>{
-      const ev=(month,day,name,time,desc,tag)=>`<div class="li-wrap" style="border-bottom:1px solid #f0f0f0;margin-bottom:2px;display:flex;align-items:stretch;position:relative;">
-        <div style="background:var(--gray);width:64px;flex-shrink:0;text-align:center;padding:10px 8px;display:flex;flex-direction:column;justify-content:center;">${ph(month,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;opacity:.7;")}${ph(day,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1.1;")}</div>
-        <div style="padding:14px 16px;flex:1;">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;")}<span class="evt-time" contenteditable="true" data-ph="${esc(time)}"></span></div>
-          ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
-          <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
-        </div>
-        ${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      const ev=(month,day,name,time,desc,tag)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;border-bottom:1px solid #f0f0f0;margin-bottom:2px;position:relative;">
+        <tr>
+          <td width="64" valign="middle" align="center" style="width:64px;background:var(--gray);padding:10px 8px;text-align:center;">${ph(month,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;opacity:.7;")}${ph(day,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1.1;")}</td>
+          <td valign="top" style="padding:14px 16px;">
+            <div style="margin-bottom:4px;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;display:inline;")} <span class="evt-time" contenteditable="true" data-ph="${esc(time)}"></span></div>
+            ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
+            <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
+          </td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+        </tr>
+      </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('This Week',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Upcoming Events',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:20px;line-height:1.1;")}
@@ -1807,7 +1843,7 @@ function delStat(btn){const cell=btn.closest('.stat-cell');const row=cell?.paren
 /* schedule: add another event under the same day (connected bar, no gap) */
 function addSchedSub(btn){
   const wrap=btn.closest('.li-wrap');const subs=wrap.querySelector('.sched-subs');if(!subs)return;
-  const proto=`<div class="sched-sub" style="display:flex;gap:14px;align-items:flex-start;position:relative;padding:4px 0;"><div style="flex:1;"><div contenteditable="true" data-ph="Event Name" style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;"></div><div contenteditable="true" data-ph="Time &amp; details" style="font-size:11px;color:#999;font-weight:300;line-height:1.5;"></div></div><button class="li-del" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
+  const proto=`<div class="sched-sub" style="position:relative;padding:4px 0;"><div contenteditable="true" data-ph="Event Name" style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;"></div><div contenteditable="true" data-ph="Time &amp; details" style="font-size:11px;color:#999;font-weight:300;line-height:1.5;"></div><button class="li-del" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
   const tmp=document.createElement('div');tmp.innerHTML=proto;const node=tmp.firstElementChild;subs.appendChild(node);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
 }
@@ -2115,6 +2151,7 @@ function currentVars(){const cs=getComputedStyle(document.documentElement);const
 function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
+  clone.querySelectorAll('.li-ctrls').forEach(e=>e.remove());
   clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
@@ -2603,15 +2640,57 @@ function setPreviewWidth(w,btnId){
   document.getElementById(btnId).classList.add('active');
 }
 
-/* HTML Import has been removed. Newsletters now load from structured JSON
-   (Saved Newsletters → Load), so sections keep their type identity and all
-   dynamic controls. These stubs remain only so any stray reference is safe. */
-function openImport(){toast('HTML import was removed — use \u2b50 Saved Newsletters instead.');}
-function closeImport(){}
+/* Import a newsletter from structured section JSON. This is the inverse of
+   Copy CSS / the GitHub save: it rebuilds the editor from the section data, so
+   every section keeps its type and stays fully editable — never an "Imported"
+   block. Accepts raw JSON or the full Copy CSS bundle (JSON is extracted). */
+function openImport(){
+  const t=document.getElementById('importText');if(t)t.value='';
+  const st=document.getElementById('importStatus');if(st)st.textContent='';
+  const rep=document.getElementById('importReplace');if(rep)rep.checked=true;
+  document.getElementById('importBg').classList.add('show');
+  setTimeout(()=>t&&t.focus(),30);
+}
+function closeImport(){document.getElementById('importBg').classList.remove('show');}
+
+/* pull a newsletter object out of pasted text: either raw JSON, the Copy CSS
+   bundle (JSON sits between the LNGVTY-JSON markers), or JSON embedded anywhere */
+function extractNewsletterJSON(raw){
+  if(!raw)return null;
+  raw=raw.trim();
+  // 1) Copy CSS bundle markers
+  const m=raw.match(/LNGVTY-JSON\s*([\s\S]*?)\s*LNGVTY-JSON/);
+  if(m){try{return JSON.parse(m[1].trim());}catch(e){}}
+  // 2) whole thing is JSON
+  try{return JSON.parse(raw);}catch(e){}
+  // 3) first {...} object found in the text
+  const brace=raw.indexOf('{');const last=raw.lastIndexOf('}');
+  if(brace!==-1 && last>brace){try{return JSON.parse(raw.slice(brace,last+1));}catch(e){}}
+  return null;
+}
+
+function doImport(){
+  const raw=document.getElementById('importText').value;
+  const status=document.getElementById('importStatus');
+  const nl=extractNewsletterJSON(raw);
+  if(!nl){status.textContent='Couldn\u2019t find valid newsletter JSON in that text.';return;}
+  const sections=Array.isArray(nl.sections)?nl.sections:(Array.isArray(nl)?nl:null);
+  if(!sections){status.textContent='That JSON has no "sections" array.';return;}
+  // validate section keys against known sections
+  const known=allSections();
+  const good=sections.filter(s=>s&&s.key&&known[s.key]);
+  const skipped=sections.length-good.length;
+  if(!good.length){status.textContent='None of the sections match known section types.';return;}
+  const replace=document.getElementById('importReplace').checked;
+  if(replace && nl.theme)applyThemeVars(nl.theme);
+  loadSections(good, !replace);
+  saveStateLocal();
+  closeImport();
+  toast(`Imported ${good.length} section${good.length!==1?'s':''}`+(skipped?` (${skipped} skipped)`:''));
+}
 
 
 /* ═══════════ PUSH HTML (GHL via webhook) ═══════════ */
-const PUSH_WEBHOOK='https://hook.us2.make.com/elcnfcjykiy0gqhdeo7w5h2kt44arxm2';
 
 /* ═══════════ SAVED NEWSLETTERS (GitHub) ═══════════ */
 // Browses structured newsletter JSON files stored in the repo's /saved folder.
@@ -2766,42 +2845,26 @@ async function reloadSaved(){
   btn.innerHTML='&#8635; Reload';
 }
 
-function toggleSyncDD(e){
-  if(e)e.stopPropagation();
-  document.getElementById('syncMenu').classList.toggle('show');
-}
-document.addEventListener('click',e=>{
-  const dd=document.getElementById('syncDD');
-  if(dd && !dd.contains(e.target))document.getElementById('syncMenu').classList.remove('show');
-});
-
-async function pushHTML(){
-  document.getElementById('syncMenu').classList.remove('show');
+/* Copy CSS: copies the finished email HTML plus the structured section JSON
+   (the exact data that gets saved to GitHub). Useful for manual testing and
+   for round-tripping a newsletter back in via the Import button. */
+function copyCSS(){
   const html=buildExport();
-  toast('Pushing HTML to GHL…');
-  try{
-    await fetch(PUSH_WEBHOOK,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({html, source:'LNGVTY-builder', pushedAt:new Date().toISOString()})
-    });
-    // Make webhooks often respond with opaque/CORS — treat a completed request as success
-    toast('✓ Pushed to GHL');
-  }catch(err){
-    // no-cors fallback so the request still fires even if CORS blocks the response
-    try{
-      await fetch(PUSH_WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({html,source:'LNGVTY-builder'})});
-      toast('✓ Pushed to GHL');
-    }catch(e2){toast('Push failed — check your connection');}
-  }
-}
+  const data=serializeNewsletter({name:''});
+  const bundle=
+`<!-- ===== LNGVTY NEWSLETTER EXPORT ===== -->
+<!-- 1) EMAIL HTML (paste into GHL) -->
 
-async function pullHTML(){
-  document.getElementById('syncMenu').classList.remove('show');
-  // Pulling HTML back would require parsing exported HTML — which is exactly
-  // what we removed. Newsletters round-trip through Saved Newsletters (JSON)
-  // instead, so this no longer reconstructs the canvas.
-  toast('Pull was removed — load from \u2b50 Saved Newsletters instead.');
+${html}
+
+<!-- ===== SECTION DATA (JSON saved to GitHub — paste into Import to rebuild) ===== -->
+<!--LNGVTY-JSON
+${JSON.stringify(data,null,2)}
+LNGVTY-JSON-->`;
+  navigator.clipboard.writeText(bundle).then(
+    ()=>toast('Copied HTML + section JSON'),
+    ()=>toast('Copy failed — try View HTML')
+  );
 }
 
 /* ═══════════ BUTTON TOOLTIPS ═══════════ */
@@ -2861,14 +2924,14 @@ Click <span class="btnrep">👁 Preview</span> in the top toolbar. A window show
 <div class="bigstep"><div class="num">9</div><div class="stxt"><b>Save your work</b>
 Click <span class="btnrep orange">💾 Save</span>. A small form asks for a <strong>Name</strong> (required), a <strong>Tag</strong> (Newsletter, Graphic, etc.), a <strong>Status</strong> (Draft / In Review / Approved / Sent), and any <strong>Notes</strong>. Click Save and it's stored on this computer <em>and</em> as a JSON file in GitHub, where it shows up under <span class="btnrep">⭐ Saved Newsletters</span>. Saving again with the <strong>same name</strong> updates that same file instead of making a duplicate — and GitHub keeps the full version history automatically. <em>(Connect a repo once under <span class="btnrep">⚙ GitHub</span> — see step 13.)</em></div></div>
 
-<div class="bigstep"><div class="num">10</div><div class="stxt"><b>Send it to GoHighLevel — the one-click way (Push)</b>
-At the top, open <span class="btnrep">🔄 Sync HTML ▾</span> and click <span class="btnrep orange">⬆ Push HTML</span> — it sends the finished email straight to your GHL tag automatically through a webhook. One click, done. <em>(To re-open an older newsletter, use <span class="btnrep">⭐ Saved Newsletters</span> instead — see step 13. There's no more "Pull HTML": editing always happens from the structured save, never by re-reading exported HTML.)</em></div></div>
+<div class="bigstep"><div class="num">10</div><div class="stxt"><b>Copy the section data (Copy CSS)</b>
+<span class="btnrep">🧪 Copy CSS</span> copies the finished email HTML <em>plus</em> the structured section JSON (the same data saved to GitHub), bundled together. It's mainly for testing and for moving a newsletter between browsers: copy it, then paste the whole thing into <span class="btnrep">📥 Import</span> to rebuild every section, fully editable. To re-open an older newsletter normally, use <span class="btnrep">⭐ Saved Newsletters</span> (step 13).</div></div>
 
 <div class="bigstep"><div class="num">11</div><div class="stxt"><b>Send it to GoHighLevel — the manual way (Copy HTML)</b>
 If you'd rather do it by hand: click <span class="btnrep">📋 Copy HTML</span> (it copies the whole email). Then in GHL go to <strong>Marketing → Emails → Campaigns</strong>, create a campaign, choose the <strong>newsletter campaign template</strong>, and <strong>paste</strong> the HTML into the email body. (Or use <span class="btnrep">↓ Download</span> to save it as a file first.)</div></div>
 
 <div class="bigstep"><div class="num">12</div><div class="stxt"><b>Sharing a draft with someone</b>
-Everyone who connects the same GitHub repo (step 13) sees the same <span class="btnrep">⭐ Saved Newsletters</span>. To hand a draft off: <span class="btnrep orange">💾 Save</span> it, and the other person clicks <span class="btnrep">⭐ Saved Newsletters → ↻ Reload → 📥 Load</span> — they pick up exactly where you left off, with every section still fully editable. <em>(Copy HTML is still there if you just want to send finished code, but that's for pasting into GHL, not for re-editing.)</em></div></div>
+Everyone who connects the same GitHub repo (step 13) sees the same <span class="btnrep">⭐ Saved Newsletters</span>. To hand a draft off: <span class="btnrep orange">💾 Save</span> it, and the other person clicks <span class="btnrep">⭐ Saved Newsletters → ↻ Reload → 📥 Load</span> — they pick up exactly where you left off, with every section still fully editable. <em>(Or send them the <span class="btnrep">🧪 Copy CSS</span> output and have them paste it into <span class="btnrep">📥 Import</span>.)</em></div></div>
 
 <div class="bigstep"><div class="num">13</div><div class="stxt"><b>Connect GitHub &amp; browse Saved Newsletters</b>
 Newsletters are stored as JSON files in a GitHub repo — that gives you free version history, backups, and keeps the data right next to the builder. <strong>One-time setup:</strong> click <span class="btnrep">⚙ GitHub</span>, enter the repo <strong>Owner</strong> and <strong>Repository</strong> name, set the <strong>Folder</strong> (default <code>saved</code>), and paste a <strong>personal access token</strong> (needed for saving — create a fine-grained token at GitHub → Settings → Developer settings, scoped to just this repo with <em>Contents: Read &amp; write</em>). Hit <span class="btnrep">🔗 Test connection</span> then <strong>Save settings</strong>. After that, <span class="btnrep">⭐ Saved Newsletters → ↻ Reload</span> lists everything in the folder; <span class="btnrep">📥 Load</span> re-opens any one with all sections live and editable. <em>The token is stored only in this browser on this device.</em></div></div>
@@ -2876,15 +2939,15 @@ Newsletters are stored as JSON files in a GitHub repo — that gives you free ve
 <div class="bigstep"><div class="num">14</div><div class="stxt"><b>Set up &amp; send the campaign in GoHighLevel</b>
 In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>. Pick the <strong>newsletter campaign template</strong>, write a subject line (e.g. "LNGVTY Hub — Week of [Date]"), choose your audience (the Members smart list for members), click <strong>Review and Send</strong>, confirm, and send. 🎉</div></div>
 
-<div class="tocard"><b>Remember</b><br>This tool only <em>builds</em> the email. The actual sending always happens inside GoHighLevel — either automatically via <strong>Push HTML</strong>, or manually by pasting the <strong>Copy HTML</strong> output into a GHL campaign.</div>
+<div class="tocard"><b>Remember</b><br>This tool only <em>builds</em> the email. The actual sending happens inside GoHighLevel — paste the <strong>Copy HTML</strong> output into a GHL campaign.</div>
 
 <h2>🧰 The Toolbar — Every Button Explained</h2>
 <p>These are the buttons across the top. <em>(Hover any of them in the app to see the same tip.)</em></p>
 <table>
 <tr><th>Button</th><th>What it does</th></tr>
 <tr><td><span class="btnrep orange">💾 Save</span></td><td>Saves your work in this browser <strong>and</strong> as a JSON file in GitHub. You fill in a <strong>Name, Tag, Status,</strong> and <strong>Notes</strong>, and it appears under Saved Newsletters. Re-saving with the same Name updates that file (no duplicates); GitHub keeps the version history.</td></tr>
-<tr><td><span class="btnrep">🔄 Sync HTML ▾</span></td><td>Opens the menu for pushing the finished HTML to your GHL tag.</td></tr>
-<tr><td><span class="btnrep orange">⬆ Push HTML</span></td><td>Sends the finished HTML to your GHL tag automatically via webhook.</td></tr>
+<tr><td><span class="btnrep">🧪 Copy CSS</span></td><td>Copies the finished HTML <strong>plus</strong> the structured section JSON (the same data saved to GitHub), bundled together. Paste it into Import to rebuild a newsletter. Mainly for testing.</td></tr>
+<tr><td><span class="btnrep">📥 Import</span></td><td>Paste a newsletter’s section JSON (or a full Copy CSS bundle) to rebuild it in the editor — every section stays fully editable, never an "Imported" block. Replace the canvas or append.</td></tr>
 <tr><td><span class="btnrep">👁 Preview</span></td><td>Shows the finished email exactly as it will look, with Desktop / Mobile toggles.</td></tr>
 <tr><td><span class="btnrep">📋 Copy HTML</span></td><td>Copies the finished email HTML to your clipboard (paste this into GHL). The exported code is <strong>email-safe</strong> — colors are baked to hex and layouts use tables, so it renders the same in Gmail, Outlook, and Apple Mail as it does in the preview.</td></tr>
 <tr><td><span class="btnrep">↓ Download</span></td><td>Saves the finished email HTML as a file on your computer.</td></tr>
@@ -3193,9 +3256,9 @@ function applyThemeVars(theme){
 
 /* rebuild the canvas from a structured section list (replaces current canvas).
    This is the SINGLE load path — identical for localStorage and GitHub. */
-function loadSections(sections){
+function loadSections(sections,append){
   const S=allSections();
-  frame.querySelectorAll('.sec').forEach(s=>s.remove());
+  if(!append)frame.querySelectorAll('.sec').forEach(s=>s.remove());
   (sections||[]).forEach(s=>{
     const sec=document.createElement('div');sec.className='sec';sec.dataset.key=s.key;
     sec.innerHTML=s.html+controlsHTML();
