@@ -2172,9 +2172,30 @@ function buildExport(){
     t.classList.remove('evt-time');if(!t.getAttribute('class'))t.removeAttribute('class');
   });
 
-  // contenteditable cleanup — drop ghost text only when truly empty
+  // contenteditable cleanup — drop ghost text only when truly empty.
+  // EXCEPTION: small fixed-size styled badges (numbered step circles, timeline
+  // dots) carry their number in the placeholder. Blanking those leaves an empty
+  // coloured circle with no number, so for these we bake the placeholder text in.
   clone.querySelectorAll('[contenteditable]').forEach(e=>{
-    if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio'))e.innerHTML='';
+    const isEmpty=e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio');
+    if(isEmpty){
+      const st=e.getAttribute('style')||'';
+      const ph=(e.getAttribute('data-ph')||'').trim();
+      // Decide whether the placeholder is a *meaningful default* that should stay
+      // visible (step numbers, dots, ordinals) vs a *fill-me-in prompt* (e.g.
+      // "Event Name", "Short description.") that must NOT leak into the email.
+      //   - styled badge: small fixed-size box with a background that flex-centres
+      //     a short token (a numbered step circle/chip or a timeline dot)
+      const fixedW=/\bwidth:\s*\d+px/.test(st), fixedH=/\bheight:\s*\d+px/.test(st);
+      const centred=/display:\s*flex/.test(st) || /border-radius:\s*50%/.test(st) || /text-align:\s*center/.test(st);
+      const isBadge=ph.length>0 && ph.length<=4 && fixedW && fixedH && centred && /background:/.test(st);
+      //   - ordinal token: a numbering placeholder such as "1", "01", "N", "0X",
+      //     "Day X", or a lone symbol/emoji — no prose words. These are real
+      //     defaults for ordered lists, so keep them.
+      const isOrdinalToken=ph.length>0 && ph.length<=4
+        && /^(?:\d{1,3}|[0-9]?[xXnN]|[•▪◦‣·✓✔→➜»–-]|[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}])$/u.test(ph);
+      e.innerHTML = (isBadge||isOrdinalToken) ? ph : '';
+    }
     e.removeAttribute('contenteditable');e.removeAttribute('data-ph');e.classList.remove('is-empty');
     if(!e.getAttribute('class'))e.removeAttribute('class');
   });
@@ -2392,6 +2413,27 @@ function convertFlexToTable(el){
   const isColumn=(o['flex-direction']||'').indexOf('column')!==-1;
   const flexWrap=(o['flex-wrap']||'').indexOf('wrap')!==-1;
   const kids=[...el.children];
+
+  // SPECIAL CASE: a flex element with NO element children is using flex only to
+  // centre its own text/inline content (e.g. a numbered step badge or timeline
+  // dot: a 26px circle with display:flex;align-items:center;justify-content:center).
+  // Tableizing it would throw the text away (no child cells) — instead just drop
+  // the flex props and centre the content with text-align + line-height, which
+  // every email client supports. Keeps the white number visible inside the circle.
+  if(kids.length===0){
+    const align=(o['justify-content']||'');
+    delete o['display'];delete o['flex-direction'];delete o['flex-wrap'];
+    delete o['align-items'];delete o['justify-content'];delete o['gap'];delete o['flex'];
+    // horizontal centring -> text-align:center
+    if(align.indexOf('center')!==-1||align.indexOf('around')!==-1||align.indexOf('evenly')!==-1)o['text-align']=o['text-align']||'center';
+    else if(align.indexOf('end')!==-1)o['text-align']=o['text-align']||'right';
+    // vertical centring inside a fixed-height box -> line-height == height
+    const h=(o['height']||'').match(/^(\d+)px$/);
+    if(h)o['line-height']=h[1]+'px';
+    el.setAttribute('style',objToStyle(o));
+    return el;
+  }
+
   // container-level styling to keep (bg, padding, margin, border, etc.) goes on a wrapping cell
   delete o['display'];delete o['flex-direction'];delete o['flex-wrap'];
   const gap=o['gap']||'0';delete o['gap'];
