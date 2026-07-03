@@ -409,9 +409,12 @@
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <div class="modal-head"><h3 id="modalTitle">Email HTML</h3><button onclick="closeModal()">&times;</button></div>
-    <textarea id="modalText" readonly></textarea>
+    <textarea id="modalText" readonly spellcheck="false"></textarea>
     <div class="modal-foot">
+      <button class="tb-btn" id="modalEditBtn" onclick="toggleModalEdit()">&#9998; Edit</button>
       <button class="tb-btn" onclick="copyModal()">&#128203; Copy</button>
+      <button class="tb-btn" onclick="previewModalHTML()">&#128065; Preview this</button>
+      <span style="flex:1;"></span>
       <button class="tb-btn primary" onclick="closeModal()">Done</button>
     </div>
   </div>
@@ -605,7 +608,6 @@
     <div class="modal-head">
       <h3>&#9733; Saved Newsletters</h3>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="tb-btn" id="savedReload" onclick="reloadSaved()" data-tip="Fetch the latest newsletters from GitHub.">&#8635; Reload</button>
         <button onclick="closeSaved()">&times;</button>
       </div>
     </div>
@@ -857,20 +859,29 @@ const SECTIONS = {
       </div>`;}},
 
   greeting:{group:'Body',icon:'✎',name:'Greeting + Body',theme:'white',
-    html:()=>`<div style="background:var(--secbg);padding:44px 48px 32px;border-bottom:1px solid #eee;">
-      ${ph('Hey {{contact.first_name}},',"font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--heading);margin-bottom:16px;",'p')}
-      ${ph("You've been a member for 30 days — your first real milestone. We want to celebrate it the right way. Not with a certificate. With data.","font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;",'p')}
-      ${ph("Your 30-day InBody scan is the moment you see what consistency looks like on paper. Muscle gained. Fat lost. Hydration improved.","font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;",'p')}
-    </div>`},
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:44px 48px 32px;border-bottom:1px solid #eee;">
+        ${ph('Hey {{contact.first_name}},',"font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--heading);margin-bottom:16px;",'p')}
+        ${listBlock([para("You've been a member for 30 days — your first real milestone. We want to celebrate it the right way. Not with a certificate. With data.")],para('New paragraph'),'Add paragraph')}
+      </div>`;}},
 
   introbox:{group:'Body',icon:'❝',name:'Intro Box',theme:'white',
-    html:()=>`<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
-      ${ph('Pre-Start',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
-      ${ph('Before Day 1 Hits, Read This.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
-      <div style="background:#fafafa;border-left:3px solid var(--accent);padding:20px 24px;margin-top:14px;">
-        ${ph("Hey {{contact.first_name}} — the challenge kicks off soon and we want you prepared, not winging it. This covers the four things that make or break week one.","font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;",'p')}
-      </div>
-    </div>`},
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:10px;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
+        ${ph('Pre-Start',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
+        ${ph('Before Day 1 Hits, Read This.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
+        <div style="background:#fafafa;border-left:3px solid var(--accent);padding:20px 24px;margin-top:14px;">
+          ${listBlock([para("Hey {{contact.first_name}} — the challenge kicks off soon and we want you prepared, not winging it. This covers the four things that make or break week one.")],para('New paragraph'),'Add paragraph')}
+        </div>
+      </div>`;}},
 
   scancard:{group:'Body',icon:'☑',name:'Checklist Card (dots)',theme:'white',
     html:()=>{
@@ -1514,12 +1525,16 @@ const SECTIONS = {
     </div>`},
 
   chBody:{group:'Body',icon:'¶',name:'Letter / Body Text',theme:'white',mode:'graphics',
-    html:()=>`<div style="background:var(--secbg);padding:44px 48px;">
-      ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
-      ${ph('Your paragraph goes here. Write as much as you like — this block is for the letter or intro copy.',"font-size:15px;line-height:1.75;color:var(--secmuted);font-weight:300;margin-bottom:18px;",'p')}
-      ${ph('A second paragraph. Delete this line if you don\u2019t need it.',"font-size:15px;line-height:1.75;color:var(--secmuted);font-weight:300;",'p')}
-      <div style="margin-top:14px;">${ph('— Tim',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--sectext);",'span')}</div>
-    </div>`},
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top">${ph(txt,"font-size:15px;line-height:1.75;color:var(--secmuted);font-weight:300;margin-bottom:18px;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:44px 48px;">
+        ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
+        ${listBlock([para('Your paragraph goes here. Write as much as you like — this block is for the letter or intro copy.')],para('New paragraph'),'Add paragraph')}
+        <div style="margin-top:14px;">${ph('— Tim',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--sectext);",'span')}</div>
+      </div>`;}},
 
   chList:{group:'Lists',icon:'☰',name:'Bulleted List (orange ›)',theme:'white',mode:'graphics',
     html:()=>{
@@ -1610,12 +1625,22 @@ const SECTIONS = {
       </tr></table>
     </div>`},
 
-  chVideo:{group:'Embed',icon:'▶',name:'Video Embed (poster link)',theme:'white',mode:'graphics',
+  chVideo:{group:'Embed',icon:'▶',name:'Video Embed (poster link)',theme:'dark',mode:'graphics',
     html:()=>`<div style="background:var(--secbg);padding:40px 48px;">
       ${ph('Watch this week\u2019s video',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
       ${ph('Video Title Goes Here',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--sectext);text-transform:uppercase;line-height:1.1;margin-bottom:20px;")}
-      ${realBtn('▶  Tap to play',"display:block;text-decoration:none;background:#1a1a1a;border:1px solid #d8d8d8;text-align:center;padding:70px 20px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#ffffff;",'#')}
-      <div style="margin-top:10px;font-size:11px;line-height:1.5;color:#777777;font-weight:300;">Set the play button\u2019s link to your video. ${realBtn('Watch on the web →',"color:var(--accent);text-decoration:none;font-weight:700;display:inline;",'#')}</div>
+      <span class="editable-link" data-href="#" style="display:block;position:relative;">
+        <a contenteditable="false" href="#" style="display:block;text-decoration:none;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#3a3a3a;border:1px solid #4a4a4a;">
+            <tr><td align="center" valign="middle" style="padding:60px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:66px;height:66px;background:var(--accent);border-radius:50%;margin:0 auto;"><tr><td align="center" valign="middle" style="width:66px;height:66px;line-height:66px;font-size:24px;color:#ffffff;">&#9654;</td></tr></table>
+              <div style="margin-top:16px;">${ph('Tap to play  ·  4 min',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#cccccc;")}</div>
+            </td></tr>
+          </table>
+        </a>
+        <button class="link-edit" type="button" onclick="openLinkModal(this)">&#128279; link</button>
+      </span>
+      <div style="margin-top:10px;font-size:11px;line-height:1.5;color:var(--secmuted);font-weight:300;">Can\u2019t see it? ${realBtn('Watch on the web →',"color:var(--accent);text-decoration:none;font-weight:700;display:inline;",'#')}</div>
     </div>`},
 
   chCall:{group:'CTA',icon:'📅',name:'Check-In Call Box',theme:'white',mode:'graphics',
@@ -2839,9 +2864,25 @@ function convertFlexToTable(el){
 }
 function copyHTML(){navigator.clipboard.writeText(buildExport()).then(()=>toast('HTML copied'));}
 function downloadHTML(){const blob=new Blob([buildExport()],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lngvty-email-'+Date.now()+'.html';a.click();URL.revokeObjectURL(a.href);toast('Downloaded');}
-function viewHTML(){document.getElementById('modalTitle').textContent='Email HTML';document.getElementById('modalText').value=buildExport();document.getElementById('modalBg').classList.add('show');}
+function viewHTML(){document.getElementById('modalTitle').textContent='Email HTML';const t=document.getElementById('modalText');t.value=buildExport();t.readOnly=true;const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';document.getElementById('modalBg').classList.add('show');}
 function closeModal(){document.getElementById('modalBg').classList.remove('show');}
 function copyModal(){navigator.clipboard.writeText(document.getElementById('modalText').value).then(()=>toast('Copied'));}
+/* toggle the HTML textarea between read-only and editable for live tweaks */
+function toggleModalEdit(){
+  const t=document.getElementById('modalText');const b=document.getElementById('modalEditBtn');
+  t.readOnly=!t.readOnly;
+  if(t.readOnly){b.innerHTML='&#9998; Edit';toast('Locked (view only)');}
+  else{b.innerHTML='&#128274; Lock';t.focus();toast('Editing — tweak the HTML, then Copy or Preview this');}
+}
+/* preview exactly what's in the textarea (including any manual edits) */
+function previewModalHTML(){
+  const html=document.getElementById('modalText').value;
+  const iframe=document.getElementById('previewIframe');
+  iframe.srcdoc=html;
+  document.getElementById('pvTitle').innerHTML='&#128065; Preview (edited HTML)';
+  previewDesktop();
+  document.getElementById('previewBg').classList.add('show');
+}
 
 /* ═══════════ PREVIEW ═══════════ */
 function openPreview(){
@@ -2942,12 +2983,14 @@ const SAVED_STD_TAGS=['Graphic','Newsletter','Webpage','Promo','Announcement','O
 function openSaved(){
   const list=getSavedList();
   if(list.length){savedCurrentItems=list;savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent=list.length+' saved newsletter(s).';}
-  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved newsletters found. Hit Reload to check GitHub.';}
-  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent=ghReady()?'Hit Reload to pull your newsletters from GitHub.':'Connect a GitHub repo (⚙ GitHub) to store newsletters.';}
+  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved newsletters found.';}
+  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent=ghReady()?'Loading your newsletters from GitHub…':'Connect a GitHub repo (⚙ GitHub) to store newsletters.';}
   savedActiveTag='All';
   renderSavedFilters();
   renderSaved(savedCurrentItems,savedCurrentPlaceholder);
   document.getElementById('savedBg').classList.add('show');
+  // always pull the latest from GitHub on open so Load works without a manual refresh
+  if(ghReady())reloadSaved();
 }
 function closeSaved(){document.getElementById('savedBg').classList.remove('show');}
 
@@ -3038,15 +3081,16 @@ function renderSaved(items,isPlaceholder){
 async function reloadSaved(){
   const status=document.getElementById('savedStatus');
   const btn=document.getElementById('savedReload');
+  const setBtn=(t)=>{if(btn)btn.innerHTML=t;};
   if(!ghReady()){status.textContent='No GitHub repo connected. Click \u2699 GitHub to set one up.';openGithubSettings();return;}
-  status.textContent='Loading from GitHub…';btn.innerHTML='&#8635; Reloading…';
+  status.textContent='Loading from GitHub…';setBtn('&#8635; Reloading…');
   try{
     const files=await ghList();
     if(!files.length){
       savedEverLoaded=true;savedCurrentItems=[];savedCurrentPlaceholder=false;
       renderSavedFilters();renderSaved([],false);
       status.textContent='No newsletters in '+ghDir()+'/ yet. Save one to create it.';
-      toast('No saved newsletters found');btn.innerHTML='&#8635; Reload';return;
+      setBtn('&#8635; Reload');return;
     }
     // fetch each file's metadata (lightweight: name/tag/status/notes/updatedAt)
     const items=[];
@@ -3065,13 +3109,11 @@ async function reloadSaved(){
     setSavedList(items.map(({file,notes,...m})=>({...m,notes})));
     savedEverLoaded=true;savedCurrentItems=items;savedCurrentPlaceholder=false;
     renderSavedFilters();renderSaved(items,false);
-    status.textContent=`Loaded ${items.length} from GitHub.`;
-    toast('\u2713 Reloaded from GitHub');
+    status.textContent=`${items.length} saved newsletter(s).`;
   }catch(e){
     status.textContent='Could not reach GitHub: '+(e.message||e);
-    toast('Reload failed');
   }
-  btn.innerHTML='&#8635; Reload';
+  setBtn('&#8635; Reload');
 }
 
 /* Copy CSS: copies the finished email HTML plus the structured section JSON
