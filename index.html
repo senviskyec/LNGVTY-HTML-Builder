@@ -1249,6 +1249,11 @@ const SECTIONS = {
         ${ph('Recipe Corner',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph("This Week's Featured Recipe","font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
         ${ph('High protein · Easy prep',"font-size:12px;color:#aaa;font-weight:300;margin-bottom:20px;")}
+        <div class="nl-rpic" data-on="0" style="display:none;margin-bottom:14px;">
+          <img class="nl-rpic-img" src="" alt="" style="display:block;width:100%;max-width:100%;height:auto;border:1px solid #e8e8e8;"/>
+          <button class="nl-rpic-btn" type="button" onclick="openRecipePic(this)" style="margin-top:6px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;border-radius:4px;cursor:pointer;">Set Recipe Photo</button>
+        </div>
+        <button class="nl-rpictoggle" type="button" onclick="toggleRecipePic(this)" data-on="0" style="margin-bottom:14px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;">+ Show Recipe Photo</button>
         <div style="border:1px solid #e8e8e8;border-top:3px solid var(--accent);margin-bottom:14px;padding:20px;">
           <div style="margin-bottom:4px;">${tagBlock(['High Protein','Prep: 35 min'],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:#fff3ef;color:var(--accent);padding:3px 8px;")}</div>
           ${ph('Sheet Pan Chicken & Veggies',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--heading);text-transform:uppercase;margin:10px 0 6px;")}
@@ -1777,7 +1782,7 @@ const DEFAULT_DESC={
   nlheader:'The newsletter top: orange bar, black logo/date hero, and the orange weekly-quote band — all in one block.',
   nlschedule:'Recurring weekly schedule. Reorder days, and add multiple events to the same day with one connected bar.',
   nlmembers:'Welcome new members. Toggle member photos on or off and upload a picture for each.',
-  nlrecipe:'Featured recipe with addable tags, add/removable macro stats, a grocery list, and an optional steps list.',
+  nlrecipe:'Featured recipe with addable tags, add/removable macro stats, a grocery list, an optional photo, and an optional steps list.',
   nltip:'Tip Tuesday — a featured tip plus add/removable mini-tip cards and addable focus tags.',
   nlswaps:'Smarter swaps (instead of / try this) plus a budget-protein list, both add/removable.',
   nlevents:'Upcoming events as date boxes (month / day / weekday). Reorder them, add tags, and add an optional time chip by the title.',
@@ -1960,7 +1965,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.sec-controls,.sec-tag').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -2143,6 +2148,40 @@ function toggleRecipeSteps(btn){
   steps.dataset.on=on?'0':'1';
   steps.style.display=on?'none':'block';
   btn.textContent=on?'+ Show Instructions Steps':'− Hide Instructions Steps';
+}
+/* toggle the optional featured-recipe photo on/off */
+function toggleRecipePic(btn){
+  const card=btn.closest('.sec');const pic=card.querySelector('.nl-rpic');if(!pic)return;
+  const on=pic.dataset.on==='1';
+  pic.dataset.on=on?'0':'1';
+  pic.style.display=on?'none':'block';
+  btn.dataset.on=on?'0':'1';
+  btn.textContent=on?'+ Show Recipe Photo':'− Hide Recipe Photo';
+}
+/* pick a photo for the featured recipe — downscaled to a 620px-wide JPEG data URL
+   so it stays inside the email frame and keeps the payload reasonable */
+function openRecipePic(btn){
+  const host=btn.closest('.nl-rpic');const img=host.querySelector('.nl-rpic-img');
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';
+  fi.onchange=()=>{
+    const f=fi.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=e=>{
+      const im=new Image();
+      im.onload=()=>{
+        const maxW=620;
+        const scale=Math.min(1,maxW/im.width);
+        const w=Math.round(im.width*scale),h=Math.round(im.height*scale);
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(im,0,0,w,h);
+        const url=c.toDataURL('image/jpeg',0.82);
+        img.src=url;host.dataset.src=url;
+      };
+      im.src=e.target.result;
+    };
+    r.readAsDataURL(f);
+  };
+  fi.click();
 }
 
 /* ═══════════ PLACEHOLDER (ghost text) ═══════════ */
@@ -2407,7 +2446,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -2512,6 +2551,13 @@ function buildExport(){
   clone.querySelectorAll('.nl-steps').forEach(s=>{
     if(s.dataset.on!=='1'){s.remove();return;}
     s.classList.remove('nl-steps');s.removeAttribute('data-on');s.style.display='';if(!s.getAttribute('class'))s.removeAttribute('class');
+  });
+  // newsletter: drop the recipe photo if toggled off or no image was chosen
+  clone.querySelectorAll('.nl-rpic').forEach(p=>{
+    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    if(!shown){p.remove();return;}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
+    const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
   });
   clone.querySelectorAll('.sec').forEach(s=>{
     const key=s.dataset.key||'';const theme=s.dataset.theme||'';
