@@ -1,0 +1,29 @@
+{
+  "schema": "lngvty.newsletter/v1",
+  "id": "test",
+  "name": "test",
+  "tag": "Newsletter",
+  "status": "Draft",
+  "notes": "",
+  "updatedAt": "2026-06-30T14:11:08.254Z",
+  "theme": {
+    "--accent": "#e05a1b",
+    "--dark": "#1a1a1a",
+    "--gray": "#3a3a3a",
+    "--bg": "#f2f2f2",
+    "--body-text": "#555555",
+    "--heading": "#3a3a3a"
+  },
+  "sections": [
+    {
+      "key": "topbar",
+      "theme": "white",
+      "html": "<div style=\"background:var(--accent);padding:10px 24px;text-align:center;\">\n      <span contenteditable=\"true\" data-ph=\"LNGVTY Hub — Your Check-In\" style=\"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;\" class=\"\">lngvty hub test</span>\n    </div>\n    "
+    },
+    {
+      "key": "hero",
+      "theme": "dark",
+      "html": "<div style=\"background:var(--secbg);padding:48px 48px 44px;position:relative;overflow:hidden;\">\n      <div contenteditable=\"true\" data-ph=\"30\" style=\"position:absolute;right:-10px;top:-10px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:220px;color:rgba(127,127,127,0.10);line-height:1;z-index:0;\" class=\"is-empty\"></div>\n      <div contenteditable=\"true\" data-ph=\"LNGVTY\" style=\"font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;letter-spacing:2px;color:var(--sectext);margin-bottom:2px;position:relative;z-index:2;\" class=\"\">lngvty</div>\n      <div contenteditable=\"true\" data-ph=\"Longevity Hub · Carrboro\" style=\"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:36px;position:relative;\" class=\"is-empty\"></div>\n      <div contenteditable=\"true\" data-ph=\"30 Days In\" style=\"font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;position:relative;\" class=\"is-empty\"></div>\n      <div contenteditable=\"true\" data-ph=\"YOU SHOWED UP.\" style=\"font-family:'Montserrat',sans-serif;font-weight:900;font-size:56px;line-height:0.95;color:var(--sectext);text-transform:uppercase;margin-bottom:6px;position:relative;\" class=\"\">WOW</div>\n      <p contenteditable=\"true\" data-ph=\"That's not nothing — that's everything. 30 days of consistency is where most people quit. You didn't.\" style=\"font-size:14px;color:var(--secmuted);font-weight:300;margin-top:20px;line-height:1.7;max-width:400px;position:relative;\" class=\"\">crazy stuff</p>\n      <div style=\"position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--accent);\"></div>\n    </div>\n    "
+    }
+  ]
+}

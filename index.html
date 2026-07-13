@@ -409,9 +409,12 @@
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <div class="modal-head"><h3 id="modalTitle">Email HTML</h3><button onclick="closeModal()">&times;</button></div>
-    <textarea id="modalText" readonly></textarea>
+    <textarea id="modalText" readonly spellcheck="false"></textarea>
     <div class="modal-foot">
+      <button class="tb-btn" id="modalEditBtn" onclick="toggleModalEdit()">&#9998; Edit</button>
       <button class="tb-btn" onclick="copyModal()">&#128203; Copy</button>
+      <button class="tb-btn" onclick="previewModalHTML()">&#128065; Preview this</button>
+      <span style="flex:1;"></span>
       <button class="tb-btn primary" onclick="closeModal()">Done</button>
     </div>
   </div>
@@ -605,7 +608,6 @@
     <div class="modal-head">
       <h3>&#9733; Saved Newsletters</h3>
       <div style="display:flex;gap:8px;align-items:center;">
-        <button class="tb-btn" id="savedReload" onclick="reloadSaved()" data-tip="Fetch the latest newsletters from GitHub.">&#8635; Reload</button>
         <button onclick="closeSaved()">&times;</button>
       </div>
     </div>
@@ -857,20 +859,29 @@ const SECTIONS = {
       </div>`;}},
 
   greeting:{group:'Body',icon:'✎',name:'Greeting + Body',theme:'white',
-    html:()=>`<div style="background:var(--secbg);padding:44px 48px 32px;border-bottom:1px solid #eee;">
-      ${ph('Hey {{contact.first_name}},',"font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--heading);margin-bottom:16px;",'p')}
-      ${ph("You've been a member for 30 days — your first real milestone. We want to celebrate it the right way. Not with a certificate. With data.","font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;",'p')}
-      ${ph("Your 30-day InBody scan is the moment you see what consistency looks like on paper. Muscle gained. Fat lost. Hydration improved.","font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;",'p')}
-    </div>`},
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:44px 48px 32px;border-bottom:1px solid #eee;">
+        ${ph('Hey {{contact.first_name}},',"font-family:'Montserrat',sans-serif;font-size:18px;font-weight:700;color:var(--heading);margin-bottom:16px;",'p')}
+        ${listBlock([para("You've been a member for 30 days — your first real milestone. We want to celebrate it the right way. Not with a certificate. With data.")],para('New paragraph'),'Add paragraph')}
+      </div>`;}},
 
   introbox:{group:'Body',icon:'❝',name:'Intro Box',theme:'white',
-    html:()=>`<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
-      ${ph('Pre-Start',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
-      ${ph('Before Day 1 Hits, Read This.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
-      <div style="background:#fafafa;border-left:3px solid var(--accent);padding:20px 24px;margin-top:14px;">
-        ${ph("Hey {{contact.first_name}} — the challenge kicks off soon and we want you prepared, not winging it. This covers the four things that make or break week one.","font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;",'p')}
-      </div>
-    </div>`},
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:10px;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
+        ${ph('Pre-Start',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
+        ${ph('Before Day 1 Hits, Read This.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
+        <div style="background:#fafafa;border-left:3px solid var(--accent);padding:20px 24px;margin-top:14px;">
+          ${listBlock([para("Hey {{contact.first_name}} — the challenge kicks off soon and we want you prepared, not winging it. This covers the four things that make or break week one.")],para('New paragraph'),'Add paragraph')}
+        </div>
+      </div>`;}},
 
   scancard:{group:'Body',icon:'☑',name:'Checklist Card (dots)',theme:'white',
     html:()=>{
@@ -1238,6 +1249,11 @@ const SECTIONS = {
         ${ph('Recipe Corner',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph("This Week's Featured Recipe","font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
         ${ph('High protein · Easy prep',"font-size:12px;color:#aaa;font-weight:300;margin-bottom:20px;")}
+        <div class="nl-rpic" data-on="0" style="display:none;margin-bottom:14px;">
+          <img class="nl-rpic-img" src="" alt="" style="display:block;width:100%;max-width:100%;height:auto;border:1px solid #e8e8e8;"/>
+          <button class="nl-rpic-btn" type="button" onclick="openRecipePic(this)" style="margin-top:6px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;border-radius:4px;cursor:pointer;">Set Recipe Photo</button>
+        </div>
+        <button class="nl-rpictoggle" type="button" onclick="toggleRecipePic(this)" data-on="0" style="margin-bottom:14px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;">+ Show Recipe Photo</button>
         <div style="border:1px solid #e8e8e8;border-top:3px solid var(--accent);margin-bottom:14px;padding:20px;">
           <div style="margin-bottom:4px;">${tagBlock(['High Protein','Prep: 35 min'],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:#fff3ef;color:var(--accent);padding:3px 8px;")}</div>
           ${ph('Sheet Pan Chicken & Veggies',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--heading);text-transform:uppercase;margin:10px 0 6px;")}
@@ -1468,7 +1484,241 @@ const SECTIONS = {
         ${realBtn('Website',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
       </div>
       <div style="margin-top:22px;">${ph('© 2026 LNGVTY Hub. All rights reserved.',"font-size:11px;color:#666;",'span')}</div>
-    </div>`}
+    </div>`},
+
+  /* ══════════════ KETO CHALLENGE SECTIONS (from the Day 7/14/21/30 emails) ══════════════ */
+
+  chHeader:{group:'Challenge',icon:'▰',name:'Challenge Header (black)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);">
+      <div style="padding:44px 48px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+          ${ph('LNGVTY HUB',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;letter-spacing:2px;color:var(--sectext);line-height:1;")}
+          ${ph('Keto 30-Day Challenge',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);text-align:right;")}
+        </div>
+      </div>
+      <div style="padding:34px 48px 44px;">
+        ${ph('Day 7 · Sunday',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#888888;margin-bottom:14px;")}
+        ${ph('One Week Down.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:56px;line-height:0.92;letter-spacing:1px;text-transform:uppercase;color:var(--sectext);")}
+        ${ph('Your subheadline goes here.',"font-family:'Montserrat',sans-serif;font-weight:300;font-size:15px;color:var(--secmuted);margin-top:18px;letter-spacing:.5px;")}
+      </div>
+      <div style="height:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+    </div>`},
+
+  chHeaderFinale:{group:'Challenge',icon:'✦',name:'Challenge Header — Finale (30/30)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);">
+      <div style="padding:44px 48px 0;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+          ${ph('LNGVTY HUB',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;letter-spacing:2px;color:var(--sectext);line-height:1;")}
+          ${ph('Keto 30-Day Challenge',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);text-align:right;")}
+        </div>
+      </div>
+      <div style="padding:36px 48px 8px;text-align:center;">
+        ${ph('You Finished. Day 30.',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;")}
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:84px;line-height:0.9;letter-spacing:1px;color:var(--sectext);">${ph('30',"font-family:'Montserrat',sans-serif;font-weight:900;color:var(--sectext);display:inline;",'span')}<span style="color:var(--accent);">/</span>${ph('30',"font-family:'Montserrat',sans-serif;font-weight:900;color:var(--sectext);display:inline;",'span')}</div>
+        ${ph('You Did It.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:1px;text-transform:uppercase;color:var(--sectext);margin-top:14px;")}
+        ${ph('Thirty days of showing up. Let\u2019s read your results.',"font-family:'Montserrat',sans-serif;font-weight:300;font-size:15px;color:var(--secmuted);margin-top:14px;letter-spacing:.5px;max-width:400px;margin-left:auto;margin-right:auto;")}
+      </div>
+      <div style="padding:24px 48px 40px;text-align:center;">
+        ${ph('★ ★ ★ ★ ★',"font-size:18px;letter-spacing:8px;color:var(--accent);")}
+      </div>
+      <div style="height:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+    </div>`},
+
+  chStrip:{group:'Strips',icon:'▭',name:'Milestone Strip',theme:'orange',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:15px 48px;text-align:center;">
+      ${ph('★  Two weeks down — you\u2019re at the halfway mark  ★',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--sectext);")}
+    </div>`},
+
+  chBody:{group:'Body',icon:'¶',name:'Letter / Body Text',theme:'white',mode:'graphics',
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top">${ph(txt,"font-size:15px;line-height:1.75;color:var(--secmuted);font-weight:300;margin-bottom:18px;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:44px 48px;">
+        ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
+        ${listBlock([para('Your paragraph goes here. Write as much as you like — this block is for the letter or intro copy.')],para('New paragraph'),'Add paragraph')}
+        <div style="margin-top:14px;">${ph('— Tim',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--sectext);",'span')}</div>
+      </div>`;}},
+
+  chList:{group:'Lists',icon:'☰',name:'Bulleted List (orange ›)',theme:'white',mode:'graphics',
+    html:()=>{
+      const li=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td width="20" valign="top" style="width:20px;font-size:16px;color:var(--accent);line-height:1.6;font-weight:700;">›</td>
+        <td valign="top" style="padding:0 0 14px 4px;">${ph(txt,"font-size:14px;line-height:1.65;color:var(--secmuted);font-weight:300;")}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:40px 48px;">
+        ${ph('List heading',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:20px;")}
+        ${listBlock([li('First list item — click to edit.'),li('Second item with a longer description that wraps to show how it flows.'),li('Third item.')],li('New list item'),'Add item')}
+      </div>`;}},
+
+  chNumbered:{group:'Lists',icon:'①',name:'Numbered List (circles)',theme:'white',mode:'graphics',
+    html:()=>{
+      const step=(n,txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td width="34" valign="top" style="width:34px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:26px;height:26px;background:var(--accent);border-radius:50%;"><tr><td align="center" valign="middle" style="width:26px;height:26px;line-height:26px;">${ph(n,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;color:#ffffff;")}</td></tr></table></td>
+        <td valign="top" style="padding:0 0 18px 4px;">${ph(txt,"font-size:14px;line-height:1.65;color:var(--secmuted);font-weight:300;")}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:40px 48px;">
+        ${ph('How it works',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:22px;")}
+        ${listBlock([step('1','First step — click to edit the number or the text.'),step('2','Second step.'),step('3','Third step.')],step('4','New step'),'Add step')}
+      </div>`;}},
+
+  chChips:{group:'Lists',icon:'◧',name:'Chip List (tinted)',theme:'white',mode:'graphics',
+    html:()=>{
+      const chip=(txt)=>`<span class="li-wrap" style="display:inline-block;position:relative;margin:0 8px 8px 0;"><span style="display:inline-block;background:#ffffff;border:1px solid #ead9d0;padding:9px 14px;">${ph(txt,"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--heading);display:inline;",'span')}</span><button class="li-del" onclick="delLi(this)" style="top:-6px;right:-6px;">×</button></span>`;
+      const note=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td width="16" valign="top" style="width:16px;font-size:13px;color:var(--accent);line-height:1.6;">›</td>
+        <td valign="top" style="padding:0 0 2px 4px;">${ph(txt,"font-size:13px;line-height:1.6;color:#777777;font-weight:300;")}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:#faf7f5;padding:34px 48px;">
+        ${ph('Sweeteners that won\u2019t spike your insulin',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+        ${ph('Short supporting line under the heading.',"font-size:13px;line-height:1.6;color:#888888;font-weight:300;margin-bottom:18px;")}
+        <div style="margin-bottom:6px;">${listBlock([chip('Stevia'),chip('Monk Fruit'),chip('Erythritol'),chip('Allulose'),chip('Swerve')],chip('New chip'),'Add chip')}</div>
+        <div style="margin-top:14px;">${listBlock([note('First note about the options above.'),note('Second note.')],note('New note'),'Add note')}</div>
+      </div>`;}},
+
+  chCallout:{group:'Highlight',icon:'❝',name:'Accent-Bar Callout',theme:'white',mode:'graphics',
+    html:()=>`<div style="background:#faf7f5;padding:32px 48px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr>
+        <td width="5" valign="top" style="width:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
+        <td valign="middle" style="padding-left:20px;">
+          ${ph('The big takeaway goes here — one strong sentence.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;line-height:1.35;color:var(--heading);")}
+          ${ph('An optional supporting line underneath.',"font-size:13px;line-height:1.6;color:#888888;font-weight:300;margin-top:8px;")}
+        </td>
+      </tr></table>
+    </div>`},
+
+  chQuestions:{group:'Lists',icon:'▤',name:'Question Cards',theme:'white',mode:'graphics',
+    html:()=>{
+      const q=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:14px;position:relative;"><tr>
+        <td width="5" valign="top" style="width:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
+        <td valign="middle" style="background:#ffffff;padding:16px 20px;">${ph(txt,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;line-height:1.35;color:var(--heading);")}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:#faf7f5;padding:36px 48px;">
+        ${ph('As you head into the final week, ask yourself',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;")}
+        ${listBlock([q('What habits do I want to keep?'),q('What changes have improved my life?'),q('What do I want my Day 30 results to look like?')],q('New question'),'Add question')}
+      </div>`;}},
+
+  chMetrics:{group:'Challenge',icon:'▥',name:'Scan Reader (metrics)',theme:'white',mode:'graphics',
+    html:()=>{
+      const m=(title,desc)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:10px;position:relative;"><tr>
+        <td width="5" valign="top" style="width:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
+        <td valign="middle" style="background:#faf7f5;padding:16px 20px;">
+          ${ph(title,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:15px;color:var(--heading);text-transform:uppercase;")}
+          ${ph(desc,"font-size:13px;line-height:1.55;color:#888888;font-weight:300;margin-top:3px;")}
+        </td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:44px 48px;">
+        ${ph('Your final results',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
+        ${ph('Your FitManager scan report is attached. Compare these numbers to your Day 0 scan.',"font-size:15px;line-height:1.75;color:var(--secmuted);font-weight:300;margin-bottom:20px;",'p')}
+        ${listBlock([m('Body Fat Percentage','The share of your weight that\u2019s fat — the number that actually moved.'),m('Skeletal Muscle Mass','The muscle you kept (or built) while losing fat — that\u2019s the goal.'),m('Visceral Fat Level','The deep belly fat around your organs — the one that matters most for health.')],m('New Metric','What this number means.'),'Add metric')}
+      </div>`;}},
+
+  chAttach:{group:'Highlight',icon:'📎',name:'Attachment Callout',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:28px 48px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr>
+        <td width="52" valign="middle" style="width:52px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:42px;height:42px;background:var(--accent);"><tr><td align="center" valign="middle" style="width:42px;height:42px;line-height:42px;font-size:20px;color:#ffffff;">${ph('📎',"font-size:20px;color:#ffffff;display:inline;",'span')}</td></tr></table></td>
+        <td valign="middle" style="padding-left:8px;">
+          ${ph('Attached: Your File Name',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:15px;color:var(--sectext);text-transform:uppercase;line-height:1.2;")}
+          ${ph('A short line about what the attachment is.',"font-size:12px;line-height:1.5;color:var(--secmuted);font-weight:300;margin-top:4px;")}
+        </td>
+      </tr></table>
+    </div>`},
+
+  chVideo:{group:'Embed',icon:'▶',name:'Video Embed (poster link)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:40px 48px;">
+      ${ph('Watch this week\u2019s video',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+      ${ph('Video Title Goes Here',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--sectext);text-transform:uppercase;line-height:1.1;margin-bottom:20px;")}
+      <span class="editable-link" data-href="#" style="display:block;position:relative;">
+        <a contenteditable="false" href="#" style="display:block;text-decoration:none;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#3a3a3a;border:1px solid #4a4a4a;">
+            <tr><td align="center" valign="middle" style="padding:60px 20px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:66px;height:66px;background:var(--accent);border-radius:50%;margin:0 auto;"><tr><td align="center" valign="middle" style="width:66px;height:66px;line-height:66px;font-size:24px;color:#ffffff;">&#9654;</td></tr></table>
+              <div style="margin-top:16px;">${ph('Tap to play  ·  4 min',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#cccccc;")}</div>
+            </td></tr>
+          </table>
+        </a>
+        <button class="link-edit" type="button" onclick="openLinkModal(this)">&#128279; link</button>
+      </span>
+      <div style="margin-top:10px;font-size:11px;line-height:1.5;color:var(--secmuted);font-weight:300;">Can\u2019t see it? ${realBtn('Watch on the web →',"color:var(--accent);text-decoration:none;font-weight:700;display:inline;",'#')}</div>
+    </div>`},
+
+  chCall:{group:'CTA',icon:'📅',name:'Check-In Call Box',theme:'white',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:44px 48px 20px;">
+      ${ph('This is happening today',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#bbbbbb;margin-bottom:6px;")}
+      ${ph('Weekly Check-In Call',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--sectext);text-transform:uppercase;line-height:1.1;margin-bottom:20px;")}
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;border:1px solid #f0f0f0;margin-bottom:20px;"><tr>
+        <td width="80" valign="middle" align="center" style="width:80px;background:var(--gray);padding:16px 8px;text-align:center;">
+          ${ph('Week 1',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;opacity:.7;")}
+          ${ph('07',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:#ffffff;line-height:1.1;")}
+          ${ph('Sunday',"font-size:9px;color:#ffffff;opacity:.6;font-weight:300;text-transform:capitalize;margin-top:2px;")}
+        </td>
+        <td valign="top" style="padding:16px 18px;">
+          <div style="margin-bottom:6px;">${ph('Sunday at [TIME]',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;display:inline;",'span')} ${ph('· LNGVTY Hub',"font-size:12px;color:#999999;font-weight:300;display:inline;",'span')}</div>
+          ${ph('One line about the call — bring your questions.',"font-size:13px;line-height:1.65;color:#888888;font-weight:300;")}
+          <div style="margin-top:10px;">${ph('In person + Zoom',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 9px;background:rgba(224,90,27,.12);color:var(--accent);display:inline-block;",'span')}</div>
+        </td>
+      </tr></table>
+      ${ph('On the agenda',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#bbbbbb;margin-bottom:12px;")}
+      ${(()=>{const a=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr><td width="16" valign="top" style="width:16px;font-size:14px;color:var(--accent);line-height:1.7;">›</td><td valign="top" style="padding-bottom:4px;">${ph(txt,"font-size:14px;line-height:1.7;color:var(--secmuted);font-weight:300;")}</td><td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td></tr></table>`;
+        return listBlock([a('First agenda item.'),a('Second agenda item.'),a('Third agenda item.')],a('New agenda item'),'Add agenda item');})()}
+      <div style="margin-top:24px;">${realBtn('Join the Zoom call →',"display:inline-block;background:var(--accent);padding:15px 34px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;",'#')}</div>
+      ${ph('The link also lives in the WhatsApp group. Can\u2019t make it in person? Hop on Zoom.',"font-size:11px;line-height:1.5;color:#999999;font-weight:300;margin-top:10px;")}
+    </div>`},
+
+  chWhatsapp:{group:'CTA',icon:'💬',name:'Join Group (WhatsApp)',theme:'white',mode:'graphics',
+    html:()=>`<div style="background:#faf7f5;padding:32px 48px;">
+      ${ph('The group chat',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+      ${ph('Not in the WhatsApp group yet?',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--heading);line-height:1.2;")}
+      ${ph('That\u2019s where the call link, daily check-ins, and everyone\u2019s wins live.',"font-size:13px;line-height:1.6;color:#888888;font-weight:300;margin-top:6px;")}
+      <div style="margin-top:16px;">${realBtn('Join the WhatsApp group →',"display:inline-block;border:2px solid var(--accent);padding:13px 30px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);text-decoration:none;",'#')}</div>
+    </div>`},
+
+  chOffer:{group:'Offers',icon:'★',name:'Special Offer / Discount',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);">
+      <div style="height:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+      <div style="padding:44px 48px 10px;text-align:center;">
+        ${ph('Completer Reward — Limited',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;")}
+        ${ph('3 Months of 1:1 Coaching',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:34px;line-height:1.05;letter-spacing:.5px;text-transform:uppercase;color:var(--sectext);")}
+        <div style="margin:20px auto 0;display:inline-block;background:var(--accent);padding:12px 26px;">${ph('50% OFF',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:1px;color:#ffffff;display:inline;",'span')}</div>
+        ${ph('You proved you\u2019ll show up. Now let\u2019s build on it — personalized coaching to lock in your results.',"font-size:14px;line-height:1.65;color:var(--secmuted);font-weight:300;margin-top:20px;max-width:420px;margin-left:auto;margin-right:auto;")}
+      </div>
+      <div style="padding:24px 48px 46px;text-align:center;">
+        ${realBtn('Claim 50% off coaching →',"display:inline-block;background:var(--accent);padding:16px 40px;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;",'#')}
+        ${ph('Offer for 30-Day Challenge completers only.',"font-size:11px;line-height:1.5;color:#888888;font-weight:300;margin-top:12px;")}
+      </div>
+    </div>`},
+
+  chSignoff:{group:'Strips',icon:'✧',name:'Signoff Strip',theme:'white',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:40px 48px;text-align:center;">
+      ${ph('See You There.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:var(--sectext);text-transform:uppercase;line-height:1.05;")}
+      ${ph('One motivating closing line goes right here.',"font-size:13px;line-height:1.6;color:#888888;font-weight:300;margin-top:10px;max-width:400px;margin-left:auto;margin-right:auto;")}
+    </div>
+    <div style="height:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>`},
+
+  chQuote:{group:'Strips',icon:'❞',name:'Quote + Signature',theme:'white',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:46px 48px;text-align:center;">
+      ${ph('\u201cDon\u2019t cry because it\u2019s over, smile because it happened.\u201d',"font-family:'Montserrat',sans-serif;font-weight:300;font-size:22px;line-height:1.5;color:var(--heading);font-style:italic;max-width:440px;margin:0 auto;")}
+      ${ph('And then do it again.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-top:18px;")}
+      <div style="border-top:1px solid #eeeeee;padding-top:24px;margin-top:30px;text-align:left;">
+        ${ph('Yours in health,',"font-size:14px;line-height:1.6;color:#888888;font-weight:300;")}
+        ${ph('Tim Pedersen',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--heading);margin-top:6px;")}
+        ${ph('LNGVTY Hub',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-top:2px;")}
+      </div>
+    </div>`},
+
+  chFooter:{group:'Challenge',icon:'▂',name:'Challenge Footer (black)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:34px 48px;text-align:center;">
+      ${ph('LNGVTY HUB',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;letter-spacing:2px;color:var(--sectext);")}
+      ${ph('Keto 30-Day Challenge · Day 7 of 30',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#777777;margin-top:8px;")}
+      <div style="margin-top:16px;">${ph('Carrboro, NC · ',"font-size:11px;line-height:1.6;color:#666666;font-weight:300;display:inline;",'span')}${realBtn('Unsubscribe',"color:#888888;text-decoration:underline;display:inline;",'#')}</div>
+    </div>`},
+
 };
 </script>
 <script>
@@ -1487,6 +1737,25 @@ const THEME_GLYPH={white:'○ White',gray:'◐ Gray',dark:'● Black',orange:'�
 
 /* ═══════════ SECTION DESCRIPTIONS (hover preview) ═══════════ */
 const DEFAULT_DESC={
+  // challenge (from the Day 7/14/21/30 emails)
+  chHeader:'Black challenge header — brand row, day label, big headline, subheadline, orange accent bar. Used on Weeks 1–3.',
+  chHeaderFinale:'The Day 30 finale header — giant 30/30, "You Did It", stars. The distinct Week 4 version.',
+  chStrip:'A thin orange one-line strip — milestone, announcement, or tagline.',
+  chBody:'Plain letter / intro copy block with a small orange eyebrow heading and a signature line.',
+  chList:'A bulleted list with orange › markers. Add, remove, and reorder items.',
+  chNumbered:'A numbered list with orange number circles. Add, remove, and reorder steps.',
+  chChips:'An orange-tinted block with add-removable chips plus a notes list. Good for lists of options, tags, or ingredients.',
+  chCallout:'An orange accent-bar callout for one strong takeaway sentence.',
+  chQuestions:'Reflection questions, each in its own orange accent-bar card. Add or remove questions.',
+  chMetrics:'Scan reader — add-removable metric cards (body fat, muscle, visceral fat) with plain-language notes.',
+  chAttach:'"Attached file" callout with a paperclip icon, title, and one supporting line.',
+  chVideo:'Video embed — a play-button poster whose link you set, plus a "watch on the web" link. Reusable for any graphic.',
+  chCall:'The check-in call box — gray date box, editable details, an add-removable agenda list, and a Zoom button.',
+  chWhatsapp:'Join-a-group block (WhatsApp/Discord/etc.) — editable heading, blurb, and an outlined join button.',
+  chOffer:'Special-offer / discount block — big headline, a percent-off badge, and a claim button.',
+  chSignoff:'A centered signoff strip with a big line, one supporting line, and an orange accent bar.',
+  chQuote:'Closing quote with a signature block (name + role).',
+  chFooter:'Black challenge footer — brand, "Day X of 30" line, location, and an unsubscribe link.',
   // graphics
   topbar:'A thin top banner bar — good for a tagline or "View in browser" line.',
   footer:'The closing footer with logo, social links, and an unsubscribe line.',
@@ -1513,7 +1782,7 @@ const DEFAULT_DESC={
   nlheader:'The newsletter top: orange bar, black logo/date hero, and the orange weekly-quote band — all in one block.',
   nlschedule:'Recurring weekly schedule. Reorder days, and add multiple events to the same day with one connected bar.',
   nlmembers:'Welcome new members. Toggle member photos on or off and upload a picture for each.',
-  nlrecipe:'Featured recipe with addable tags, add/removable macro stats, a grocery list, and an optional steps list.',
+  nlrecipe:'Featured recipe with addable tags, add/removable macro stats, a grocery list, an optional photo, and an optional steps list.',
   nltip:'Tip Tuesday — a featured tip plus add/removable mini-tip cards and addable focus tags.',
   nlswaps:'Smarter swaps (instead of / try this) plus a budget-protein list, both add/removable.',
   nlevents:'Upcoming events as date boxes (month / day / weekday). Reorder them, add tags, and add an optional time chip by the title.',
@@ -1551,7 +1820,7 @@ function cycleTheme(btn){const sec=btn.closest('.sec');const cur=sec.dataset.the
    TABS is the ordered list of tab names shown on the left rail. */
 let CUSTOM={};               // key -> {group,icon,name,theme,raw}
 let TABS=[];                 // ordered tab names for the sections rail
-const DEFAULT_GROUP_ORDER=['Structure','Hero','Stats','Body','Lists','Social Proof','Highlight','Offers','Strips','CTA','Embed'];
+const DEFAULT_GROUP_ORDER=['Structure','Challenge','Hero','Stats','Body','Lists','Social Proof','Highlight','Offers','Strips','CTA','Embed'];
 
 function allSections(){return Object.assign({},SECTIONS,builtCustomMap());}
 function builtCustomMap(){
@@ -1696,7 +1965,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.sec-controls,.sec-tag').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -1879,6 +2148,40 @@ function toggleRecipeSteps(btn){
   steps.dataset.on=on?'0':'1';
   steps.style.display=on?'none':'block';
   btn.textContent=on?'+ Show Instructions Steps':'− Hide Instructions Steps';
+}
+/* toggle the optional featured-recipe photo on/off */
+function toggleRecipePic(btn){
+  const card=btn.closest('.sec');const pic=card.querySelector('.nl-rpic');if(!pic)return;
+  const on=pic.dataset.on==='1';
+  pic.dataset.on=on?'0':'1';
+  pic.style.display=on?'none':'block';
+  btn.dataset.on=on?'0':'1';
+  btn.textContent=on?'+ Show Recipe Photo':'− Hide Recipe Photo';
+}
+/* pick a photo for the featured recipe — downscaled to a 620px-wide JPEG data URL
+   so it stays inside the email frame and keeps the payload reasonable */
+function openRecipePic(btn){
+  const host=btn.closest('.nl-rpic');const img=host.querySelector('.nl-rpic-img');
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';
+  fi.onchange=()=>{
+    const f=fi.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=e=>{
+      const im=new Image();
+      im.onload=()=>{
+        const maxW=620;
+        const scale=Math.min(1,maxW/im.width);
+        const w=Math.round(im.width*scale),h=Math.round(im.height*scale);
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(im,0,0,w,h);
+        const url=c.toDataURL('image/jpeg',0.82);
+        img.src=url;host.dataset.src=url;
+      };
+      im.src=e.target.result;
+    };
+    r.readAsDataURL(f);
+  };
+  fi.click();
 }
 
 /* ═══════════ PLACEHOLDER (ghost text) ═══════════ */
@@ -2143,7 +2446,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -2248,6 +2551,13 @@ function buildExport(){
   clone.querySelectorAll('.nl-steps').forEach(s=>{
     if(s.dataset.on!=='1'){s.remove();return;}
     s.classList.remove('nl-steps');s.removeAttribute('data-on');s.style.display='';if(!s.getAttribute('class'))s.removeAttribute('class');
+  });
+  // newsletter: drop the recipe photo if toggled off or no image was chosen
+  clone.querySelectorAll('.nl-rpic').forEach(p=>{
+    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    if(!shown){p.remove();return;}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
+    const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
   });
   clone.querySelectorAll('.sec').forEach(s=>{
     const key=s.dataset.key||'';const theme=s.dataset.theme||'';
@@ -2600,9 +2910,25 @@ function convertFlexToTable(el){
 }
 function copyHTML(){navigator.clipboard.writeText(buildExport()).then(()=>toast('HTML copied'));}
 function downloadHTML(){const blob=new Blob([buildExport()],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lngvty-email-'+Date.now()+'.html';a.click();URL.revokeObjectURL(a.href);toast('Downloaded');}
-function viewHTML(){document.getElementById('modalTitle').textContent='Email HTML';document.getElementById('modalText').value=buildExport();document.getElementById('modalBg').classList.add('show');}
+function viewHTML(){document.getElementById('modalTitle').textContent='Email HTML';const t=document.getElementById('modalText');t.value=buildExport();t.readOnly=true;const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';document.getElementById('modalBg').classList.add('show');}
 function closeModal(){document.getElementById('modalBg').classList.remove('show');}
 function copyModal(){navigator.clipboard.writeText(document.getElementById('modalText').value).then(()=>toast('Copied'));}
+/* toggle the HTML textarea between read-only and editable for live tweaks */
+function toggleModalEdit(){
+  const t=document.getElementById('modalText');const b=document.getElementById('modalEditBtn');
+  t.readOnly=!t.readOnly;
+  if(t.readOnly){b.innerHTML='&#9998; Edit';toast('Locked (view only)');}
+  else{b.innerHTML='&#128274; Lock';t.focus();toast('Editing — tweak the HTML, then Copy or Preview this');}
+}
+/* preview exactly what's in the textarea (including any manual edits) */
+function previewModalHTML(){
+  const html=document.getElementById('modalText').value;
+  const iframe=document.getElementById('previewIframe');
+  iframe.srcdoc=html;
+  document.getElementById('pvTitle').innerHTML='&#128065; Preview (edited HTML)';
+  previewDesktop();
+  document.getElementById('previewBg').classList.add('show');
+}
 
 /* ═══════════ PREVIEW ═══════════ */
 function openPreview(){
@@ -2703,12 +3029,14 @@ const SAVED_STD_TAGS=['Graphic','Newsletter','Webpage','Promo','Announcement','O
 function openSaved(){
   const list=getSavedList();
   if(list.length){savedCurrentItems=list;savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent=list.length+' saved newsletter(s).';}
-  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved newsletters found. Hit Reload to check GitHub.';}
-  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent=ghReady()?'Hit Reload to pull your newsletters from GitHub.':'Connect a GitHub repo (⚙ GitHub) to store newsletters.';}
+  else if(savedEverLoaded){savedCurrentItems=[];savedCurrentPlaceholder=false;document.getElementById('savedStatus').textContent='No saved newsletters found.';}
+  else{savedCurrentItems=SAVED_PLACEHOLDERS;savedCurrentPlaceholder=true;document.getElementById('savedStatus').textContent=ghReady()?'Loading your newsletters from GitHub…':'Connect a GitHub repo (⚙ GitHub) to store newsletters.';}
   savedActiveTag='All';
   renderSavedFilters();
   renderSaved(savedCurrentItems,savedCurrentPlaceholder);
   document.getElementById('savedBg').classList.add('show');
+  // always pull the latest from GitHub on open so Load works without a manual refresh
+  if(ghReady())reloadSaved();
 }
 function closeSaved(){document.getElementById('savedBg').classList.remove('show');}
 
@@ -2799,15 +3127,16 @@ function renderSaved(items,isPlaceholder){
 async function reloadSaved(){
   const status=document.getElementById('savedStatus');
   const btn=document.getElementById('savedReload');
+  const setBtn=(t)=>{if(btn)btn.innerHTML=t;};
   if(!ghReady()){status.textContent='No GitHub repo connected. Click \u2699 GitHub to set one up.';openGithubSettings();return;}
-  status.textContent='Loading from GitHub…';btn.innerHTML='&#8635; Reloading…';
+  status.textContent='Loading from GitHub…';setBtn('&#8635; Reloading…');
   try{
     const files=await ghList();
     if(!files.length){
       savedEverLoaded=true;savedCurrentItems=[];savedCurrentPlaceholder=false;
       renderSavedFilters();renderSaved([],false);
       status.textContent='No newsletters in '+ghDir()+'/ yet. Save one to create it.';
-      toast('No saved newsletters found');btn.innerHTML='&#8635; Reload';return;
+      setBtn('&#8635; Reload');return;
     }
     // fetch each file's metadata (lightweight: name/tag/status/notes/updatedAt)
     const items=[];
@@ -2826,13 +3155,11 @@ async function reloadSaved(){
     setSavedList(items.map(({file,notes,...m})=>({...m,notes})));
     savedEverLoaded=true;savedCurrentItems=items;savedCurrentPlaceholder=false;
     renderSavedFilters();renderSaved(items,false);
-    status.textContent=`Loaded ${items.length} from GitHub.`;
-    toast('\u2713 Reloaded from GitHub');
+    status.textContent=`${items.length} saved newsletter(s).`;
   }catch(e){
     status.textContent='Could not reach GitHub: '+(e.message||e);
-    toast('Reload failed');
   }
-  btn.innerHTML='&#8635; Reload';
+  setBtn('&#8635; Reload');
 }
 
 /* Copy CSS: copies the finished email HTML plus the structured section JSON
