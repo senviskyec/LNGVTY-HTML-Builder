@@ -61,7 +61,9 @@
   .acc-group.open .acc-body{display:block;}
   .palette{padding:8px 12px 40px;}
   .pal-group-label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin:14px 4px 7px;}
-  .pal-item{background:#2a2b30;border:1px solid #3a3b41;border-radius:6px;padding:9px 11px;margin-bottom:6px;cursor:pointer;transition:.12s;display:flex;align-items:center;gap:9px;}
+  .pal-item{background:#2a2b30;border:1px solid #3a3b41;border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:9px;
+    transition:transform .14s cubic-bezier(.2,.8,.2,1),border-color .14s ease,background .14s ease;}
+  .pal-item:hover{transform:translateX(3px);}
   .pal-item:hover{background:#34353c;border-color:var(--accent);}
   .pal-item .ic{font-size:15px;width:18px;text-align:center;flex-shrink:0;}
   .pal-item .nm{font-size:12px;font-weight:600;color:#e8e8e8;line-height:1.25;}
@@ -98,8 +100,12 @@
   .hk-hint{font-size:10px;color:#888;line-height:1.5;margin-top:12px;background:#26272c;padding:9px 10px;border-radius:6px;}
 
   .canvas-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-  .toolbar{background:#fff;border-bottom:1px solid #d5d5d8;padding:9px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;}
-  .tb-btn{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:8px 14px;border-radius:6px;border:1px solid #ccc;background:#fff;color:#444;cursor:pointer;transition:.12s;display:inline-flex;align-items:center;gap:6px;}
+  .toolbar{background:#fff;border-bottom:1px solid #e6e6ea;padding:13px 22px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.03);z-index:5;}
+  .tb-btn{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:9px 15px;border-radius:8px;border:1px solid #dcdce1;background:#fff;color:#43444b;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:transform .14s cubic-bezier(.2,.8,.2,1),box-shadow .14s ease,border-color .14s ease,background .14s ease;}
+  .tb-btn:hover{border-color:#c2c2ca;box-shadow:0 2px 8px rgba(0,0,0,.07);transform:translateY(-1px);}
+  .tb-btn:active{transform:translateY(0);box-shadow:none;}
+  .tb-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
   .tb-btn:hover{border-color:var(--accent);color:var(--accent);}
   .tb-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
   .tb-btn.primary:hover{background:#c44e16;color:#fff;}
@@ -109,18 +115,141 @@
   #tipBox{position:fixed;z-index:1300;background:#1a1a1a;color:#fff;font-family:'Open Sans',sans-serif;font-size:11.5px;line-height:1.45;padding:8px 11px;border-radius:6px;max-width:240px;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none;display:none;}
   #tipBox::after{content:'';position:absolute;top:-5px;left:16px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:5px solid #1a1a1a;}
   .tb-spacer{flex:1;}
+
+  /* ─── rail: newsletter starter ─── */
+  .rail-starter{display:flex;align-items:center;gap:10px;width:calc(100% - 28px);margin:8px 14px 2px;
+    padding:11px 12px;background:linear-gradient(135deg,rgba(224,90,27,.16),rgba(224,90,27,.06));
+    border:1px dashed var(--accent);border-radius:9px;cursor:pointer;text-align:left;color:#fff;
+    transition:transform .14s cubic-bezier(.2,.8,.2,1),background .14s ease;}
+  .rail-starter:hover{transform:translateY(-1px);background:linear-gradient(135deg,rgba(224,90,27,.26),rgba(224,90,27,.1));}
+  .rail-starter .rs-ic{font-size:15px;}
+  .rail-starter .rs-tx{display:flex;flex-direction:column;gap:2px;line-height:1.25;}
+  .rail-starter b{font-family:'Montserrat';font-size:11px;font-weight:900;letter-spacing:.6px;text-transform:uppercase;color:var(--accent);}
+  .rail-starter i{font-style:normal;font-size:9.5px;color:#8d8e96;}
+
+  /* ─── canvas: EKG backdrop ─── */
+  .canvas-scroll{position:relative;background:#0e0f11;}
+  /* The stage is sized by its CONTENT, so both the backdrop and the white shell
+     grow as sections are added — an absolutely-positioned canvas pinned to the
+     scroll container would only ever be viewport-tall and would scroll away. */
+  .canvas-stage{position:relative;display:flex;justify-content:center;
+    width:100%;min-height:100%;padding:44px 24px 160px;box-sizing:border-box;}
+  #ekg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+  /* the white shell is a real padded element (not a shadow) so it tracks height exactly */
+  .frame-shell{position:relative;z-index:1;background:#fff;padding:12px;border-radius:5px;
+    align-self:flex-start;box-shadow:0 24px 70px rgba(0,0,0,.6);}
+
+  /* ─── drag a section from the rail onto the canvas ─── */
+  .pal-item.dragging{opacity:.45;}
+  /* While a section is being dragged, suppress text selection everywhere — the
+     pointer sweep would otherwise highlight the whole document behind the cursor. */
+  body.dragging-section{cursor:grabbing;}
+  body.dragging-section,body.dragging-section *{
+    user-select:none !important;-webkit-user-select:none !important;-ms-user-select:none !important;}
+  body.dragging-section ::selection{background:transparent;}
+  body.dragging-section ::-moz-selection{background:transparent;}
+  /* contenteditable blocks also stop swallowing the pointer mid-drag */
+  body.dragging-section .sec [contenteditable]{pointer-events:none;}
+  .pal-item{-webkit-user-select:none;user-select:none;}
+  .drag-ghost{position:fixed;z-index:2000;pointer-events:none;padding:9px 13px;border-radius:8px;
+    background:#2a2b30;border:1px solid var(--accent);color:#fff;font-family:'Montserrat';font-size:11px;
+    font-weight:700;letter-spacing:.4px;box-shadow:0 12px 30px rgba(0,0,0,.45);
+    transform:translate(-50%,-50%) scale(.96);opacity:.95;}
+  .drop-line{height:0;border-top:2px dashed var(--accent);margin:0;position:relative;
+    animation:dropPulse .9s ease-in-out infinite;}
+  .drop-line::after{content:'Drop here';position:absolute;left:50%;top:-9px;transform:translateX(-50%);
+    background:var(--accent);color:#fff;font-family:'Montserrat';font-size:8px;font-weight:900;
+    letter-spacing:1.2px;text-transform:uppercase;padding:2px 8px;border-radius:9px;white-space:nowrap;}
+  @keyframes dropPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+  /* a section dropped in place lands with a small fall */
+  .sec.just-dropped{animation:secDrop .34s cubic-bezier(.2,.9,.25,1.05) both;}
+  @keyframes secDrop{0%{opacity:0;transform:translateY(-16px) scale(.985);}60%{transform:translateY(2px);}100%{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){
+    .drop-line{animation:none;}.sec.just-dropped{animation:none;}
+    .rail-starter{transition:none;}#ekg{display:none;}
+  }
+  .tb-div{width:1px;height:20px;background:#e0e0e3;margin:0 2px;}
+
+  /* ─────────── SETTINGS SHELL ─────────── */
+  .settings-bg{backdrop-filter:blur(3px);}
+  .settings-bg.show .settings{animation:setRise .26s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes setRise{from{opacity:0;transform:translateY(14px) scale(.985);}to{opacity:1;transform:none;}}
+  .settings{width:960px;max-width:94vw;height:76vh;max-height:720px;background:#fff;border-radius:16px;
+    overflow:hidden;display:flex;box-shadow:0 30px 80px rgba(0,0,0,.35),0 2px 8px rgba(0,0,0,.16);}
+
+  /* sidebar */
+  .set-side{width:236px;flex-shrink:0;background:#17181c;display:flex;flex-direction:column;}
+  .set-brand{padding:22px 20px 16px;border-bottom:1px solid #26272d;}
+  .set-brand-mark{display:block;font-family:'Montserrat';font-weight:900;font-size:17px;letter-spacing:2px;color:#fff;}
+  .set-brand-sub{display:block;font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:2.4px;
+    text-transform:uppercase;color:var(--accent);margin-top:4px;}
+  .set-nav{flex:1;overflow-y:auto;padding:12px 10px;}
+  .set-item{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;margin-bottom:2px;
+    background:none;border:0;border-radius:9px;cursor:pointer;text-align:left;color:#9a9ba3;
+    font-family:'Montserrat';font-size:12px;font-weight:700;letter-spacing:.3px;
+    transition:background .16s ease,color .16s ease,transform .16s ease;}
+  .set-item .ic{width:18px;text-align:center;font-size:13px;filter:grayscale(1) opacity(.75);transition:filter .16s ease;}
+  .set-item .tx{flex:1;}
+  .set-item .ch{opacity:0;font-size:14px;transform:translateX(-4px);transition:opacity .16s ease,transform .16s ease;}
+  .set-item:hover{background:#212228;color:#d8d9de;transform:translateX(2px);}
+  .set-item:hover .ic{filter:none;}
+  .set-item.active{background:var(--accent);color:#fff;}
+  .set-item.active .ic{filter:none;}
+  .set-item.active .ch{opacity:.85;transform:none;}
+  .set-sep{height:1px;background:#26272d;margin:10px 12px;}
+  .set-foot{padding:12px 20px;border-top:1px solid #26272d;font-size:10px;color:#6a6b73;
+    font-family:'Montserrat';letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  /* right side */
+  .set-main{flex:1;min-width:0;display:flex;flex-direction:column;background:#fbfbfc;}
+  .set-head{padding:18px 24px;border-bottom:1px solid #ececef;display:flex;align-items:center;
+    justify-content:space-between;background:#fff;}
+  .set-head h3{font-family:'Montserrat';font-size:16px;font-weight:900;letter-spacing:.4px;color:#1a1a1a;}
+  .set-close{border:0;background:none;font-size:24px;line-height:1;color:#b4b4bb;cursor:pointer;
+    padding:2px 6px;border-radius:6px;transition:.15s;}
+  .set-close:hover{color:#1a1a1a;background:#f0f0f2;}
+  .set-body{flex:1;overflow-y:auto;padding:24px;}
+  .set-pane{display:none;}
+  .set-pane.active{display:block;animation:paneIn .24s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes paneIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .set-lede{font-size:13px;color:#77787f;line-height:1.6;margin-bottom:18px;}
+  /* cards inside panes */
+  .set-card{background:#fff;border:1px solid #e8e8eb;border-radius:11px;padding:16px 18px;margin-bottom:12px;
+    transition:border-color .16s ease,box-shadow .16s ease;}
+  .set-card:hover{border-color:#dcdce0;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  .set-card-t{font-family:'Montserrat';font-size:12px;font-weight:900;letter-spacing:.5px;color:#1a1a1a;margin-bottom:5px;}
+  .set-card-d{font-size:12px;color:#82838a;line-height:1.6;margin-bottom:12px;}
+  /* panes reuse existing widgets; give the relocated bodies breathing room */
+  .set-pane .modal-foot{border-top:1px solid #ececef;margin-top:18px;padding:14px 0 0;background:none;}
+  .set-pane .panel-note{background:#f6f6f8;border-radius:8px;padding:11px 13px;font-size:12px;line-height:1.6;color:#6f7077;}
+  @media (prefers-reduced-motion:reduce){
+    .settings-bg.show .settings,.set-pane.active{animation:none;}
+    .set-item,.set-item .ic,.set-item .ch,.set-card{transition:none;}
+  }
+  /* Customize modal */
+  .cz-title{font-family:'Montserrat';font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .cz-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;margin-top:12px;}
+  .cz-sel{width:100%;padding:7px 9px;border:1px solid #ccc;border-radius:6px;font-size:12px;background:#fff;}
+  /* Image library */
+  .img-card{border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;cursor:pointer;background:#fff;transition:.12s;}
+  .img-card:hover{border-color:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.09);}
+  .img-card img{display:block;width:100%;height:110px;object-fit:cover;background:#f4f4f5;}
+  .img-card .nm{font-size:10px;color:#666;padding:6px 8px;word-break:break-all;line-height:1.35;}
   .tb-label{font-size:11px;color:#999;font-weight:600;}
-  .canvas-scroll{flex:1;overflow-y:auto;padding:30px 20px 140px;display:flex;justify-content:center;}
-  .email-frame{width:620px;background:#fff;box-shadow:0 6px 30px rgba(0,0,0,.16);min-height:200px;position:relative;}
+  .canvas-scroll{flex:1;overflow-y:auto;}
+  .email-frame{width:620px;background:#fff;min-height:200px;position:relative;display:block;}
   .email-frame.webpage-mode{width:100%;max-width:1100px;}
-  body.webpage-builder .canvas-scroll{padding-left:0;padding-right:0;}
+  body.webpage-builder .canvas-stage{padding-left:0;padding-right:0;}
+  body.webpage-builder .frame-shell{padding:0;border-radius:0;}
   /* drop-cap lead paragraph (blog) */
   .dropcap::first-letter{font-family:'Montserrat',sans-serif;font-weight:900;float:left;font-size:72px;line-height:.78;padding:8px 14px 0 0;color:var(--accent);}
   .empty-hint{padding:80px 30px;text-align:center;color:#bbb;}
   .empty-hint .big{font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:#ccc;margin-bottom:8px;text-transform:uppercase;}
   .empty-hint p{font-size:13px;line-height:1.6;}
 
-  .sec{position:relative;}
+  .sec{position:relative;animation:secIn .3s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes secIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.sec{animation:none;}.tb-btn,.pal-item{transition:none;}}
   .sec.dragover-top::before{content:'';position:absolute;top:-2px;left:0;right:0;height:4px;background:var(--accent);z-index:50;}
   .sec.dragover-bot::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:4px;background:var(--accent);z-index:50;}
   .sec-controls{position:absolute;top:6px;right:6px;display:none;gap:4px;z-index:40;flex-wrap:wrap;justify-content:flex-end;max-width:80%;}
@@ -151,7 +280,7 @@
   .li-wrap:hover > .li-move,.li-wrap:hover .li-ctrls > .li-move,.li-wrap:hover .li-ctrls .li-move{display:block;}
   .li-move:hover{background:var(--accent);}
   /* addable inline tags (translucent orange pills) */
-  .tag-wrap{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .tag-wrap{display:inline-flex;flex-wrap:wrap;gap:0;align-items:center;}  /* spacing now lives on each .tag-pill as an inline margin so it survives export */
   .tag-pill{position:relative;display:inline-block;}
   .tag-pill > .li-del{top:-7px;right:-7px;width:15px;height:15px;font-size:10px;}
   .tag-pill:hover > .li-del{display:block;}
@@ -209,7 +338,8 @@
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
   .toast .ck{color:var(--accent);margin-right:8px;}
 
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:900;}
+  .modal-bg{position:fixed;inset:0;background:rgba(16,17,20,.58);display:none;align-items:center;justify-content:center;z-index:900;animation:fadeIn .18s ease both;}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
   .modal-bg.show{display:flex;}
   .modal{background:#fff;width:680px;max-width:92vw;max-height:82vh;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;}
   .modal.wide{width:860px;}
@@ -305,9 +435,9 @@
   <div class="bt-hint" id="btHint">Page format: narrow email/graphic</div>
   <div class="rail-modes" id="railModes">
     <div class="rail-modes-select-wrap">
-      <select id="railModeSelect" class="rail-mode-select" onchange="setRailMode(this.value)">
+      <select id="railModeSelect" class="rail-mode-select" onchange="setRailMode(this.value)" onmousedown="exitTagsPane()" onfocus="exitTagsPane()">
         <option value="graphics">Graphics</option>
-        <option value="newsletter">Newsletter</option>
+        <option value="newsletter" selected>Newsletter</option>
         <option value="blog">Webpage</option>
       </select>
     </div>
@@ -315,6 +445,10 @@
   </div>
   <div class="rail-body active" id="railSections">
     <div class="rail-sublabel" id="railSubLabel">Graphics Sections</div>
+    <button class="rail-starter" id="railStarter" onclick="buildNewsletterTemplate()" style="display:none;">
+      <span class="rs-ic">&#9889;</span>
+      <span class="rs-tx"><b>Start a newsletter</b><i>Header, note, schedule, tips, recipe, events, footer</i></span>
+    </button>
     <div class="rail-search"><input type="text" id="palSearch" placeholder="Search sections..." oninput="renderRail(this.value)"></div>
     <div class="acc-list" id="accList"></div>
   </div>
@@ -334,44 +468,178 @@
 
 <div class="canvas-wrap">
   <div class="toolbar">
-    <button class="tb-btn primary" onclick="saveState()" data-tip="Saves your work in this browser AND to GitHub (you'll fill in Name, Tag, Status, Notes).">&#128190; Save</button>
-    <button class="tb-btn" onclick="openPreview()" data-tip="See exactly how the finished email looks, with desktop/mobile toggles.">&#128065; Preview</button>
-    <button class="tb-btn" onclick="copyHTML()" data-tip="Copies the finished email HTML to your clipboard (paste this into GHL).">&#128203; Copy HTML</button>
-    <button class="tb-btn" onclick="copyCSS()" data-tip="Copies the finished HTML plus the structured section JSON (the same data saved to GitHub). For testing / re-import.">&#129521; Copy CSS</button>
-    <button class="tb-btn" onclick="downloadHTML()" data-tip="Saves the finished email HTML as a file.">&#8595; Download</button>
-    <button class="tb-btn" onclick="viewHTML()" data-tip="Opens the finished HTML in a window so you can read or copy it.">&#10216;&#10217; View HTML</button>
-    <button class="tb-btn" onclick="openImport()" data-tip="Import a newsletter JSON (from Copy CSS) back into the builder, keeping every section editable.">&#128229; Import</button>
-    <button class="tb-btn" onclick="openAddSection()" data-tip="Create your own section by pasting in HTML.">&#10010; New Section</button>
-    <button class="tb-btn" onclick="openSaved()" data-tip="Browse newsletters saved to GitHub. Reload to fetch the latest, then load one to keep editing.">&#9733; Saved Newsletters</button>
-    <button class="tb-btn" onclick="openGithubSettings()" data-tip="Connect the GitHub repo where newsletters are stored.">&#9881; GitHub</button>
-    <button class="tb-btn" onclick="openDocs()" data-tip="Open the step-by-step guide.">&#128214; Docs</button>
+    <button class="tb-btn primary" onclick="saveState()" data-tip="Save to this browser and to GitHub.">&#128190; Save</button>
+    <button class="tb-btn" onclick="openPreview()" data-tip="See the finished email, with desktop and mobile views.">&#128065; Preview</button>
+    <button class="tb-btn" onclick="copyHTML()" data-tip="Copy the finished email HTML. Paste this into GoHighLevel.">&#128203; Copy HTML</button>
+    <span class="tb-div"></span>
+    <button class="tb-btn" onclick="openSaved()" data-tip="Browse everything saved to GitHub.">&#9733; Saved</button>
     <div class="tb-spacer"></div>
     <span class="tb-label" id="secCount">0 sections</span>
-    <button class="tb-btn danger" onclick="clearAll()" data-tip="Removes everything from the canvas (asks first).">&#128465; Clear</button>
+    <button class="tb-btn" onclick="openSettings()" data-tip="Everything else: theme, images, docs, GitHub, import, and more.">&#9881; Settings</button>
+    <button class="tb-btn danger" onclick="clearAll()" data-tip="Remove everything from the canvas.">&#128465; Clear</button>
   </div>
-  <div class="canvas-scroll">
-    <div class="email-frame" id="frame">
-      <div class="empty-hint" id="emptyHint">
-        <div class="big">Empty Canvas</div>
-        <p>Pick sections from the left to start building.<br>Faded ghost text is a suggestion &mdash; type to replace it.</p>
+  <div class="canvas-scroll" id="canvasScroll">
+    <div class="canvas-stage" id="canvasStage">
+      <canvas id="ekg" aria-hidden="true"></canvas>
+      <div class="frame-shell" id="frameShell">
+        <div class="email-frame" id="frame">
+          <div class="empty-hint" id="emptyHint">
+            <div class="big">Empty Canvas</div>
+            <p>Pick sections from the left to start building.<br>Faded ghost text is a suggestion &mdash; type to replace it.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="panel">
-  <h2>&#127912; Global Theme</h2>
-  <div class="panel-body">
-    <div class="col-row"><label>Accent</label><div class="ctrl"><span class="hex" id="hex-accent">#e05a1b</span><input type="color" id="col-accent" value="#e05a1b"></div></div>
-    <div class="col-row"><label>Dark BG</label><div class="ctrl"><span class="hex" id="hex-dark">#1a1a1a</span><input type="color" id="col-dark" value="#1a1a1a"></div></div>
-    <div class="col-row"><label>Gray BG</label><div class="ctrl"><span class="hex" id="hex-gray">#3a3a3a</span><input type="color" id="col-gray" value="#3a3a3a"></div></div>
-    <div class="col-row"><label>Page BG</label><div class="ctrl"><span class="hex" id="hex-bg">#f2f2f2</span><input type="color" id="col-bg" value="#f2f2f2"></div></div>
-    <div class="col-row"><label>Body Text</label><div class="ctrl"><span class="hex" id="hex-body-text">#555555</span><input type="color" id="col-body-text" value="#555555"></div></div>
-    <div class="col-row"><label>Heading</label><div class="ctrl"><span class="hex" id="hex-heading">#3a3a3a</span><input type="color" id="col-heading" value="#3a3a3a"></div></div>
-    <div class="pal-group-label" style="color:#aaa;margin-left:0;">Quick Accent Presets</div>
-    <div class="swatch-presets" id="presets"></div>
-    <button class="reset-theme" onclick="resetTheme()">&#8634; Reset Theme to Default</button>
-    <div class="panel-note">Global colors recolor every block at once. Each block also has its own <strong>Theme</strong> button (&#9679; black / &#9680; gray / &#9675; white) that flips just that block &mdash; still using your accent.</div>
+<!-- SETTINGS (sidebar shell — panes are populated from the modals below at load) -->
+<div class="modal-bg settings-bg" id="settingsBg">
+  <div class="settings">
+    <aside class="set-side">
+      <div class="set-brand">
+        <span class="set-brand-mark">LNGVTY</span>
+        <span class="set-brand-sub">Builder Settings</span>
+      </div>
+      <nav class="set-nav" id="setNav">
+        <button class="set-item" data-pane="theme"><span class="ic">&#127912;</span><span class="tx">Theme &amp; Type</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="images"><span class="ic">&#128247;</span><span class="tx">Images</span><span class="ch">›</span></button>
+        <div class="set-sep"></div>
+        <button class="set-item" data-pane="export"><span class="ic">&#8595;</span><span class="tx">Export</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="html"><span class="ic">&#10216;&#10217;</span><span class="tx">View HTML</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="import"><span class="ic">&#128229;</span><span class="tx">Import</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="newsec"><span class="ic">&#10010;</span><span class="tx">New Section</span><span class="ch">›</span></button>
+        <div class="set-sep"></div>
+        <button class="set-item" data-pane="github"><span class="ic">&#9881;</span><span class="tx">GitHub</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
+      </nav>
+      <div class="set-foot">
+        <span id="setRepoHint">&mdash;</span>
+      </div>
+    </aside>
+    <section class="set-main">
+      <header class="set-head">
+        <h3 id="setTitle">Theme &amp; Type</h3>
+        <button class="set-close" onclick="closeSettings()" title="Close">&times;</button>
+      </header>
+      <div class="set-body" id="setBody">
+        <div class="set-pane" data-pane="theme" id="pane-theme"></div>
+        <div class="set-pane" data-pane="images" id="pane-images"></div>
+        <div class="set-pane" data-pane="export" id="pane-export">
+          <p class="set-lede">Get the finished document out of the builder.</p>
+          <div class="set-card">
+            <div class="set-card-t">Copy HTML</div>
+            <div class="set-card-d">The finished email markup. This is what you paste into a GoHighLevel campaign.</div>
+            <button class="tb-btn primary" onclick="copyHTML()">&#128203; Copy HTML</button>
+          </div>
+          <div class="set-card">
+            <div class="set-card-t">Copy bundle</div>
+            <div class="set-card-d">The HTML <em>and</em> the section data together. Use this to move a document between machines, then paste it into Import.</div>
+            <button class="tb-btn" onclick="copyCSS()">&#129521; Copy Bundle</button>
+          </div>
+          <div class="set-card">
+            <div class="set-card-t">Download</div>
+            <div class="set-card-d">Save the finished HTML to a file.</div>
+            <button class="tb-btn" onclick="downloadHTML()">&#8595; Download .html</button>
+          </div>
+        </div>
+        <div class="set-pane" data-pane="html" id="pane-html"></div>
+        <div class="set-pane" data-pane="import" id="pane-import"></div>
+        <div class="set-pane" data-pane="newsec" id="pane-newsec"></div>
+        <div class="set-pane" data-pane="github" id="pane-github"></div>
+        <div class="set-pane" data-pane="docs" id="pane-docs"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- CUSTOMIZE modal (global theme, typography, text clean-up) -->
+<div class="modal-bg" id="customizeBg">
+  <div class="modal" style="width:640px;">
+    <div class="modal-head"><h3>&#127912; Customize</h3><button onclick="closeCustomize()">&times;</button></div>
+    <div class="modal-scroll">
+
+      <div class="cz-title">Global Colors</div>
+      <div class="panel-note" style="margin-top:0;">These recolor every block at once. Each block also has its own <strong>Theme</strong> button (&#9679; black / &#9680; gray / &#9675; white) that flips just that block &mdash; still using your accent.</div>
+      <div class="cz-grid">
+        <div class="col-row"><label>Accent</label><div class="ctrl"><span class="hex" id="hex-accent">#e05a1b</span><input type="color" id="col-accent" value="#e05a1b"></div></div>
+        <div class="col-row"><label>Dark BG</label><div class="ctrl"><span class="hex" id="hex-dark">#1a1a1a</span><input type="color" id="col-dark" value="#1a1a1a"></div></div>
+        <div class="col-row"><label>Gray BG</label><div class="ctrl"><span class="hex" id="hex-gray">#3a3a3a</span><input type="color" id="col-gray" value="#3a3a3a"></div></div>
+        <div class="col-row"><label>Page BG</label><div class="ctrl"><span class="hex" id="hex-bg">#f2f2f2</span><input type="color" id="col-bg" value="#f2f2f2"></div></div>
+        <div class="col-row"><label>Body Text</label><div class="ctrl"><span class="hex" id="hex-body-text">#555555</span><input type="color" id="col-body-text" value="#555555"></div></div>
+        <div class="col-row"><label>Heading</label><div class="ctrl"><span class="hex" id="hex-heading">#3a3a3a</span><input type="color" id="col-heading" value="#3a3a3a"></div></div>
+      </div>
+      <div class="pal-group-label" style="color:#aaa;margin-left:0;margin-top:12px;">Quick Accent Presets</div>
+      <div class="swatch-presets" id="presets"></div>
+      <button class="reset-theme" onclick="resetTheme()">&#8634; Reset Colors to Default</button>
+
+      <div class="cz-title" style="margin-top:24px;">Typography</div>
+      <div class="panel-note" style="margin-top:0;">Applies to the whole document. Defaults match the LNGVTY brand.</div>
+      <div class="cz-grid">
+        <div class="col-row"><label>Heading font</label>
+          <select id="fontHeading" class="cz-sel" onchange="setFont('heading',this.value)">
+            <option value="'Montserrat',sans-serif">Montserrat (brand)</option>
+            <option value="'Open Sans',sans-serif">Open Sans</option>
+            <option value="Arial,Helvetica,sans-serif">Arial / Helvetica</option>
+            <option value="Georgia,serif">Georgia</option>
+            <option value="'Courier New',monospace">Courier New</option>
+          </select>
+        </div>
+        <div class="col-row"><label>Body font</label>
+          <select id="fontBody" class="cz-sel" onchange="setFont('body',this.value)">
+            <option value="'Open Sans',Arial,sans-serif">Open Sans (brand)</option>
+            <option value="'Montserrat',sans-serif">Montserrat</option>
+            <option value="Arial,Helvetica,sans-serif">Arial / Helvetica</option>
+            <option value="Georgia,serif">Georgia</option>
+          </select>
+        </div>
+        <div class="col-row"><label>Body size</label>
+          <select id="fontBodySize" class="cz-sel" onchange="setBodySize(this.value)">
+            <option value="13px">Small (13px)</option>
+            <option value="14px" selected>Normal (14px)</option>
+            <option value="15px">Large (15px)</option>
+            <option value="16px">Extra large (16px)</option>
+          </select>
+        </div>
+        <div class="col-row"><label>Line height</label>
+          <select id="lineHeight" class="cz-sel" onchange="setLineHeight(this.value)">
+            <option value="1.5">Tight (1.5)</option>
+            <option value="1.7" selected>Normal (1.7)</option>
+            <option value="1.9">Airy (1.9)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="cz-title" style="margin-top:24px;">Text Clean-Up</div>
+      <div class="panel-note" style="margin-top:0;">Pasting from Word, Google Docs, or a webpage drags in foreign fonts, sizes, and colors. This strips all of that and snaps every text box back to the brand styling &mdash; without touching your words.</div>
+      <button class="tb-btn" style="width:100%;justify-content:center;margin-top:10px;padding:11px;" onclick="normalizeAllText()">&#129529; Reset All Text to Brand Styling</button>
+      <div class="panel-note" style="margin-top:8px;">Tip: this clears inline font-family, font-size, and color from pasted text. Intentional per-word accent coloring you applied with the text color bar <em>will</em> be cleared too, so re-apply it afterwards.</div>
+
+    </div>
+    <div class="modal-foot">
+      <span style="flex:1;font-size:11px;color:#999;" id="czStatus"></span>
+      <button class="tb-btn primary" onclick="closeCustomize()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE LIBRARY modal -->
+<div class="modal-bg" id="imageBg">
+  <div class="modal" style="width:760px;">
+    <div class="modal-head"><h3>&#128247; Image Library</h3><button onclick="closeImageLib()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="panel-note" style="margin-top:0;">Images live in the repo's <code>/images</code> folder and are referenced by URL &mdash; so they stay out of the email payload. Click one to insert it, or upload a new one.</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:14px;">
+        <button class="tb-btn" onclick="uploadImage()">&#8593; Upload New Image</button>
+        <button class="tb-btn" onclick="loadImageLib()">&#8635; Refresh</button>
+        <span style="flex:1;"></span>
+        <span style="font-size:11px;color:#999;" id="imgStatus"></span>
+      </div>
+      <div id="imgGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="closeImageLib()">Close</button>
+    </div>
   </div>
 </div>
 
@@ -460,7 +728,7 @@
           <label>Main section</label>
           <select id="addMode" onchange="onAddModeChange()">
             <option value="graphics">Graphics (email)</option>
-            <option value="newsletter">Newsletter</option>
+            <option value="newsletter" selected>Newsletter</option>
             <option value="blog">Webpage</option>
           </select>
         </div>
@@ -642,7 +910,7 @@
       <div style="display:flex;gap:10px;margin-top:10px;">
         <div class="field-row" style="flex:1;">
           <label>Folder</label>
-          <input type="text" id="ghDir" placeholder="templates" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
+          <input type="text" id="ghDir" placeholder="saved" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid #ddd;border-radius:6px;">
         </div>
         <div class="field-row" style="flex:1;">
           <label>Branch (optional)</label>
@@ -754,7 +1022,11 @@ function liMoves(){return `<button class="li-move up" onclick="moveLi(this,-1)" 
 /* a single editable tag pill (translucent orange) */
 function tagPill(text,style){
   const s=style||"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(224,90,27,.12);color:var(--accent);padding:3px 10px;";
-  return `<span class="tag-pill">${ph(text,s,'span')}<button class="li-del" onclick="delTag(this)">×</button></span>`;
+  // The gap between pills in the editor comes from .tag-wrap's flex `gap`, which is a
+  // builder-only class that gets stripped on export — leaving the pills flush against
+  // each other so they render as one connected orange blob in email. Carrying the
+  // spacing as an inline margin on each pill makes it survive the export.
+  return `<span class="tag-pill" style="display:inline-block;margin:0 6px 6px 0;">${ph(text,s,'span')}<button class="li-del" onclick="delTag(this)">×</button></span>`;
 }
 /* a wrap of addable tag pills */
 function tagBlock(tags,pillStyle,wrapStyle){
@@ -801,11 +1073,11 @@ const SECTIONS = {
       ${ph('LNGVTY Hub — Your Check-In',"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;",'span')}
     </div>`},
 
-  footer:{group:'Structure',icon:'▭',name:'Footer',theme:'white',
+  footer:{group:'Structure',icon:'▭',name:'Footer',theme:'white',mode:'both',
     html:()=>`<div style="padding:28px 48px;text-align:center;background:var(--secbg);">
       <div contenteditable="true" style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;letter-spacing:2px;color:var(--secmuted);margin-bottom:10px;">LNGVTY HUB · CARRBORO</div>
       <div style="text-align:center;margin:12px 0;">
-        ${['Facebook','Instagram','Website'].map(s=>realBtn(s,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--secmuted);text-decoration:none;border:1px solid #ddd;padding:5px 12px;display:inline-block;margin:0 4px;")).join('')}
+        ${[['Facebook','https://www.facebook.com/LNGVTYHubNC'],['Instagram','https://www.instagram.com/lngvtyhub/'],['Website','https://lngvtyhub.com/']].map(([s,u])=>realBtn(s,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--secmuted);text-decoration:none;border:1px solid #ddd;padding:5px 12px;display:inline-block;margin:0 4px;",u)).join('')}
       </div>
       <p contenteditable="true" style="font-size:11px;color:var(--secmuted);line-height:1.8;">You're receiving this as a member of LNGVTY Hub. Unsubscribe.</p>
     </div>`},
@@ -869,7 +1141,7 @@ const SECTIONS = {
         ${listBlock([para("You've been a member for 30 days — your first real milestone. We want to celebrate it the right way. Not with a certificate. With data.")],para('New paragraph'),'Add paragraph')}
       </div>`;}},
 
-  introbox:{group:'Body',icon:'❝',name:'Intro Box',theme:'white',
+  introbox:{group:'Body',ngroup:'Newsletter',norder:1,icon:'❝',name:'Intro Box',theme:'white',mode:'both',
     html:()=>{
       const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
         <td valign="top">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:10px;",'p')}</td>
@@ -1168,7 +1440,7 @@ const SECTIONS = {
     </div>`},
 
   /* ═══════════ NEWSLETTER SECTIONS ═══════════ */
-  nlheader:{group:'Newsletter',icon:'▦',name:'Newsletter Header + Quote',theme:'dark',mode:'newsletter',
+  nlheader:{group:'Newsletter',norder:0,icon:'▦',name:'Newsletter Header + Quote',theme:'dark',mode:'newsletter',
     html:()=>`<div style="background:var(--accent);padding:10px 24px;text-align:center;">
         ${ph('LNGVTY Hub — Weekly Member Newsletter',"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;")}
       </div>
@@ -1188,7 +1460,7 @@ const SECTIONS = {
         ${ph("Another week, another chance to show up for yourself.","font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.4;")}
       </div>`},
 
-  nlschedule:{group:'Newsletter',icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
+  nlschedule:{group:'Newsletter',norder:2,icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
     html:()=>{
       // Each sub-event (a day can hold more than one). Plain block layout — no flex.
       const sub=(name,time)=>`<div class="sched-sub" style="position:relative;padding:4px 0;">
@@ -1477,11 +1749,11 @@ const SECTIONS = {
       <div style="max-width:360px;height:1px;background:#3a3a3c;margin:14px auto 16px;"></div>
       ${ph('601-A W Main St, Carrboro · 919-914-0249',"font-size:13px;color:#888;margin-bottom:22px;font-weight:300;")}
       <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">
-        ${realBtn('Facebook',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
+        ${realBtn('Facebook',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'https://www.facebook.com/LNGVTYHubNC')}
         <span style="color:#3a3a3c;">|</span>
-        ${realBtn('Instagram',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
+        ${realBtn('Instagram',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'https://www.instagram.com/lngvtyhub/')}
         <span style="color:#3a3a3c;">|</span>
-        ${realBtn('Website',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'#')}
+        ${realBtn('Website',"display:inline-block;color:#cfcfcf;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;text-decoration:none;padding:6px 18px;",'https://lngvtyhub.com/')}
       </div>
       <div style="margin-top:22px;">${ph('© 2026 LNGVTY Hub. All rights reserved.',"font-size:11px;color:#666;",'span')}</div>
     </div>`},
@@ -1832,6 +2104,12 @@ function builtCustomMap(){
 }
 /* does a section belong in the currently-shown rail tab? */
 function secMode(s){return s.mode||'graphics';}
+/* A shared section can sit in a different rail group depending on the mode —
+   e.g. the Intro Box is "Body" in Graphics but belongs with the Newsletter blocks. */
+function secGroup(s){
+  if(railMode==='newsletter'&&s.ngroup)return s.ngroup;
+  return s.group;
+}
 function inCurrentMode(s){
   const m=secMode(s);
   if(railMode==='blog')return m==='blog';            // blog tab: only blog sections
@@ -1842,7 +2120,7 @@ const NEWSLETTER_GROUP_ORDER=['Newsletter','Members','Recipe','Tips','Nutrition'
 const BLOG_GROUP_ORDER=['Header','Content','Embed','CTA'];
 function computeTabs(){
   const groups=new Set();
-  Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(s.group);});
+  Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(secGroup(s));});
   // start from default order, then any custom-created tabs in creation order
   const ordered=[];
   const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:DEFAULT_GROUP_ORDER;
@@ -1855,7 +2133,7 @@ function computeTabs(){
 }
 
 /* ═══════════ RAIL: MODE TOGGLE + ACCORDION PALETTE ═══════════ */
-let railMode='graphics';                  // 'graphics' | 'newsletter' | 'blog' | 'hotkeys'
+let railMode='newsletter';                // default tab | 'graphics' | 'newsletter' | 'blog' | 'hotkeys'
 let builderMode='email';                  // 'email' | 'webpage'
 let openGroups=null;                      // Set of expanded group names (null = init to all)
 
@@ -1888,7 +2166,17 @@ function setRailMode(m){
   if(sl&&isSections){
     sl.textContent=(m==='newsletter')?'Newsletter Sections':(m==='blog')?'Webpage / Blog Sections':'Graphics Sections';
   }
+  const st=document.getElementById('railStarter');
+  if(st)st.style.display=(m==='newsletter')?'flex':'none';
   if(isSections){openGroups=null;renderRail(document.getElementById('palSearch')?.value||'');}
+}
+/* Touching the mode dropdown while the Tags pane is open should return to the
+   sections list — a <select> onchange won't fire if the same value is re-picked,
+   so this gives the user a reliable way back out of Tags. */
+function exitTagsPane(){
+  if(railMode!=='hotkeys')return;
+  const sel=document.getElementById('railModeSelect');
+  setRailMode((sel&&sel.value)||'graphics');
 }
 
 function toggleGroup(g){
@@ -1906,7 +2194,16 @@ function renderRail(filter=''){
 
   // group sections by tab, preserving TABS order (only sections for the current tab)
   const grouped={};
-  Object.entries(sections).forEach(([k,s])=>{if(inCurrentMode(s))(grouped[s.group]=grouped[s.group]||[]).push([k,s]);});
+  Object.entries(sections).forEach(([k,s])=>{if(inCurrentMode(s)){const g=secGroup(s);(grouped[g]=grouped[g]||[]).push([k,s]);}});
+  // sections may declare a norder hint to pin their position within a group
+  Object.values(grouped).forEach(list=>{
+    list.forEach((it,i)=>{it._i=i;});
+    list.sort((a,b)=>{
+      const ao=(a[1].norder!==undefined)?a[1].norder:999+a._i;
+      const bo=(b[1].norder!==undefined)?b[1].norder:999+b._i;
+      return ao-bo;
+    });
+  });
 
   // init open-state: all groups open by default
   if(openGroups===null){openGroups=new Set(TABS);}
@@ -1933,7 +2230,7 @@ function renderRail(filter=''){
       const el=document.createElement('div');el.className='pal-item';
       const delBtn=s.custom?`<span class="pal-del" title="Delete custom section" onclick="event.stopPropagation();deleteCustom('${k}')">×</span>`:'';
       el.innerHTML=`<span class="ic">${s.icon}</span><span class="nm">${s.name}</span>${delBtn}<span class="plus">+</span>`;
-      el.onclick=()=>addSection(k);
+      armPaletteDrag(el,k);   // click = append; click-and-hold = drag into place
       el.addEventListener('mouseenter',()=>showSecPreview(k,s,el));
       el.addEventListener('mouseleave',hideSecPreview);
       pal.appendChild(el);
@@ -2047,16 +2344,229 @@ function wireSec(sec){
   hydrateMedia(sec);
 }
 function clearDrop(){frame.querySelectorAll('.sec').forEach(s=>s.classList.remove('dragover-top','dragover-bot'));}
-function addSection(key){
+function addSection(key,before){
   const S=allSections();
-  if(!S[key]){toast('Unknown section');return;}
+  if(!S[key]){toast('Unknown section');return null;}
   const sec=document.createElement('div');sec.className='sec';sec.dataset.key=key;
   sec.innerHTML=S[key].html()+controlsHTML();
   const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=S[key].name;
-  frame.appendChild(sec);
+  if(before&&before.parentElement===frame)frame.insertBefore(sec,before);
+  else frame.appendChild(sec);
   applySecTheme(sec,S[key].theme||'white');
   wireSec(sec);refreshState();
-  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  if(!before)sec.scrollIntoView({behavior:'smooth',block:'center'});
+  return sec;
+}
+
+/* ═══════════ NEWSLETTER STARTER ═══════════
+   Drops in the standard weekly-newsletter skeleton in reading order, so the
+   only things left to fill in are the date, the quote, and the week's content. */
+const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nltip','nlrecipe','nlevents','footer'];
+function buildNewsletterTemplate(){
+  const existing=frame.querySelectorAll('.sec').length;
+  if(existing && !confirm('Replace the '+existing+' section(s) on the canvas with a fresh newsletter?'))return;
+  frame.querySelectorAll('.sec').forEach(s=>s.remove());
+  NEWSLETTER_TEMPLATE.forEach(k=>{
+    const sec=addSection(k);
+    // the Intro Box becomes the "note from Tim" opener
+    if(sec && k==='introbox'){
+      const eds=sec.querySelectorAll('[data-ph]');
+      if(eds[0])eds[0].setAttribute('data-ph','Welcome');
+      if(eds[1])eds[1].setAttribute('data-ph','A Note From Tim,');
+    }
+  });
+  saveStateLocal();
+  frame.scrollIntoView({behavior:'smooth',block:'start'});
+  toast('\u2713 Newsletter started — add your date, quote, and content');
+}
+
+/* ═══════════ EKG BACKDROP ═══════════
+   A faint orange heartbeat trace behind the canvas. Purely ambient: it sits in a
+   canvas element that is never part of the document, so export/preview never see it. */
+function startEKG(){
+  const cv=document.getElementById('ekg');
+  const stage=document.getElementById('canvasStage');
+  if(!cv||!stage||!cv.getContext)return;
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const ctx=cv.getContext('2d');
+  if(!ctx)return;                      // no canvas support — the backdrop is optional
+  let w=0,h=0;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+
+  /* Size to the STAGE, not the viewport, so the trace grows as sections are added. */
+  function size(){
+    const nw=stage.clientWidth, nh=stage.clientHeight;
+    if(nw===w && nh===h)return;
+    w=nw;h=nh;
+    cv.width=Math.max(1,w*dpr);cv.height=Math.max(1,h*dpr);
+    cv.style.width=w+'px';cv.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size();
+  window.addEventListener('resize',size);
+  // the canvas re-measures itself whenever the document grows or shrinks
+  if(window.ResizeObserver)new ResizeObserver(size).observe(stage);
+
+  // one heartbeat: baseline, small p-wave, the tall QRS spike, then a t-wave
+  function beat(x){
+    if(x<0||x>1)return 0;
+    if(x<0.14)return 0;
+    if(x<0.22)return Math.sin((x-0.14)/0.08*Math.PI)*0.12;   // p
+    if(x<0.30)return 0;
+    if(x<0.34)return -((x-0.30)/0.04)*0.18;                  // q
+    if(x<0.40)return -0.18+((x-0.34)/0.06)*1.18;             // r (spike)
+    if(x<0.45)return 1.0-((x-0.40)/0.05)*1.35;               // s
+    if(x<0.52)return -0.35+((x-0.45)/0.07)*0.35;             // back to baseline
+    if(x<0.72)return Math.sin((x-0.52)/0.20*Math.PI)*0.22;   // t
+    return 0;
+  }
+
+  /* Layered traces at different depths. Slower speeds and staggered cycle lengths
+     mean the lines drift across each other rather than marching in lockstep, which
+     reads as depth — some passing in front, some behind. */
+  const LAYERS=[
+    {hue:'160,160,168', y:0.16, speed:5,  amp:34, alpha:0.10, width:1.0, cycle:520, phase:0.10}, // gray, far
+    {hue:'224,90,27',   y:0.30, speed:7,  amp:46, alpha:0.16, width:1.3, cycle:470, phase:0.62}, // orange
+    {hue:'255,255,255', y:0.46, speed:6,  amp:30, alpha:0.07, width:1.0, cycle:610, phase:0.28}, // white, far
+    {hue:'224,90,27',   y:0.60, speed:10, amp:66, alpha:0.26, width:1.9, cycle:430, phase:0.00}, // orange, near
+    {hue:'160,160,168', y:0.74, speed:8,  amp:40, alpha:0.11, width:1.2, cycle:560, phase:0.45}, // gray
+    {hue:'255,255,255', y:0.88, speed:9,  amp:26, alpha:0.06, width:0.9, cycle:500, phase:0.80}, // white
+  ];
+
+  let last=performance.now(), t=0;
+  function draw(now){
+    const dt=Math.min((now-last)/1000,0.05);   // seconds, clamped on tab-refocus
+    last=now;
+    t+=dt;
+    size();
+    ctx.clearRect(0,0,w,h);
+    LAYERS.forEach(L=>{
+      const baseY=h*L.y;
+      const grad=ctx.createLinearGradient(0,0,w,0);
+      grad.addColorStop(0,   'rgba('+L.hue+',0)');
+      grad.addColorStop(0.14,'rgba('+L.hue+','+L.alpha+')');
+      grad.addColorStop(0.86,'rgba('+L.hue+','+L.alpha+')');
+      grad.addColorStop(1,   'rgba('+L.hue+',0)');
+      ctx.strokeStyle=grad;
+      ctx.lineWidth=L.width;
+      ctx.lineJoin='round';ctx.lineCap='round';
+      ctx.beginPath();
+      const shift=t*L.speed + L.phase*L.cycle;   // px/sec — slow and ambient
+      for(let px=0;px<=w;px+=2){
+        const phase=(((px+shift)%L.cycle)+L.cycle)%L.cycle/L.cycle;
+        const y=baseY-beat(phase)*L.amp;
+        px===0?ctx.moveTo(px,y):ctx.lineTo(px,y);
+      }
+      ctx.stroke();
+    });
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+}
+/* start it only once everything else has loaded */
+if(document.readyState==='complete')setTimeout(startEKG,0);
+else window.addEventListener('load',startEKG);
+
+/* ═══════════ DRAG A SECTION FROM THE RAIL ═══════════
+   Click = append to the bottom (unchanged). Click-and-hold = pick the block up and
+   drop it between existing sections, with a live indicator showing where it lands. */
+let dragState=null;
+function armPaletteDrag(el,key){
+  el.addEventListener('pointerdown',e=>{
+    if(e.button!==0)return;
+    e.preventDefault();                 // never begin a text selection from the rail
+    const start={x:e.clientX,y:e.clientY};
+    let held=false;
+    const holdTimer=setTimeout(()=>{held=true;beginDrag(key,el,start);},170);
+    const up=()=>{clearTimeout(holdTimer);cleanup();if(!held)addSection(key);};
+    const move=(ev)=>{
+      // a decisive move before the hold fires also starts the drag
+      if(!held && Math.hypot(ev.clientX-start.x,ev.clientY-start.y)>7){
+        clearTimeout(holdTimer);held=true;beginDrag(key,el,{x:ev.clientX,y:ev.clientY});
+      }
+    };
+    const cleanup=()=>{
+      el.removeEventListener('pointerup',up);
+      el.removeEventListener('pointermove',move);
+      window.removeEventListener('pointerup',up);
+    };
+    el.addEventListener('pointerup',up,{once:true});
+    el.addEventListener('pointermove',move);
+    window.addEventListener('pointerup',()=>{clearTimeout(holdTimer);cleanup();},{once:true});
+  });
+}
+
+function beginDrag(key,el,pt){
+  const S=allSections();
+  el.classList.add('dragging');
+  document.body.classList.add('dragging-section');
+  // a selection may already have started on pointerdown — drop it
+  try{const sel=window.getSelection();if(sel)sel.removeAllRanges();}catch(e){}
+  const ghost=document.createElement('div');
+  ghost.className='drag-ghost';
+  ghost.textContent=(S[key]&&S[key].name)||key;
+  ghost.style.left=pt.x+'px';ghost.style.top=pt.y+'px';
+  document.body.appendChild(ghost);
+
+  const line=document.createElement('div');
+  line.className='drop-line';
+
+  dragState={key,el,ghost,line,before:null};
+
+  const onMove=(e)=>{
+    e.preventDefault();                 // stops the browser from starting a text selection
+    ghost.style.left=e.clientX+'px';
+    ghost.style.top=e.clientY+'px';
+    positionDropLine(e.clientX,e.clientY);
+  };
+  const onUp=()=>{
+    document.removeEventListener('pointermove',onMove);
+    document.removeEventListener('pointerup',onUp);
+    finishDrag();
+  };
+  document.addEventListener('pointermove',onMove);
+  document.addEventListener('pointerup',onUp);
+  positionDropLine(pt.x,pt.y);
+}
+
+/* work out which gap the cursor is nearest and park the indicator there */
+function positionDropLine(x,y){
+  if(!dragState)return;
+  const frameRect=frame.getBoundingClientRect();
+  const pad=140;   // a generous target — you don't have to be pixel-perfect
+  const inside = x>frameRect.left-pad && x<frameRect.right+pad &&
+                 y>frameRect.top-pad  && y<frameRect.bottom+pad;
+  if(!inside){ if(dragState.line.parentElement)dragState.line.remove(); dragState.before=null; return; }
+  const secs=[...frame.querySelectorAll('.sec')];
+  let before=null;
+  for(const s of secs){
+    const r=s.getBoundingClientRect();
+    if(y < r.top + r.height/2){ before=s; break; }
+  }
+  dragState.before=before;
+  if(before)frame.insertBefore(dragState.line,before);
+  else frame.appendChild(dragState.line);
+}
+
+function finishDrag(){
+  if(!dragState)return;
+  const {key,el,ghost,line,before}=dragState;
+  const dropped = line.parentElement===frame;
+  ghost.remove();
+  if(line.parentElement)line.remove();
+  el.classList.remove('dragging');
+  document.body.classList.remove('dragging-section');
+  try{const sel=window.getSelection();if(sel)sel.removeAllRanges();}catch(e){}
+  dragState=null;
+  if(dropped){
+    const sec=addSection(key,before||null);
+    if(sec){
+      sec.classList.add('just-dropped');
+      setTimeout(()=>sec.classList.remove('just-dropped'),400);
+      sec.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+    saveStateLocal();
+  }
 }
 function moveSec(btn,dir){const sec=btn.closest('.sec');if(dir<0&&sec.previousElementSibling?.classList.contains('sec'))sec.previousElementSibling.before(sec);else if(dir>0&&sec.nextElementSibling)sec.nextElementSibling.after(sec);refreshState();}
 function dupSec(btn){const sec=btn.closest('.sec');const clone=sec.cloneNode(true);wireSec(clone);sec.after(clone);refreshState();}
@@ -2137,9 +2647,10 @@ function toggleMemberPics(btn){
 let memberPicTarget=null;
 function openMemberPic(btn){
   const wrap=btn.closest('.li-wrap');const host=wrap.querySelector('.nl-pic');const img=host.querySelector('.nl-pic-img');
-  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';
-  fi.onchange=()=>{const f=fi.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=100;c.height=100;c.getContext('2d').drawImage(im,0,0,100,100);const url=c.toDataURL('image/jpeg',0.82);img.src=url;host.dataset.src=url;};im.src=e.target.result;};r.readAsDataURL(f);};
-  fi.click();
+  openImageLib((url,name)=>{
+    img.src=url;img.alt=name||'';host.dataset.src=url;
+    saveStateLocal();
+  });
 }
 /* newsletter: toggle recipe instruction steps */
 function toggleRecipeSteps(btn){
@@ -2162,26 +2673,11 @@ function toggleRecipePic(btn){
    so it stays inside the email frame and keeps the payload reasonable */
 function openRecipePic(btn){
   const host=btn.closest('.nl-rpic');const img=host.querySelector('.nl-rpic-img');
-  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';
-  fi.onchange=()=>{
-    const f=fi.files[0];if(!f)return;
-    const r=new FileReader();
-    r.onload=e=>{
-      const im=new Image();
-      im.onload=()=>{
-        const maxW=620;
-        const scale=Math.min(1,maxW/im.width);
-        const w=Math.round(im.width*scale),h=Math.round(im.height*scale);
-        const c=document.createElement('canvas');c.width=w;c.height=h;
-        c.getContext('2d').drawImage(im,0,0,w,h);
-        const url=c.toDataURL('image/jpeg',0.82);
-        img.src=url;host.dataset.src=url;
-      };
-      im.src=e.target.result;
-    };
-    r.readAsDataURL(f);
-  };
-  fi.click();
+  // pull from the repo's image library (URL-referenced, keeps the email light)
+  openImageLib((url,name)=>{
+    img.src=url;img.alt=name||'';host.dataset.src=url;
+    saveStateLocal();
+  });
 }
 
 /* ═══════════ PLACEHOLDER (ghost text) ═══════════ */
@@ -2436,6 +2932,315 @@ const THEME_VARMAP={accent:'--accent',dark:'--dark',gray:'--gray',bg:'--bg','bod
 function setVar(k,v){document.documentElement.style.setProperty(THEME_VARMAP[k],v);const hx=document.getElementById('hex-'+k);if(hx)hx.textContent=v;}
 Object.keys(THEME_VARMAP).forEach(k=>{const inp=document.getElementById('col-'+k);if(inp)inp.addEventListener('input',()=>setVar(k,inp.value));});
 function resetTheme(){Object.entries(THEME_DEFAULT).forEach(([k,v])=>{const inp=document.getElementById('col-'+k);if(inp)inp.value=v;setVar(k,v);});toast('Theme reset');}
+
+/* ═══════════ CUSTOMIZE (theme + typography + text clean-up) ═══════════ */
+/* ═══════════ SETTINGS SHELL ═══════════
+   The settings dialog doesn't duplicate any UI. On first open it MOVES the body
+   of each existing modal into its matching pane, so every input keeps its id and
+   every handler keeps working — there's exactly one of each control in the DOM. */
+const SET_PANES={
+  theme  : {title:'Theme & Type', src:'customizeBg'},
+  images : {title:'Images',       src:'imageBg'},
+  export : {title:'Export',       src:null},         // authored inline
+  html   : {title:'View HTML',    src:'modalBg'},
+  import : {title:'Import',       src:'importBg'},
+  newsec : {title:'New Section',  src:'addBg'},
+  github : {title:'GitHub',       src:'githubBg'},
+  docs   : {title:'Docs',         src:'docsBg'},
+};
+let settingsHydrated=false;
+
+function hydrateSettings(){
+  if(settingsHydrated)return;
+  Object.entries(SET_PANES).forEach(([key,cfg])=>{
+    if(!cfg.src)return;                             // inline pane, nothing to move
+    const modal=document.getElementById(cfg.src);
+    const pane=document.getElementById('pane-'+key);
+    if(!modal||!pane)return;
+    // move the scroll body and the footer (buttons) out of the modal into the pane
+    modal.querySelectorAll('.modal-scroll, .modal-foot, textarea#modalText').forEach(part=>{
+      // a footer whose only job is "close" is redundant — the header has an X
+      if(part.classList.contains('modal-foot')){
+        const btns=[...part.querySelectorAll('button')];
+        const allClose=btns.length>0 && btns.every(b=>/^close/i.test(b.getAttribute('onclick')||''));
+        if(allClose)return;
+      }
+      pane.appendChild(part);
+    });
+    // docs also has an inline editor textarea + an Edit button living in its head
+    if(cfg.src==='docsBg'){
+      const ed=modal.querySelector('#docsEdit');
+      const btn=modal.querySelector('#docsEditBtn');
+      if(btn){
+        const bar=document.createElement('div');
+        bar.style.cssText='display:flex;justify-content:flex-end;margin-bottom:12px;';
+        bar.appendChild(btn);
+        pane.insertBefore(bar,pane.firstChild);
+      }
+      if(ed)pane.appendChild(ed);
+    }
+    // the now-empty modal shell stays in the DOM but is never shown
+  });
+  settingsHydrated=true;
+}
+
+function openSettings(pane){
+  hydrateSettings();
+  const c=ghConfig();
+  const hint=document.getElementById('setRepoHint');
+  if(hint)hint.textContent=ghReady()?(c.owner+'/'+c.repo+' · '+ghDir()+'/'):'No repo connected';
+  document.getElementById('settingsBg').classList.add('show');
+  setPane(pane||'theme');
+}
+function closeSettings(){document.getElementById('settingsBg').classList.remove('show');}
+
+function setPane(key){
+  if(!SET_PANES[key])key='theme';
+  document.querySelectorAll('#setNav .set-item').forEach(b=>b.classList.toggle('active',b.dataset.pane===key));
+  document.querySelectorAll('#setBody .set-pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===key));
+  document.getElementById('setTitle').textContent=SET_PANES[key].title;
+  // pane-specific refreshes
+  if(key==='images')loadImageLib();
+  if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
+    const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
+  if(key==='github'){const c=ghConfig();
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+    set('ghOwner',c.owner);set('ghRepo',c.repo);set('ghDir',c.dir||'saved');set('ghBranch',c.branch);set('ghToken',c.token);}
+}
+document.addEventListener('click',e=>{
+  const item=e.target.closest('#setNav .set-item');
+  if(item)setPane(item.dataset.pane);
+});
+
+/* The old entry points now route into the settings dialog, so any existing
+   button, doc link, or keyboard path lands on the right pane. */
+function openCustomize(){openSettings('theme');}
+function closeCustomize(){closeSettings();}
+function openDocsPane(){openSettings('docs');}
+
+/* typography — applied as document-level CSS vars that sections inherit */
+function setFont(which,val){
+  document.documentElement.style.setProperty(which==='heading'?'--font-heading':'--font-body',val);
+  // sections hardcode their font stacks, so also sweep the canvas
+  const sel=which==='heading'
+    ? "[style*=\"Montserrat\"]"
+    : "[style*=\"Open Sans\"]";
+  frame.querySelectorAll(sel).forEach(el=>{
+    const st=el.getAttribute('style')||'';
+    el.setAttribute('style', st.replace(/font-family:[^;]+;?/g, 'font-family:'+val+';'));
+  });
+  saveStateLocal();
+  document.getElementById('czStatus').textContent=(which==='heading'?'Heading':'Body')+' font updated';
+}
+function setBodySize(px){
+  frame.querySelectorAll('.sec [contenteditable]').forEach(el=>{
+    const st=el.getAttribute('style')||'';
+    // only touch body-scale text (leave headings/labels/badges alone)
+    const m=st.match(/font-size:\s*(\d+)px/);
+    if(m && +m[1]>=12 && +m[1]<=16){
+      el.setAttribute('style', st.replace(/font-size:\s*\d+px/, 'font-size:'+px));
+    }
+  });
+  saveStateLocal();
+  document.getElementById('czStatus').textContent='Body size set to '+px;
+}
+function setLineHeight(lh){
+  frame.querySelectorAll('.sec [contenteditable]').forEach(el=>{
+    const st=el.getAttribute('style')||'';
+    if(/line-height:/.test(st)) el.setAttribute('style', st.replace(/line-height:[^;]+/, 'line-height:'+lh));
+  });
+  saveStateLocal();
+  document.getElementById('czStatus').textContent='Line height set to '+lh;
+}
+
+/* Strip pasted formatting: text pasted from Word/Docs/the web drags in its own
+   font-family, font-size, and color as inline styles or <span>/<font> wrappers.
+   This removes those so every text box snaps back to the section's own styling,
+   leaving the words untouched. */
+function normalizeAllText(){
+  let cleaned=0;
+  frame.querySelectorAll('.sec [contenteditable]').forEach(el=>{
+    // 1) unwrap junk inline wrappers, keeping their text
+    el.querySelectorAll('span,font,b,i,u,em,strong').forEach(w=>{
+      // keep intentional formatting tags, but drop their foreign styling
+      w.removeAttribute('style');w.removeAttribute('color');w.removeAttribute('face');w.removeAttribute('size');
+      w.removeAttribute('class');
+      if(w.tagName==='SPAN'||w.tagName==='FONT'){
+        // a bare span/font with no attributes carries no meaning — unwrap it
+        if(!w.attributes.length){while(w.firstChild)w.parentNode.insertBefore(w.firstChild,w);w.remove();}
+      }
+    });
+    // 2) drop foreign font/size/colour from the box's own style, keep layout props
+    const st=el.getAttribute('style')||'';
+    if(/font-family|font-size|color|background/i.test(st)) cleaned++;
+    // note: we intentionally do NOT wipe the section's own inline style here —
+    // that IS the brand styling. We only removed the pasted children's overrides.
+  });
+  saveStateLocal();
+  toast('\u2713 Text reset to brand styling');
+  document.getElementById('czStatus').textContent='Cleaned '+cleaned+' text box(es)';
+}
+
+/* ═══════════ IMAGE LIBRARY (repo /images folder) ═══════════ */
+let IMAGE_CACHE=[];
+let imagePickTarget=null;   // set when the picker is opened from a section
+
+function ghImageDir(){const c=ghConfig();return (c.imagedir||'images').replace(/^\/+|\/+$/g,'')||'images';}
+/* public URL of a file in the images folder, served by GitHub Pages */
+function imagePublicURL(name){
+  const c=ghConfig();
+  return `https://${c.owner}.github.io/${c.repo}/${ghImageDir()}/${name}`;
+}
+async function ghListImages(){
+  if(!ghReady())throw new Error('GitHub not configured');
+  const res=await fetch(ghContentsURL(ghImageDir()),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404)return [];
+  if(!res.ok)throw new Error('Image list failed ('+res.status+')');
+  const arr=await res.json();
+  return (Array.isArray(arr)?arr:[]).filter(f=>f.type==='file'&&/\.(png|jpe?g|gif|webp|svg)$/i.test(f.name))
+    .map(f=>({name:f.name,path:f.path,sha:f.sha,url:imagePublicURL(f.name)}));
+}
+async function ghPutImage(name,base64){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to upload.');
+  const path=`${ghImageDir()}/${name}`;
+  const body={message:`builder: add image ${name}`,content:base64};
+  if(c.branch)body.branch=c.branch;
+  const existing=await ghGetSha(path);
+  if(existing)body.sha=existing;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Upload failed ('+res.status+') '+m);}
+  return await res.json();
+}
+
+/* Build export-style HTML from a saved newsletter object WITHOUT touching the
+   canvas — used for saved-item thumbnails and previews so you can look at a
+   newsletter without loading it over your current work. */
+function renderSavedHTML(nl){
+  const stash=frame.innerHTML;                 // keep the live canvas intact
+  const stashVars={};
+  Object.values(THEME_VARMAP).forEach(cv=>{stashVars[cv]=document.documentElement.style.getPropertyValue(cv);});
+  let html='';
+  try{
+    applyThemeVars(nl.theme);
+    loadSections(nl.sections||[]);
+    html=buildExport();
+  } finally {
+    frame.innerHTML=stash;                     // always restore, even on error
+    Object.entries(stashVars).forEach(([cv,v])=>{
+      if(v)document.documentElement.style.setProperty(cv,v);
+      else document.documentElement.style.removeProperty(cv);
+    });
+    frame.querySelectorAll('.sec').forEach(wireSec);
+    refreshState();
+  }
+  return html;
+}
+
+/* small scaled-down snippet of the top of a saved newsletter */
+async function renderSavedThumb(it,host){
+  if(!host)return;
+  try{
+    const file=it.file||{path:`${ghDir()}/${(it.id||slugify(it.name))}.json`};
+    const nl=await ghLoadFile(file);
+    const html=renderSavedHTML(nl);
+    host.innerHTML='';
+    const ifr=document.createElement('iframe');
+    // render at full width, then scale down so it reads as a thumbnail
+    ifr.style.cssText='width:620px;height:800px;border:0;transform:scale(0.24);transform-origin:top left;pointer-events:none;position:absolute;top:0;left:50%;margin-left:-74px;';
+    ifr.setAttribute('scrolling','no');
+    host.appendChild(ifr);
+    ifr.srcdoc=html;
+  }catch(e){
+    host.innerHTML='<span style="font-size:10px;color:#c66;">Preview unavailable</span>';
+  }
+}
+
+/* full preview of a saved newsletter, without loading it into the canvas */
+async function previewSavedItem(it){
+  if(!ghReady()){toast('Connect a GitHub repo first (⚙ GitHub).');return;}
+  const file=it.file||{path:`${ghDir()}/${(it.id||slugify(it.name))}.json`};
+  const nl=await ghLoadFile(file);
+  const html=renderSavedHTML(nl);
+  const iframe=document.getElementById('previewIframe');
+  iframe.srcdoc=html;
+  document.getElementById('pvTitle').innerHTML='&#128065; '+esc(nl.name||it.name||'Preview');
+  previewDesktop();
+  document.getElementById('previewBg').classList.add('show');
+}
+
+function openImageLib(target){
+  imagePickTarget=target||null;
+  openSettings('images');
+}
+function closeImageLib(){closeSettings();imagePickTarget=null;}
+
+/* fetch the repo's images/ folder and render it as a thumbnail grid */
+async function loadImageLib(){
+  const grid=document.getElementById('imgGrid');
+  const status=document.getElementById('imgStatus');
+  if(!grid||!status)return;
+  if(!ghReady()){status.textContent='Connect GitHub first.';grid.innerHTML='';return;}
+  status.textContent='Loading…';grid.innerHTML='';
+  try{
+    IMAGE_CACHE=await ghListImages();
+    if(!IMAGE_CACHE.length){
+      status.textContent='';
+      grid.innerHTML='<div style="grid-column:1/-1;color:#9b9ca3;font-size:12px;padding:28px;text-align:center;">No images yet. Upload one to get started.</div>';
+      return;
+    }
+    IMAGE_CACHE.forEach(im=>{
+      const card=document.createElement('div');
+      card.className='img-card';
+      card.title='Use this image';
+      card.innerHTML=`<img src="${esc(im.url)}" alt="${esc(im.name)}" loading="lazy"/><div class="nm">${esc(im.name)}</div>`;
+      card.onclick=()=>pickImage(im);
+      grid.appendChild(card);
+    });
+    status.textContent=IMAGE_CACHE.length+' image'+(IMAGE_CACHE.length===1?'':'s');
+  }catch(e){
+    status.textContent='Could not load: '+(e.message||e);
+  }
+}
+
+/* click an image: either drop it into the target that opened the picker,
+   or copy its URL if the library was opened standalone from the toolbar */
+function pickImage(im){
+  if(imagePickTarget && typeof imagePickTarget==='function'){
+    imagePickTarget(im.url,im.name);
+    closeImageLib();
+    return;
+  }
+  copyText(im.url,'Image URL copied');
+}
+
+async function uploadImage(){
+  if(!ghReady()){toast('Connect GitHub first');openGithubSettings();return;}
+  const fi=document.createElement('input');fi.type='file';fi.accept='image/*';
+  fi.onchange=async()=>{
+    const f=fi.files[0];if(!f)return;
+    const status=document.getElementById('imgStatus');
+    const name=f.name.replace(/[^a-zA-Z0-9._-]/g,'-').toLowerCase();
+    status.textContent='Uploading '+name+'…';
+    try{
+      const b64=await new Promise((res,rej)=>{
+        const r=new FileReader();
+        r.onload=()=>res(String(r.result).split(',')[1]);
+        r.onerror=()=>rej(new Error('read failed'));
+        r.readAsDataURL(f);
+      });
+      await ghPutImage(name,b64);
+      status.textContent='\u2713 Uploaded '+name;
+      toast('\u2713 Image uploaded');
+      setTimeout(loadImageLib,600);   // give GitHub Pages a moment
+    }catch(e){
+      status.textContent='Upload failed: '+(e.message||e);
+    }
+  };
+  fi.click();
+}
 const PRESETS=['#e05a1b','#1e88e5','#43a047','#8e24aa','#e53935','#fb8c00','#00897b','#5e35b1','#d81b60','#00acc1'];
 const presetWrap=document.getElementById('presets');
 PRESETS.forEach(c=>{const s=document.createElement('div');s.className='swatch';s.style.background=c;s.title=c;s.onclick=()=>{document.getElementById('col-accent').value=c;setVar('accent',c);};presetWrap.appendChild(s);});
@@ -2445,7 +3250,7 @@ function currentVars(){const cs=getComputedStyle(document.documentElement);const
 function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
-  clone.querySelectorAll('.li-ctrls').forEach(e=>e.remove());
+  clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
   clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
@@ -2908,17 +3713,51 @@ function convertFlexToTable(el){
   el.parentNode.replaceChild(tbl,el);
   return tbl;
 }
-function copyHTML(){navigator.clipboard.writeText(buildExport()).then(()=>toast('HTML copied'));}
+/* Robust clipboard write.
+   navigator.clipboard.writeText() rejects silently in several real situations —
+   a non-secure context, a lost user-gesture, or the document not being focused
+   (which happens when a modal or toast steals focus). Every copy path in the app
+   goes through this, which falls back to a hidden textarea + execCommand so the
+   copy still lands. Returns true on success. */
+function copyText(text,okMsg){
+  okMsg=okMsg||'Copied';
+  const fallback=()=>{
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=text;
+      ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;';
+      document.body.appendChild(ta);
+      ta.select();ta.setSelectionRange(0,ta.value.length);
+      const ok=document.execCommand('copy');
+      ta.remove();
+      toast(ok?okMsg:'Copy failed \u2014 open View HTML and copy manually');
+      return ok;
+    }catch(e){
+      toast('Copy failed \u2014 open View HTML and copy manually');
+      return false;
+    }
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    try{
+      navigator.clipboard.writeText(text).then(()=>toast(okMsg),()=>fallback());
+      return true;
+    }catch(e){ return fallback(); }
+  }
+  return fallback();
+}
+
+function copyHTML(){copyText(buildExport(),'HTML copied');}
 function downloadHTML(){const blob=new Blob([buildExport()],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='lngvty-email-'+Date.now()+'.html';a.click();URL.revokeObjectURL(a.href);toast('Downloaded');}
-function viewHTML(){document.getElementById('modalTitle').textContent='Email HTML';const t=document.getElementById('modalText');t.value=buildExport();t.readOnly=true;const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';document.getElementById('modalBg').classList.add('show');}
-function closeModal(){document.getElementById('modalBg').classList.remove('show');}
-function copyModal(){navigator.clipboard.writeText(document.getElementById('modalText').value).then(()=>toast('Copied'));}
+function viewHTML(){openSettings('html');}
+function closeModal(){closeSettings();}
+function copyModal(){copyText(document.getElementById('modalText').value,'Copied');}
 /* toggle the HTML textarea between read-only and editable for live tweaks */
 function toggleModalEdit(){
   const t=document.getElementById('modalText');const b=document.getElementById('modalEditBtn');
   t.readOnly=!t.readOnly;
   if(t.readOnly){b.innerHTML='&#9998; Edit';toast('Locked (view only)');}
-  else{b.innerHTML='&#128274; Lock';t.focus();toast('Editing — tweak the HTML, then Copy or Preview this');}
+  else{b.innerHTML='&#128274; Lock';t.focus();toast('Editing — tweak the HTML, then Copy or Preview it');}
 }
 /* preview exactly what's in the textarea (including any manual edits) */
 function previewModalHTML(){
@@ -2965,24 +3804,21 @@ function openImport(){
   const t=document.getElementById('importText');if(t)t.value='';
   const st=document.getElementById('importStatus');if(st)st.textContent='';
   const rep=document.getElementById('importReplace');if(rep)rep.checked=true;
-  document.getElementById('importBg').classList.add('show');
-  setTimeout(()=>t&&t.focus(),30);
+  openSettings('import');
+  setTimeout(()=>t&&t.focus(),40);
 }
-function closeImport(){document.getElementById('importBg').classList.remove('show');}
+function closeImport(){closeSettings();}
 
-/* pull a newsletter object out of pasted text: either raw JSON, the Copy CSS
-   bundle (JSON sits between the LNGVTY-JSON markers), or JSON embedded anywhere */
+/* pull a newsletter object out of pasted text: raw JSON, a Copy Bundle (JSON sits
+   between the LNGVTY-JSON markers), or JSON embedded anywhere in the text */
 function extractNewsletterJSON(raw){
   if(!raw)return null;
   raw=raw.trim();
-  // 1) Copy CSS bundle markers
   const m=raw.match(/LNGVTY-JSON\s*([\s\S]*?)\s*LNGVTY-JSON/);
   if(m){try{return JSON.parse(m[1].trim());}catch(e){}}
-  // 2) whole thing is JSON
   try{return JSON.parse(raw);}catch(e){}
-  // 3) first {...} object found in the text
-  const brace=raw.indexOf('{');const last=raw.lastIndexOf('}');
-  if(brace!==-1 && last>brace){try{return JSON.parse(raw.slice(brace,last+1));}catch(e){}}
+  const a=raw.indexOf('{'), b=raw.lastIndexOf('}');
+  if(a!==-1&&b>a){try{return JSON.parse(raw.slice(a,b+1));}catch(e){}}
   return null;
 }
 
@@ -3081,7 +3917,10 @@ function renderSaved(items,isPlaceholder){
     const badge=(/newsletter/i.test(it.tag||''))?'#e05a1b':(/webpage/i.test(it.tag||'')?'#2a6cb0':'#1a1a1a');
     const when=it.updated?new Date(it.updated):null;
     const whenStr=when&&!isNaN(when)?when.toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}):(it.updated||'');
-    card.innerHTML=`<div style="display:flex;gap:6px;align-items:center;">
+    card.innerHTML=`<div class="sv-thumb" style="height:120px;border:1px solid #ececef;border-radius:6px;background:#fafafa;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:10px;color:#bbb;">${isPlaceholder?'No preview':'Loading preview…'}</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;">
         <span style="font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;background:${badge};padding:2px 7px;border-radius:4px;">${esc(it.tag||'graphic')}</span>
         ${it.status?`<span style="font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;background:#eee;padding:2px 7px;border-radius:4px;">${esc(it.status)}</span>`:''}</div>
       <div style="font-family:'Montserrat';font-size:13px;font-weight:700;color:#222;line-height:1.3;">${esc(it.name||'Untitled')}</div>
@@ -3104,6 +3943,18 @@ function renderSaved(items,isPlaceholder){
     };
     row.appendChild(load);
     if(!isPlaceholder){
+      const pv=document.createElement('button');
+      pv.className='tb-btn';pv.style.cssText='font-size:10px;padding:6px 10px;';
+      pv.innerHTML='&#128065; Preview';
+      pv.onclick=async()=>{
+        pv.disabled=true;pv.innerHTML='&#128065; …';
+        try{ await previewSavedItem(it); }
+        catch(e){ toast('Preview failed: '+(e.message||e)); }
+        pv.disabled=false;pv.innerHTML='&#128065; Preview';
+      };
+      row.appendChild(pv);
+    }
+    if(!isPlaceholder){
       const del=document.createElement('button');
       del.className='tb-btn danger';del.style.cssText='font-size:10px;padding:6px 10px;';
       del.innerHTML='&#128465; Delete';
@@ -3121,6 +3972,7 @@ function renderSaved(items,isPlaceholder){
     }
     card.appendChild(row);
     grid.appendChild(card);
+    if(!isPlaceholder)renderSavedThumb(it,card.querySelector('.sv-thumb'));
   });
 }
 
@@ -3178,10 +4030,7 @@ ${html}
 <!--LNGVTY-JSON
 ${JSON.stringify(data,null,2)}
 LNGVTY-JSON-->`;
-  navigator.clipboard.writeText(bundle).then(
-    ()=>toast('Copied HTML + section JSON'),
-    ()=>toast('Copy failed — try View HTML')
-  );
+  copyText(bundle,'Copied HTML + section data');
 }
 
 /* ═══════════ BUTTON TOOLTIPS ═══════════ */
@@ -3329,24 +4178,34 @@ In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>.
 <p>Click the <span class="btnrep">✎ Edit</span> button at the top of this window to rewrite any of this. Save stores it in your browser; <strong>Reset to Default</strong> brings back this original guide.</p>
 </div>`;}
 function getDocs(){try{return localStorage.getItem('lngvty_docs')||defaultDocs();}catch(e){return defaultDocs();}}
-function openDocs(){
-  document.getElementById('docsView').innerHTML=getDocs();
-  document.getElementById('docsView').style.display='block';
-  document.getElementById('docsEdit').style.display='none';
-  document.getElementById('docsEditFoot').style.display='none';
-  document.getElementById('docsEditBtn').innerHTML='&#9998; Edit';
-  document.getElementById('docsBg').classList.add('show');
-}
-function closeDocs(){document.getElementById('docsBg').classList.remove('show');}
 let docsEditing=false;
+function openDocs(){
+  const view=document.getElementById('docsView');
+  const ed=document.getElementById('docsEdit');
+  let saved=null;try{saved=localStorage.getItem('lngvty_docs');}catch(e){}
+  const content=saved||defaultDocs();
+  if(view)view.innerHTML=content;
+  if(ed)ed.value=content;
+  openSettings('docs');
+}
+function closeDocs(){closeSettings();}
+/* flip the docs pane between reading and editing */
 function toggleDocsEdit(){
-  if(docsEditing){cancelDocsEdit();return;}
-  docsEditing=true;
-  document.getElementById('docsEdit').value=getDocs();
-  document.getElementById('docsView').style.display='none';
-  document.getElementById('docsEdit').style.display='block';
-  document.getElementById('docsEditFoot').style.display='flex';
-  document.getElementById('docsEditBtn').innerHTML='&#128065; View';
+  const view=document.getElementById('docsView');
+  const ed=document.getElementById('docsEdit');
+  const foot=document.getElementById('docsEditFoot');
+  const btn=document.getElementById('docsEditBtn');
+  docsEditing=!docsEditing;
+  if(docsEditing){
+    ed.value=view.innerHTML;
+    view.style.display='none';ed.style.display='block';foot.style.display='flex';
+    btn.innerHTML='&#128065; Preview';
+    ed.focus();
+  }else{
+    view.innerHTML=ed.value;
+    view.style.display='block';ed.style.display='none';foot.style.display='none';
+    btn.innerHTML='&#9998; Edit';
+  }
 }
 function cancelDocsEdit(){
   docsEditing=false;
@@ -3372,32 +4231,10 @@ function resetDocs(){
 
 /* ═══════════ ADD CUSTOM SECTION ═══════════ */
 function openAddSection(){
-  // default the main-section dropdown to whatever tab the user is on
-  const modeSel=document.getElementById('addMode');
-  if(modeSel)modeSel.value=(railMode==='newsletter'||railMode==='blog')?railMode:'graphics';
-  populateAddTabs();
-  document.getElementById('addName').value='';
-  document.getElementById('addNewTab').value='';
-  document.getElementById('addHtml').value='';
-  renderAddGuide();
-  document.getElementById('addBg').classList.add('show');
+  const t=document.getElementById('addHtml');if(t)t.value='';
+  openSettings('newsec');
 }
-function closeAddSection(){document.getElementById('addBg').classList.remove('show');}
-/* the subsection (group) names that belong to each main section */
-function groupsForMode(mode){
-  const set=new Set();
-  Object.values(allSections()).forEach(s=>{if((s.mode||'graphics')===mode)set.add(s.group);});
-  // 'both'-mode sections (e.g. 90-day) appear under graphics + newsletter
-  if(mode==='graphics'||mode==='newsletter'){
-    Object.values(allSections()).forEach(s=>{if((s.mode||'graphics')==='both')set.add(s.group);});
-  }
-  // order using the known order lists, then any extras
-  const order=(mode==='newsletter')?NEWSLETTER_GROUP_ORDER:(mode==='blog')?BLOG_GROUP_ORDER:DEFAULT_GROUP_ORDER;
-  const ordered=[];
-  order.forEach(g=>{if(set.has(g)){ordered.push(g);set.delete(g);}});
-  set.forEach(g=>ordered.push(g));
-  return ordered;
-}
+function closeAddSection(){closeSettings();}
 function populateAddTabs(){
   const mode=document.getElementById('addMode')?.value||'graphics';
   const sel=document.getElementById('addTab');sel.innerHTML='';
@@ -3632,7 +4469,7 @@ const GH_API='https://api.github.com';
 /* Default GitHub storage target. Newsletters are stored as JSON files in
    github.com/senviskyec/LNGVTY-HTML-Builder under /templates. Anything saved
    in the GitHub settings modal (especially the token) overrides these. */
-const GH_DEFAULTS={owner:'senviskyec',repo:'LNGVTY-HTML-Builder',dir:'templates',branch:''};
+const GH_DEFAULTS={owner:'senviskyec',repo:'LNGVTY-HTML-Builder',dir:'saved',branch:'',imagedir:'images'};
 function ghConfig(){
   let saved={};
   try{saved=JSON.parse(localStorage.getItem('lngvty_github')||'{}');}catch(e){saved={};}
@@ -3715,24 +4552,20 @@ async function ghDelete(path,sha){
 
 /* ── GitHub settings modal ── */
 function openGithubSettings(note){
-  const c=ghConfig();
-  document.getElementById('ghOwner').value=c.owner||'';
-  document.getElementById('ghRepo').value=c.repo||'';
-  document.getElementById('ghDir').value=c.dir||'saved';
-  document.getElementById('ghBranch').value=c.branch||'';
-  document.getElementById('ghToken').value=c.token||'';
-  document.getElementById('ghTestStatus').textContent=note||'';
-  document.getElementById('githubBg').classList.add('show');
-  setTimeout(()=>document.getElementById('ghOwner').focus(),30);
+  openSettings('github');
+  const el=document.getElementById('ghTestStatus');if(el)el.textContent=note||'';
 }
-function closeGithubSettings(){document.getElementById('githubBg').classList.remove('show');}
+function closeGithubSettings(){closeSettings();}
+/* read the GitHub settings pane back into a config object */
 function readGhForm(){
+  const val=id=>{const el=document.getElementById(id);return el?el.value.trim():'';};
   return {
-    owner:document.getElementById('ghOwner').value.trim(),
-    repo:document.getElementById('ghRepo').value.trim(),
-    dir:(document.getElementById('ghDir').value.trim()||'saved').replace(/^\/+|\/+$/g,''),
-    branch:document.getElementById('ghBranch').value.trim(),
-    token:document.getElementById('ghToken').value.trim()
+    owner   : val('ghOwner'),
+    repo    : val('ghRepo'),
+    dir     : (val('ghDir')||'saved').replace(/^\/+|\/+$/g,''),
+    branch  : val('ghBranch'),
+    token   : val('ghToken'),
+    imagedir: 'images'
   };
 }
 function saveGithubSettings(){
@@ -3882,12 +4715,12 @@ let toastTimer;
 function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1900);}
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();saveState();}
-  if(e.key==='Escape'){closeModal();closeLinkModal();closeAddSection();closePreview();closeImport();closeDocs();closeSaved();closeSaveModal();closeGithubSettings();closeTextLink();closeEmbedModal&&closeEmbedModal();closeMediaModal&&closeMediaModal();}
+  if(e.key==='Escape'){closeModal();closeLinkModal();closeAddSection();closePreview();closeImport();closeDocs();closeSaved();closeSaveModal();closeGithubSettings();closeCustomize();closeImageLib();closeTextLink();closeEmbedModal&&closeEmbedModal();closeMediaModal&&closeMediaModal();}
 });
 
 /* INIT */
 loadCustom();
-renderRail();
+setRailMode('newsletter');   // newsletter is the default tab (also renders the rail)
 loadHotkeys();renderHotkeys();
 loadState();
 refreshState();
