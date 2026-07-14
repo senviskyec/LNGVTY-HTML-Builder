@@ -2934,6 +2934,8 @@ Object.keys(THEME_VARMAP).forEach(k=>{const inp=document.getElementById('col-'+k
 function resetTheme(){Object.entries(THEME_DEFAULT).forEach(([k,v])=>{const inp=document.getElementById('col-'+k);if(inp)inp.value=v;setVar(k,v);});toast('Theme reset');}
 
 /* ═══════════ CUSTOMIZE (theme + typography + text clean-up) ═══════════ */
+let docsEditing=false;
+
 /* ═══════════ SETTINGS SHELL ═══════════
    The settings dialog doesn't duplicate any UI. On first open it MOVES the body
    of each existing modal into its matching pane, so every input keeps its id and
@@ -3001,6 +3003,14 @@ function setPane(key){
   document.getElementById('setTitle').textContent=SET_PANES[key].title;
   // pane-specific refreshes
   if(key==='images')loadImageLib();
+  if(key==='docs'){
+    // the sidebar reaches this pane directly, so it has to fill itself
+    const view=document.getElementById('docsView');
+    const ed=document.getElementById('docsEdit');
+    const content=getDocs();
+    if(view && !docsEditing)view.innerHTML=content;
+    if(ed && !docsEditing)ed.value=content;
+  }
   if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
     const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
   if(key==='github'){const c=ghConfig();
@@ -4057,128 +4067,178 @@ LNGVTY-JSON-->`;
 
 /* ═══════════ DOCUMENTATION ═══════════ */
 function defaultDocs(){return `<div class="docs-body">
-<h2>📖 LNGVTY Builder — Complete Guide</h2>
-<p>This tool builds two things: <strong>graphics emails</strong> (promos, challenge announcements) and the <strong>weekly newsletter</strong>. You pick blocks, type your words over the faded "ghost" text, then send the finished HTML to GoHighLevel (GHL). Everything saves in this browser automatically — nothing is sent anywhere until you choose to.</p>
-<div class="note"><strong>New here? Read this top to bottom once.</strong> The numbered walkthrough below is written so anyone can follow it, even with zero tech experience.</div>
 
-<h2>⭐ Quick Walkthrough — Building &amp; Sending the Newsletter</h2>
+<div class="tocard">
+  <b>Start here</b><br>
+  This tool builds the weekly newsletter and one-off graphics, then hands you finished HTML to paste into GoHighLevel. You never touch code. Everything you see on the page can be clicked and typed over.
+  <br><br>
+  <b>The 60-second version</b><br>
+  Click <span class="btnrep orange">&#9889; Start a Newsletter</span> &rarr; type over the faded text &rarr; <span class="btnrep orange">&#128190; Save</span> &rarr; <span class="btnrep">&#128203; Copy HTML</span> &rarr; paste into GHL.
+</div>
 
-<div class="bigstep"><div class="num">1</div><div class="stxt"><b>Open the Newsletter tab</b>
-On the far left there are three tabs at the very top: <span class="btnrep">Graphics</span> <span class="btnrep orange">Newsletter</span> <span class="btnrep">Tags</span>. Click <strong>Newsletter</strong>. The list below now shows the newsletter blocks (Header, Schedule, Members, Recipe, and so on).</div></div>
+<h2>1. The screen, in three parts</h2>
 
-<div class="bigstep"><div class="num">2</div><div class="stxt"><b>Hover to preview any block before adding it</b>
-Move your mouse over any block name in the left list (don't click yet). A little window pops up showing <strong>what that block looks like</strong> plus a short description. This is the fastest way to find the block you want. Every block has this. <em>(The description has a <span class="btnrep">✎ Edit</span> button if you ever want to reword it.)</em></div></div>
-
-<div class="bigstep"><div class="num">3</div><div class="stxt"><b>Start with the Newsletter Header</b>
-Click <strong>Newsletter Header + Quote</strong> (hover it first to preview it). It drops onto the white canvas in the middle. This block is the orange top bar, the black LNGVTY logo area with the date, and the orange "quote of the week" band — all in one.</div></div>
-
-<div class="bigstep"><div class="num">4</div><div class="stxt"><b>Click the faded text and type over it</b>
-Any <strong>greyed-out faded text</strong> is just a suggestion ("ghost text"). Click directly on it and type to replace it. If you leave a piece of ghost text untouched, it simply won't show up in the final email — so you can ignore parts you don't need.</div></div>
-
-<div class="bigstep"><div class="num">5</div><div class="stxt"><b>Add the rest of the blocks you want</b>
-Go down the newsletter list and click each block you need: <strong>Weekly Schedule, Welcome New Members, Featured Recipe, Tip Tuesday, Smarter Swaps, Special Events, Upcoming Events,</strong> and the <strong>Footer CTA</strong>. Only add the ones you actually want this week. Fill in each one by clicking its faded text.</div></div>
-
-<div class="bigstep"><div class="num">6</div><div class="stxt"><b>Use the + Add and × buttons inside blocks</b>
-Blocks like the schedule, recipe ingredients, members, and events have a dashed <span class="btnrep orange">+ Add…</span> button to add more rows, and a red <span class="btnrep red">×</span> on each row to remove it. Hover a row to see its controls — including small <span class="chip">▲</span><span class="chip">▼</span> arrows to <strong>reorder</strong> without deleting.</div></div>
-
-<div class="bigstep"><div class="num">7</div><div class="stxt"><b>Reorder whole sections if needed</b>
-Hover over any block on the canvas to see its control bar in the top-right corner. Use <span class="chip">▲</span> / <span class="chip">▼</span> to move the whole section up or down, <span class="chip">⧉</span> to duplicate it, and the red <span class="chip red">×</span> to delete it. The <span class="chip">○ White</span> button changes just that block's color (black / grey / white).</div></div>
-
-<div class="bigstep"><div class="num">8</div><div class="stxt"><b>Preview the finished email</b>
-Click <span class="btnrep">👁 Preview</span> in the top toolbar. A window shows exactly how the email will look when it lands in someone's inbox, with <strong>Desktop</strong> and <strong>Mobile</strong> toggles. Read it carefully — check the date, names, times, and links.</div></div>
-
-<div class="bigstep"><div class="num">9</div><div class="stxt"><b>Save your work</b>
-Click <span class="btnrep orange">💾 Save</span>. A small form asks for a <strong>Name</strong> (required), a <strong>Tag</strong> (Newsletter, Graphic, etc.), a <strong>Status</strong> (Draft / In Review / Approved / Sent), and any <strong>Notes</strong>. Click Save and it's stored on this computer <em>and</em> as a JSON file in GitHub, where it shows up under <span class="btnrep">⭐ Saved Newsletters</span>. Saving again with the <strong>same name</strong> updates that same file instead of making a duplicate — and GitHub keeps the full version history automatically. <em>(Connect a repo once under <span class="btnrep">⚙ GitHub</span> — see step 13.)</em></div></div>
-
-<div class="bigstep"><div class="num">10</div><div class="stxt"><b>Copy the section data (Copy CSS)</b>
-<span class="btnrep">🧪 Copy CSS</span> copies the finished email HTML <em>plus</em> the structured section JSON (the same data saved to GitHub), bundled together. It's mainly for testing and for moving a newsletter between browsers: copy it, then paste the whole thing into <span class="btnrep">📥 Import</span> to rebuild every section, fully editable. To re-open an older newsletter normally, use <span class="btnrep">⭐ Saved Newsletters</span> (step 13).</div></div>
-
-<div class="bigstep"><div class="num">11</div><div class="stxt"><b>Send it to GoHighLevel — the manual way (Copy HTML)</b>
-If you'd rather do it by hand: click <span class="btnrep">📋 Copy HTML</span> (it copies the whole email). Then in GHL go to <strong>Marketing → Emails → Campaigns</strong>, create a campaign, choose the <strong>newsletter campaign template</strong>, and <strong>paste</strong> the HTML into the email body. (Or use <span class="btnrep">↓ Download</span> to save it as a file first.)</div></div>
-
-<div class="bigstep"><div class="num">12</div><div class="stxt"><b>Sharing a draft with someone</b>
-Everyone who connects the same GitHub repo (step 13) sees the same <span class="btnrep">⭐ Saved Newsletters</span>. To hand a draft off: <span class="btnrep orange">💾 Save</span> it, and the other person clicks <span class="btnrep">⭐ Saved Newsletters → ↻ Reload → 📥 Load</span> — they pick up exactly where you left off, with every section still fully editable. <em>(Or send them the <span class="btnrep">🧪 Copy CSS</span> output and have them paste it into <span class="btnrep">📥 Import</span>.)</em></div></div>
-
-<div class="bigstep"><div class="num">13</div><div class="stxt"><b>Connect GitHub &amp; browse Saved Newsletters</b>
-Newsletters are stored as JSON files in a GitHub repo — that gives you free version history, backups, and keeps the data right next to the builder. <strong>One-time setup:</strong> click <span class="btnrep">⚙ GitHub</span>, enter the repo <strong>Owner</strong> and <strong>Repository</strong> name, set the <strong>Folder</strong> (default <code>saved</code>), and paste a <strong>personal access token</strong> (needed for saving — create a fine-grained token at GitHub → Settings → Developer settings, scoped to just this repo with <em>Contents: Read &amp; write</em>). Hit <span class="btnrep">🔗 Test connection</span> then <strong>Save settings</strong>. After that, <span class="btnrep">⭐ Saved Newsletters → ↻ Reload</span> lists everything in the folder; <span class="btnrep">📥 Load</span> re-opens any one with all sections live and editable. <em>The token is stored only in this browser on this device.</em></div></div>
-
-<div class="bigstep"><div class="num">14</div><div class="stxt"><b>Set up &amp; send the campaign in GoHighLevel</b>
-In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>. Pick the <strong>newsletter campaign template</strong>, write a subject line (e.g. "LNGVTY Hub — Week of [Date]"), choose your audience (the Members smart list for members), click <strong>Review and Send</strong>, confirm, and send. 🎉</div></div>
-
-<div class="tocard"><b>Remember</b><br>This tool only <em>builds</em> the email. The actual sending happens inside GoHighLevel — paste the <strong>Copy HTML</strong> output into a GHL campaign.</div>
-
-<h2>🧰 The Toolbar — Every Button Explained</h2>
-<p>These are the buttons across the top. <em>(Hover any of them in the app to see the same tip.)</em></p>
 <table>
-<tr><th>Button</th><th>What it does</th></tr>
-<tr><td><span class="btnrep orange">💾 Save</span></td><td>Saves your work in this browser <strong>and</strong> as a JSON file in GitHub. You fill in a <strong>Name, Tag, Status,</strong> and <strong>Notes</strong>, and it appears under Saved Newsletters. Re-saving with the same Name updates that file (no duplicates); GitHub keeps the version history.</td></tr>
-<tr><td><span class="btnrep">🧪 Copy CSS</span></td><td>Copies the finished HTML <strong>plus</strong> the structured section JSON (the same data saved to GitHub), bundled together. Paste it into Import to rebuild a newsletter. Mainly for testing.</td></tr>
-<tr><td><span class="btnrep">📥 Import</span></td><td>Paste a newsletter’s section JSON (or a full Copy CSS bundle) to rebuild it in the editor — every section stays fully editable, never an "Imported" block. Replace the canvas or append.</td></tr>
-<tr><td><span class="btnrep">👁 Preview</span></td><td>Shows the finished email exactly as it will look, with Desktop / Mobile toggles.</td></tr>
-<tr><td><span class="btnrep">📋 Copy HTML</span></td><td>Copies the finished email HTML to your clipboard (paste this into GHL). The exported code is <strong>email-safe</strong> — colors are baked to hex and layouts use tables, so it renders the same in Gmail, Outlook, and Apple Mail as it does in the preview.</td></tr>
-<tr><td><span class="btnrep">↓ Download</span></td><td>Saves the finished email HTML as a file on your computer.</td></tr>
-<tr><td><span class="btnrep">⟨⟩ View HTML</span></td><td>Opens the finished HTML in a window so you can read or copy it.</td></tr>
-<tr><td><span class="btnrep">⚙ GitHub</span></td><td>One-time setup for where newsletters are stored: repo owner, name, folder, and a personal access token (needed to save). Test the connection here.</td></tr>
-<tr><td><span class="btnrep">⭐ Saved Newsletters</span></td><td>Browse newsletters saved to GitHub. Hit <span class="btnrep">↻ Reload</span> to fetch the latest, then <span class="btnrep">📥 Load</span> one back in — every section stays fully editable (no "Imported" blocks).</td></tr>
-<tr><td><span class="btnrep">➕ New Section</span></td><td>Make your own custom block by pasting in HTML.</td></tr>
-<tr><td><span class="btnrep">📖 Docs</span></td><td>Opens this guide. Use the <span class="btnrep">✎ Edit</span> button at the top to change it.</td></tr>
-<tr><td><span class="btnrep red">🗑 Clear</span></td><td>Removes everything from the canvas (it asks you first).</td></tr>
+  <tr><th style="width:24%;">Where</th><th>What it's for</th></tr>
+  <tr>
+    <td><b>Left rail</b></td>
+    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Tags</b> (next to it) holds merge fields like the member's first name.</td>
+  </tr>
+  <tr>
+    <td><b>Middle canvas</b></td>
+    <td>The document itself. This is what your members will see. Click any text to edit it.</td>
+  </tr>
+  <tr>
+    <td><b>Top bar</b></td>
+    <td>Save, Preview, Copy HTML, Saved, and <span class="btnrep">&#9881; Settings</span> &mdash; everything else lives inside Settings.</td>
+  </tr>
 </table>
 
-<h2>🧭 The Left Rail (Choosing Blocks)</h2>
-<p><strong>Email / Graphic vs Webpage:</strong> the toggle at the top of the rail sets the <strong>page format</strong>, not which blocks you can use. Left = <strong>Email / Graphic</strong> (narrow, exports as bulletproof email HTML). Right = <strong>Webpage</strong> (full-width, exports as a normal browser page). <strong>All tabs — Webpage, Newsletter, Graphics, Tags — stay available in either format</strong>, so you can mix any blocks and just choose how the final page is sized and exported. Preview and Copy/Download both follow the format you've selected. The Webpage tab adds on-brand blog blocks: nav, EKG hero, drop-cap lead, article text, pull quote, tip grid, takeaway, newsletter embed, CTA, and footer.</p>
-<p>Three tabs at the top: <strong>Graphics</strong>, <strong>Newsletter</strong>, and <strong>Tags</strong> (merge tags). Graphics holds promo/landing blocks; Newsletter holds the weekly-newsletter blocks. Blocks are grouped into collapsible folders — click a folder header to open or close it. The <strong>search box</strong> filters all folders at once.</p>
-<p><strong>Hover to preview:</strong> rest your mouse on any block to see a live mini-preview and description before adding it. The description has an <span class="btnrep">✎ Edit</span> button so you can reword it for your team.</p>
-<p><strong>One shared canvas:</strong> Graphics and Newsletter build into the <em>same</em> email. Switching tabs only changes which list you're browsing — it never erases your work, and you can mix blocks from both. The <strong>Coming Up on 90 Days?</strong> block appears in both lists.</p>
+<div class="note">
+  <b>Faded text is a suggestion, not real text.</b> It's there to show you what belongs in that spot. If you leave it alone it will <b>not</b> appear in the email. Click it and type to make it real.
+</div>
 
-<h2>✍️ Editing Blocks</h2>
-<p>Hover any block on the canvas to reveal its control bar (top-right):</p>
+<h2>2. Build the weekly newsletter</h2>
+
+<div class="bigstep"><div class="num">1</div><div class="stxt">
+  <b>Make sure you're on the Newsletter tab</b>
+  The dropdown at the top-left should say <b>Newsletter</b>. It opens there by default, so usually there's nothing to do.
+</div></div>
+
+<div class="bigstep"><div class="num">2</div><div class="stxt">
+  <b>Click <span class="btnrep orange">&#9889; Start a Newsletter</span></b>
+  It's the orange box at the top of the left rail. This drops in the whole standard newsletter, already in the right order:
+  <br><br>
+  Header + Quote &rarr; A Note From Tim &rarr; Weekly Schedule &rarr; Tip Tuesday &rarr; Featured Recipe &rarr; Upcoming Events &rarr; Footer
+  <br><br>
+  Everything is there as faded placeholder text. Now you just fill it in.
+</div></div>
+
+<div class="bigstep"><div class="num">3</div><div class="stxt">
+  <b>Fill in the header</b>
+  Click the <b>Date</b> and type this week's date. Click the <b>"Quote"</b> line and type the week's quote. Everything else in the header is already correct.
+</div></div>
+
+<div class="bigstep"><div class="num">4</div><div class="stxt">
+  <b>Write the note from Tim</b>
+  Click the paragraph and type. Need another paragraph? Click <span class="btnrep">+ Add Paragraph</span> underneath. To remove one, hover it and click the <span class="chip red">&times;</span>.
+</div></div>
+
+<div class="bigstep"><div class="num">5</div><div class="stxt">
+  <b>Fill in the weekly schedule</b>
+  Each row is one day. Click the day, the date, the event name, and the time to edit them.
+  <ul>
+    <li><span class="btnrep">+ Add Day</span> &mdash; adds another row.</li>
+    <li><span class="btnrep">&#65291; event</span> &mdash; puts a <b>second event on the same day</b> (no new row needed).</li>
+    <li><span class="chip">&#9650;</span> <span class="chip">&#9660;</span> &mdash; move a day up or down. Hover the row to see them.</li>
+    <li><span class="chip red">&times;</span> &mdash; delete the row.</li>
+  </ul>
+</div></div>
+
+<div class="bigstep"><div class="num">6</div><div class="stxt">
+  <b>Tip Tuesday, the recipe, and the events</b>
+  All three work the same way: click text to change it, and use the dashed <span class="btnrep">+ Add</span> buttons to add tips, ingredients, steps, or events. A few extras worth knowing:
+  <ul>
+    <li><b>Recipe photo</b> &mdash; click <span class="btnrep">+ Show Recipe Photo</span>, then pick an image from the library.</li>
+    <li><b>Recipe steps</b> &mdash; click <span class="btnrep">+ Show Instructions Steps</span> if you want to include them.</li>
+    <li><b>Tags</b> (like <span class="chip pill orange">Members Only</span>) &mdash; click <span class="btnrep">+ tag</span> to add one. Leave a tag blank and it simply won't show up.</li>
+  </ul>
+</div></div>
+
+<div class="bigstep"><div class="num">7</div><div class="stxt">
+  <b>Check it, then save it</b>
+  Click <span class="btnrep">&#128065; Preview</span> to see exactly what lands in the inbox &mdash; there's a mobile toggle too, worth a look. Happy? Click <span class="btnrep orange">&#128190; Save</span>, give it a name, and it's stored.
+</div></div>
+
+<div class="bigstep"><div class="num">8</div><div class="stxt">
+  <b>Send it</b>
+  Click <span class="btnrep">&#128203; Copy HTML</span>. In GoHighLevel, make a new email, choose the <b>Custom HTML / Code</b> block, and paste.
+  <br><br>
+  <b>Always send yourself a test first.</b> The preview here is accurate, but a real inbox is the final word.
+</div></div>
+
+<h2>3. Adding and moving blocks</h2>
+
 <table>
-<tr><th>Control</th><th>Action</th></tr>
-<tr><td><span class="chip">○ White</span></td><td>Cycles that block's color: black → grey → white.</td></tr>
-<tr><td><span class="chip">⠿</span></td><td>Drag handle — hold and drag to move the block.</td></tr>
-<tr><td><span class="chip">▲</span> <span class="chip">▼</span></td><td>Nudge the block up or down one spot.</td></tr>
-<tr><td><span class="chip">⧉</span></td><td>Duplicate the block.</td></tr>
-<tr><td><span class="chip red">×</span></td><td>Delete the block.</td></tr>
+  <tr><th style="width:30%;">To do this</th><th>Do that</th></tr>
+  <tr><td><b>Add a block to the bottom</b></td><td><b>Click</b> it once in the left rail.</td></tr>
+  <tr><td><b>Drop a block in the middle</b></td><td><b>Click and hold</b> it in the rail, drag onto the page. A dashed <b>Drop here</b> line shows where it will land. Let go.</td></tr>
+  <tr><td><b>Move a block already on the page</b></td><td>Hover it and use the <span class="chip">&#8593;</span> <span class="chip">&#8595;</span> buttons in its top-right corner.</td></tr>
+  <tr><td><b>Copy a block</b></td><td>Hover it, click the <span class="chip">&#10697;</span> duplicate button.</td></tr>
+  <tr><td><b>Delete a block</b></td><td>Hover it, click <span class="chip red">&times;</span>.</td></tr>
+  <tr><td><b>Change a block's color</b></td><td>Hover it, click the theme button (<span class="chip">&#9679; Black</span> / <span class="chip">&#9680; Gray</span> / <span class="chip">&#9675; White</span>) to cycle it.</td></tr>
 </table>
-<p><strong>Ghost text:</strong> faded text is a placeholder. Click and type to replace it. Left blank, it won't appear in the final email.</p>
 
-<h2>🔘 Buttons, Links, Lists &amp; Tags</h2>
+<h2>4. Text, links, and merge fields</h2>
+
+<h3>Editing text</h3>
+<p>Click and type. To color a few words, <b>select them</b> and a small bar appears &mdash; pick a color, or click <span class="btnrep">&#128279; Link</span> to turn them into a link.</p>
+
+<h3>Changing where a button goes</h3>
+<p>Hover the button and click the <span class="btnrep">&#128279; link</span> control next to it. Paste your URL. You never need to edit code to change a link.</p>
+
+<div class="note">
+  Facebook, Instagram, and the website link in the footers are <b>already set</b> to the real LNGVTY accounts. You don't need to touch them.
+</div>
+
+<h3>Merge fields (first name, etc.)</h3>
+<p>Click into a text box where you want it, then open <b>Tags</b> (top-left, beside the mode dropdown) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
+
+<h2>5. Settings</h2>
+
+<p>Click <span class="btnrep">&#9881; Settings</span> in the top bar. Pick a section on the left; it opens on the right.</p>
+
+<table>
+  <tr><th style="width:26%;">Section</th><th>What's in it</th></tr>
+  <tr><td><b>&#127912; Theme &amp; Type</b></td><td>Colors for the whole document, fonts, text size, and <b>Reset All Text to Brand Styling</b> &mdash; see the tip below.</td></tr>
+  <tr><td><b>&#128247; Images</b></td><td>Every image in the library, as thumbnails. Click one to use it, or upload a new one.</td></tr>
+  <tr><td><b>&#8595; Export</b></td><td>Copy HTML, Copy Bundle, or Download the file.</td></tr>
+  <tr><td><b>&#10216;&#10217; View HTML</b></td><td>The finished code. Click <b>&#9998; Edit</b> to hand-tweak it (rarely needed).</td></tr>
+  <tr><td><b>&#128229; Import</b></td><td>Paste a saved bundle to rebuild a document.</td></tr>
+  <tr><td><b>&#10010; New Section</b></td><td>Build your own reusable block by pasting in HTML.</td></tr>
+  <tr><td><b>&#9881; GitHub</b></td><td>Where documents are stored. Set up once, then forget it.</td></tr>
+  <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
+</table>
+
+<div class="note">
+  <b>Pasted text looking wrong?</b> Copying from Word, Google Docs, or a website drags its fonts and colors along with it. Go to <span class="btnrep">&#9881; Settings</span> &rarr; <b>Theme &amp; Type</b> &rarr; <span class="btnrep">&#129529; Reset All Text to Brand Styling</span>. It fixes the formatting and leaves your words alone.
+</div>
+
+<h2>6. Saving, reopening, and images</h2>
+
+<h3>Saving</h3>
+<p><span class="btnrep orange">&#128190; Save</span> asks for a <b>Name</b>, a <b>Tag</b>, a <b>Status</b>, and any <b>Notes</b>. Saving again with the same name updates that same document &mdash; it won't create a duplicate.</p>
+
+<h3>Reopening something</h3>
+<p>Click <span class="btnrep">&#9733; Saved</span>. Every document shows a small picture of itself. Three buttons on each:</p>
 <ul>
-<li><strong>Editable buttons:</strong> hover a button to see <span class="chip pill">🔗 link</span> (top-right, set where it points) and a red <span class="chip red">×</span> (top-left, remove the button). Click the button label to edit its words.</li>
-<li><strong>Linking words inside text:</strong> select any text in a block — the floating bar appears with color swatches and a <span class="chip pill orange">🔗 Link</span> button. Click it, paste a URL, and just that selected text becomes a clickable link. (Clear the box and choose Remove Link to unlink.)</li>
-<li><strong>Lists:</strong> dashed <span class="chip pill orange">+ Add…</span> adds an item; hover an item and click its <span class="chip red">×</span> to remove it.</li>
-<li><strong>Reorder rows:</strong> schedule days and event rows have <span class="chip">▲</span><span class="chip">▼</span> arrows so you can move them without deleting.</li>
-<li><strong>Same-day events:</strong> in the Weekly Schedule, a day's <span class="chip pill orange">＋ event</span> button adds another event under that same day with one connected orange bar.</li>
-<li><strong>Tags:</strong> the orange pill tags (Recipe, Tip Tuesday, Events) have a <span class="chip pill orange">+ tag</span> button to add more, and each tag has a × to remove it. <strong>Empty tags don't show up in the final email.</strong></li>
-<li><strong>Stats:</strong> the recipe macro numbers can be added/removed with <span class="chip pill orange">+ stat</span> and stay centered automatically.</li>
-<li><strong>Event time:</strong> each event has an optional bright-orange time chip to the right of its title. Leave it blank and it won't appear.</li>
+  <li><span class="btnrep">&#128065; Preview</span> &mdash; look at it <b>without</b> opening it, so you don't lose what you're working on.</li>
+  <li><span class="btnrep">&#128229; Load</span> &mdash; open it up and keep editing.</li>
+  <li><span class="btnrep red">&#128465; Delete</span> &mdash; remove it.</li>
 </ul>
 
-<h2>🎨 Colors</h2>
-<p>The right panel sets global colors — Accent, Dark BG, Grey BG, Page BG, Body Text, Heading. Changing these recolors every block at once. Quick Accent Presets give one-click swaps, and <strong>Reset Theme</strong> returns to LNGVTY defaults (orange <code>#e05a1b</code>, dark <code>#1a1a1a</code>).</p>
+<h3>Images</h3>
+<p>Any time you add a photo, the image library opens. Click a picture to use it, or <b>Upload New Image</b> to add one. Uploaded images are saved and available forever after.</p>
 
-<h2>🏷️ Merge Tags</h2>
-<p>Switch the rail to <strong>Tags</strong>, click into a text box on the canvas first, then click a tag to drop it where your cursor is (e.g. <code>{{contact.first_name}}</code>). Add your own with the Label + tag fields.</p>
+<h2>7. If something looks off</h2>
 
-<h2>🖼️ Embeds, Video &amp; Audio</h2>
-<ul>
-<li><strong>Embed / GHL Form</strong> — click <span class="chip pill orange">⚙ Edit Embed</span> and paste a GHL form embed (iframe or script).</li>
-<li><strong>Video (MP4)</strong> / <strong>Audio (MP3)</strong> — click the edit button to set the file URL.</li>
-</ul>
-<div class="note"><strong>Heads up:</strong> many email apps block inline video/audio. They play in web preview and supporting clients; for broad email, link to a hosted page instead.</div>
+<table>
+  <tr><th style="width:38%;">What you're seeing</th><th>What to do</th></tr>
+  <tr><td>The faded example text got sent in a real email</td><td>You typed in that box, so it became real. Clear the box completely and it won't appear.</td></tr>
+  <tr><td>Pasted text is the wrong font or color</td><td>Settings &rarr; Theme &amp; Type &rarr; <b>Reset All Text to Brand Styling</b>.</td></tr>
+  <tr><td>Copy button doesn't seem to do anything</td><td>Click on the page once, then try again. If it still fails, use Settings &rarr; View HTML and copy from there.</td></tr>
+  <tr><td>Saved list is empty</td><td>Settings &rarr; GitHub, and check the connection.</td></tr>
+  <tr><td>Stuck in the Tags panel</td><td>Click the dropdown (Newsletter / Graphics / Webpage) to get back to the blocks.</td></tr>
+  <tr><td>Email looks broken in the inbox</td><td>Note which block, and send it over. That's a bug worth fixing, not something you did wrong.</td></tr>
+</table>
 
-<h2>🧩 Creating Your Own Block</h2>
-<p>Click <span class="btnrep">➕ New Section</span>, paste in HTML, name it, pick a folder, and choose a default color. Patterns that wire your HTML into the features: <code>contenteditable="true"</code> with <code>data-ph="suggestion"</code> for editable ghost text, and wrap an <code>&lt;a&gt;</code> in <code>&lt;span class="editable-link" data-href="…"&gt;</code> for an editable button.</p>
+<div class="tocard">
+  <b>The one rule</b><br>
+  Always send yourself a test email before sending to everyone. It takes twenty seconds and catches everything.
+</div>
 
-<h2>💾 Where Your Work Lives</h2>
-<p>Saves, custom blocks, merge tags, edited descriptions, and these docs are stored in <strong>this browser only</strong>. Clearing browser data wipes them, so keep exported HTML (or Push to GHL) for anything you want to keep long-term.</p>
-
-<h2>✎ Editing These Docs</h2>
-<p>Click the <span class="btnrep">✎ Edit</span> button at the top of this window to rewrite any of this. Save stores it in your browser; <strong>Reset to Default</strong> brings back this original guide.</p>
 </div>`;}
 function getDocs(){try{return localStorage.getItem('lngvty_docs')||defaultDocs();}catch(e){return defaultDocs();}}
-let docsEditing=false;
 function openDocs(){
   const view=document.getElementById('docsView');
   const ed=document.getElementById('docsEdit');
