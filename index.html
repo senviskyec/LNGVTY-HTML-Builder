@@ -129,14 +129,28 @@
 
   /* ─── canvas: EKG backdrop ─── */
   .canvas-scroll{position:relative;background:#0e0f11;}
-  #ekg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.5;}
-  .canvas-scroll > .email-frame{position:relative;z-index:1;}
-  /* white ring keeps the document readable against the dark backdrop.
-     It's chrome only — buildExport() never sees it. */
-  .email-frame{box-shadow:0 0 0 10px #fff, 0 22px 60px rgba(0,0,0,.55) !important;}
+  /* The stage is sized by its CONTENT, so both the backdrop and the white shell
+     grow as sections are added — an absolutely-positioned canvas pinned to the
+     scroll container would only ever be viewport-tall and would scroll away. */
+  .canvas-stage{position:relative;display:flex;justify-content:center;
+    width:100%;min-height:100%;padding:44px 24px 160px;box-sizing:border-box;}
+  #ekg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+  /* the white shell is a real padded element (not a shadow) so it tracks height exactly */
+  .frame-shell{position:relative;z-index:1;background:#fff;padding:12px;border-radius:5px;
+    align-self:flex-start;box-shadow:0 24px 70px rgba(0,0,0,.6);}
 
   /* ─── drag a section from the rail onto the canvas ─── */
   .pal-item.dragging{opacity:.45;}
+  /* While a section is being dragged, suppress text selection everywhere — the
+     pointer sweep would otherwise highlight the whole document behind the cursor. */
+  body.dragging-section{cursor:grabbing;}
+  body.dragging-section,body.dragging-section *{
+    user-select:none !important;-webkit-user-select:none !important;-ms-user-select:none !important;}
+  body.dragging-section ::selection{background:transparent;}
+  body.dragging-section ::-moz-selection{background:transparent;}
+  /* contenteditable blocks also stop swallowing the pointer mid-drag */
+  body.dragging-section .sec [contenteditable]{pointer-events:none;}
+  .pal-item{-webkit-user-select:none;user-select:none;}
   .drag-ghost{position:fixed;z-index:2000;pointer-events:none;padding:9px 13px;border-radius:8px;
     background:#2a2b30;border:1px solid var(--accent);color:#fff;font-family:'Montserrat';font-size:11px;
     font-weight:700;letter-spacing:.4px;box-shadow:0 12px 30px rgba(0,0,0,.45);
@@ -222,10 +236,11 @@
   .img-card img{display:block;width:100%;height:110px;object-fit:cover;background:#f4f4f5;}
   .img-card .nm{font-size:10px;color:#666;padding:6px 8px;word-break:break-all;line-height:1.35;}
   .tb-label{font-size:11px;color:#999;font-weight:600;}
-  .canvas-scroll{flex:1;overflow-y:auto;padding:44px 24px 160px;display:flex;justify-content:center;}
-  .email-frame{width:620px;background:#fff;box-shadow:0 10px 44px rgba(0,0,0,.13),0 2px 6px rgba(0,0,0,.06);min-height:200px;position:relative;border-radius:3px;}
+  .canvas-scroll{flex:1;overflow-y:auto;}
+  .email-frame{width:620px;background:#fff;min-height:200px;position:relative;display:block;}
   .email-frame.webpage-mode{width:100%;max-width:1100px;}
-  body.webpage-builder .canvas-scroll{padding-left:0;padding-right:0;}
+  body.webpage-builder .canvas-stage{padding-left:0;padding-right:0;}
+  body.webpage-builder .frame-shell{padding:0;border-radius:0;}
   /* drop-cap lead paragraph (blog) */
   .dropcap::first-letter{font-family:'Montserrat',sans-serif;font-weight:900;float:left;font-size:72px;line-height:.78;padding:8px 14px 0 0;color:var(--accent);}
   .empty-hint{padding:80px 30px;text-align:center;color:#bbb;}
@@ -422,7 +437,7 @@
     <div class="rail-modes-select-wrap">
       <select id="railModeSelect" class="rail-mode-select" onchange="setRailMode(this.value)" onmousedown="exitTagsPane()" onfocus="exitTagsPane()">
         <option value="graphics">Graphics</option>
-        <option value="newsletter">Newsletter</option>
+        <option value="newsletter" selected>Newsletter</option>
         <option value="blog">Webpage</option>
       </select>
     </div>
@@ -464,11 +479,15 @@
     <button class="tb-btn danger" onclick="clearAll()" data-tip="Remove everything from the canvas.">&#128465; Clear</button>
   </div>
   <div class="canvas-scroll" id="canvasScroll">
-    <canvas id="ekg" aria-hidden="true"></canvas>
-    <div class="email-frame" id="frame">
-      <div class="empty-hint" id="emptyHint">
-        <div class="big">Empty Canvas</div>
-        <p>Pick sections from the left to start building.<br>Faded ghost text is a suggestion &mdash; type to replace it.</p>
+    <div class="canvas-stage" id="canvasStage">
+      <canvas id="ekg" aria-hidden="true"></canvas>
+      <div class="frame-shell" id="frameShell">
+        <div class="email-frame" id="frame">
+          <div class="empty-hint" id="emptyHint">
+            <div class="big">Empty Canvas</div>
+            <p>Pick sections from the left to start building.<br>Faded ghost text is a suggestion &mdash; type to replace it.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -709,7 +728,7 @@
           <label>Main section</label>
           <select id="addMode" onchange="onAddModeChange()">
             <option value="graphics">Graphics (email)</option>
-            <option value="newsletter">Newsletter</option>
+            <option value="newsletter" selected>Newsletter</option>
             <option value="blog">Webpage</option>
           </select>
         </div>
@@ -1122,7 +1141,7 @@ const SECTIONS = {
         ${listBlock([para("You've been a member for 30 days — your first real milestone. We want to celebrate it the right way. Not with a certificate. With data.")],para('New paragraph'),'Add paragraph')}
       </div>`;}},
 
-  introbox:{group:'Body',icon:'❝',name:'Intro Box',theme:'white',mode:'both',
+  introbox:{group:'Body',ngroup:'Newsletter',norder:1,icon:'❝',name:'Intro Box',theme:'white',mode:'both',
     html:()=>{
       const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
         <td valign="top">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:10px;",'p')}</td>
@@ -1421,7 +1440,7 @@ const SECTIONS = {
     </div>`},
 
   /* ═══════════ NEWSLETTER SECTIONS ═══════════ */
-  nlheader:{group:'Newsletter',icon:'▦',name:'Newsletter Header + Quote',theme:'dark',mode:'newsletter',
+  nlheader:{group:'Newsletter',norder:0,icon:'▦',name:'Newsletter Header + Quote',theme:'dark',mode:'newsletter',
     html:()=>`<div style="background:var(--accent);padding:10px 24px;text-align:center;">
         ${ph('LNGVTY Hub — Weekly Member Newsletter',"font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;")}
       </div>
@@ -1441,7 +1460,7 @@ const SECTIONS = {
         ${ph("Another week, another chance to show up for yourself.","font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.4;")}
       </div>`},
 
-  nlschedule:{group:'Newsletter',icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
+  nlschedule:{group:'Newsletter',norder:2,icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
     html:()=>{
       // Each sub-event (a day can hold more than one). Plain block layout — no flex.
       const sub=(name,time)=>`<div class="sched-sub" style="position:relative;padding:4px 0;">
@@ -2085,6 +2104,12 @@ function builtCustomMap(){
 }
 /* does a section belong in the currently-shown rail tab? */
 function secMode(s){return s.mode||'graphics';}
+/* A shared section can sit in a different rail group depending on the mode —
+   e.g. the Intro Box is "Body" in Graphics but belongs with the Newsletter blocks. */
+function secGroup(s){
+  if(railMode==='newsletter'&&s.ngroup)return s.ngroup;
+  return s.group;
+}
 function inCurrentMode(s){
   const m=secMode(s);
   if(railMode==='blog')return m==='blog';            // blog tab: only blog sections
@@ -2095,7 +2120,7 @@ const NEWSLETTER_GROUP_ORDER=['Newsletter','Members','Recipe','Tips','Nutrition'
 const BLOG_GROUP_ORDER=['Header','Content','Embed','CTA'];
 function computeTabs(){
   const groups=new Set();
-  Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(s.group);});
+  Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(secGroup(s));});
   // start from default order, then any custom-created tabs in creation order
   const ordered=[];
   const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:DEFAULT_GROUP_ORDER;
@@ -2108,7 +2133,7 @@ function computeTabs(){
 }
 
 /* ═══════════ RAIL: MODE TOGGLE + ACCORDION PALETTE ═══════════ */
-let railMode='graphics';                  // 'graphics' | 'newsletter' | 'blog' | 'hotkeys'
+let railMode='newsletter';                // default tab | 'graphics' | 'newsletter' | 'blog' | 'hotkeys'
 let builderMode='email';                  // 'email' | 'webpage'
 let openGroups=null;                      // Set of expanded group names (null = init to all)
 
@@ -2169,7 +2194,16 @@ function renderRail(filter=''){
 
   // group sections by tab, preserving TABS order (only sections for the current tab)
   const grouped={};
-  Object.entries(sections).forEach(([k,s])=>{if(inCurrentMode(s))(grouped[s.group]=grouped[s.group]||[]).push([k,s]);});
+  Object.entries(sections).forEach(([k,s])=>{if(inCurrentMode(s)){const g=secGroup(s);(grouped[g]=grouped[g]||[]).push([k,s]);}});
+  // sections may declare a norder hint to pin their position within a group
+  Object.values(grouped).forEach(list=>{
+    list.forEach((it,i)=>{it._i=i;});
+    list.sort((a,b)=>{
+      const ao=(a[1].norder!==undefined)?a[1].norder:999+a._i;
+      const bo=(b[1].norder!==undefined)?b[1].norder:999+b._i;
+      return ao-bo;
+    });
+  });
 
   // init open-state: all groups open by default
   if(openGroups===null){openGroups=new Set(TABS);}
@@ -2351,21 +2385,29 @@ function buildNewsletterTemplate(){
    canvas element that is never part of the document, so export/preview never see it. */
 function startEKG(){
   const cv=document.getElementById('ekg');
-  if(!cv||!cv.getContext)return;
+  const stage=document.getElementById('canvasStage');
+  if(!cv||!stage||!cv.getContext)return;
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const ctx=cv.getContext('2d');
   if(!ctx)return;                      // no canvas support — the backdrop is optional
-  let w=0,h=0,dpr=Math.min(window.devicePixelRatio||1,2);
+  let w=0,h=0;
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+
+  /* Size to the STAGE, not the viewport, so the trace grows as sections are added. */
   function size(){
-    const r=cv.getBoundingClientRect();
-    w=r.width;h=r.height;
-    cv.width=w*dpr;cv.height=h*dpr;
+    const nw=stage.clientWidth, nh=stage.clientHeight;
+    if(nw===w && nh===h)return;
+    w=nw;h=nh;
+    cv.width=Math.max(1,w*dpr);cv.height=Math.max(1,h*dpr);
+    cv.style.width=w+'px';cv.style.height=h+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   size();
   window.addEventListener('resize',size);
+  // the canvas re-measures itself whenever the document grows or shrinks
+  if(window.ResizeObserver)new ResizeObserver(size).observe(stage);
 
-  // one heartbeat: flat line, small p-wave, the tall QRS spike, then a t-wave
+  // one heartbeat: baseline, small p-wave, the tall QRS spike, then a t-wave
   function beat(x){
     if(x<0||x>1)return 0;
     if(x<0.14)return 0;
@@ -2374,40 +2416,49 @@ function startEKG(){
     if(x<0.34)return -((x-0.30)/0.04)*0.18;                  // q
     if(x<0.40)return -0.18+((x-0.34)/0.06)*1.18;             // r (spike)
     if(x<0.45)return 1.0-((x-0.40)/0.05)*1.35;               // s
-    if(x<0.52)return -0.35+((x-0.45)/0.07)*0.35;             // back to base
+    if(x<0.52)return -0.35+((x-0.45)/0.07)*0.35;             // back to baseline
     if(x<0.72)return Math.sin((x-0.52)/0.20*Math.PI)*0.22;   // t
     return 0;
   }
 
-  const lines=[
-    {y:0.22,speed:0.028,amp:52,alpha:0.30,width:1.6,phase:0.0},
-    {y:0.52,speed:0.019,amp:74,alpha:0.42,width:2.0,phase:0.45},
-    {y:0.80,speed:0.034,amp:40,alpha:0.22,width:1.3,phase:0.8},
+  /* Layered traces at different depths. Slower speeds and staggered cycle lengths
+     mean the lines drift across each other rather than marching in lockstep, which
+     reads as depth — some passing in front, some behind. */
+  const LAYERS=[
+    {hue:'160,160,168', y:0.16, speed:5,  amp:34, alpha:0.10, width:1.0, cycle:520, phase:0.10}, // gray, far
+    {hue:'224,90,27',   y:0.30, speed:7,  amp:46, alpha:0.16, width:1.3, cycle:470, phase:0.62}, // orange
+    {hue:'255,255,255', y:0.46, speed:6,  amp:30, alpha:0.07, width:1.0, cycle:610, phase:0.28}, // white, far
+    {hue:'224,90,27',   y:0.60, speed:10, amp:66, alpha:0.26, width:1.9, cycle:430, phase:0.00}, // orange, near
+    {hue:'160,160,168', y:0.74, speed:8,  amp:40, alpha:0.11, width:1.2, cycle:560, phase:0.45}, // gray
+    {hue:'255,255,255', y:0.88, speed:9,  amp:26, alpha:0.06, width:0.9, cycle:500, phase:0.80}, // white
   ];
-  let t=0;
-  function draw(){
+
+  let last=performance.now(), t=0;
+  function draw(now){
+    const dt=Math.min((now-last)/1000,0.05);   // seconds, clamped on tab-refocus
+    last=now;
+    t+=dt;
+    size();
     ctx.clearRect(0,0,w,h);
-    lines.forEach(L=>{
+    LAYERS.forEach(L=>{
       const baseY=h*L.y;
-      ctx.beginPath();
+      const grad=ctx.createLinearGradient(0,0,w,0);
+      grad.addColorStop(0,   'rgba('+L.hue+',0)');
+      grad.addColorStop(0.14,'rgba('+L.hue+','+L.alpha+')');
+      grad.addColorStop(0.86,'rgba('+L.hue+','+L.alpha+')');
+      grad.addColorStop(1,   'rgba('+L.hue+',0)');
+      ctx.strokeStyle=grad;
       ctx.lineWidth=L.width;
       ctx.lineJoin='round';ctx.lineCap='round';
-      const grad=ctx.createLinearGradient(0,0,w,0);
-      grad.addColorStop(0,'rgba(224,90,27,0)');
-      grad.addColorStop(0.12,'rgba(224,90,27,'+L.alpha+')');
-      grad.addColorStop(0.88,'rgba(224,90,27,'+L.alpha+')');
-      grad.addColorStop(1,'rgba(224,90,27,0)');
-      ctx.strokeStyle=grad;
-      const cycle=420;                       // px per heartbeat
+      ctx.beginPath();
+      const shift=t*L.speed + L.phase*L.cycle;   // px/sec — slow and ambient
       for(let px=0;px<=w;px+=2){
-        const travel=px+ (t*L.speed*1000) + L.phase*cycle;
-        const phase=((travel%cycle)+cycle)%cycle/cycle;
+        const phase=(((px+shift)%L.cycle)+L.cycle)%L.cycle/L.cycle;
         const y=baseY-beat(phase)*L.amp;
         px===0?ctx.moveTo(px,y):ctx.lineTo(px,y);
       }
       ctx.stroke();
     });
-    t+=1;
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
@@ -2423,6 +2474,7 @@ let dragState=null;
 function armPaletteDrag(el,key){
   el.addEventListener('pointerdown',e=>{
     if(e.button!==0)return;
+    e.preventDefault();                 // never begin a text selection from the rail
     const start={x:e.clientX,y:e.clientY};
     let held=false;
     const holdTimer=setTimeout(()=>{held=true;beginDrag(key,el,start);},170);
@@ -2447,6 +2499,9 @@ function armPaletteDrag(el,key){
 function beginDrag(key,el,pt){
   const S=allSections();
   el.classList.add('dragging');
+  document.body.classList.add('dragging-section');
+  // a selection may already have started on pointerdown — drop it
+  try{const sel=window.getSelection();if(sel)sel.removeAllRanges();}catch(e){}
   const ghost=document.createElement('div');
   ghost.className='drag-ghost';
   ghost.textContent=(S[key]&&S[key].name)||key;
@@ -2459,6 +2514,7 @@ function beginDrag(key,el,pt){
   dragState={key,el,ghost,line,before:null};
 
   const onMove=(e)=>{
+    e.preventDefault();                 // stops the browser from starting a text selection
     ghost.style.left=e.clientX+'px';
     ghost.style.top=e.clientY+'px';
     positionDropLine(e.clientX,e.clientY);
@@ -2499,6 +2555,8 @@ function finishDrag(){
   ghost.remove();
   if(line.parentElement)line.remove();
   el.classList.remove('dragging');
+  document.body.classList.remove('dragging-section');
+  try{const sel=window.getSelection();if(sel)sel.removeAllRanges();}catch(e){}
   dragState=null;
   if(dropped){
     const sec=addSection(key,before||null);
@@ -4662,7 +4720,7 @@ document.addEventListener('keydown',e=>{
 
 /* INIT */
 loadCustom();
-renderRail();
+setRailMode('newsletter');   // newsletter is the default tab (also renders the rail)
 loadHotkeys();renderHotkeys();
 loadState();
 refreshState();
