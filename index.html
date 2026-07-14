@@ -116,6 +116,40 @@
   #tipBox::after{content:'';position:absolute;top:-5px;left:16px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:5px solid #1a1a1a;}
   .tb-spacer{flex:1;}
 
+  /* version / notes pane */
+  .ver-hero{display:flex;align-items:center;gap:14px;background:#17181c;border-radius:12px;padding:16px 18px;margin-bottom:18px;}
+  .ver-badge{font-family:'Montserrat';font-weight:900;font-size:20px;letter-spacing:.5px;color:#fff;
+    background:var(--accent);padding:8px 14px;border-radius:9px;flex-shrink:0;}
+  .ver-meta{flex:1;display:flex;flex-direction:column;gap:2px;line-height:1.3;}
+  .ver-meta b{font-family:'Montserrat';font-size:13px;font-weight:900;letter-spacing:.6px;color:#fff;}
+  .ver-meta span{font-size:11px;color:#8d8e96;}
+  .ver-hero .tb-btn{background:#26272d;border-color:#34353b;color:#d8d9de;}
+  .ver-hero .tb-btn:hover{background:#2f3037;border-color:var(--accent);color:#fff;}
+
+  /* feedback embed */
+  .fb-wrap{border:1px solid #e6e6ea;border-radius:10px;overflow:hidden;background:#fff;}
+  .fb-wrap iframe{display:block;width:100%;max-width:100%;border:0;min-height:1100px;}
+
+  /* markdown rendered into the notes pane — reuses the docs typography */
+  .md-render h1{font-family:'Montserrat';font-size:19px;font-weight:900;color:#1a1a1a;margin:0 0 10px;letter-spacing:.4px;}
+  .md-render h2{font-family:'Montserrat';font-size:15px;font-weight:900;color:var(--accent);margin:22px 0 8px;
+    letter-spacing:.5px;border-bottom:2px solid #f0e2da;padding-bottom:5px;}
+  .md-render h3{font-family:'Montserrat';font-size:12px;font-weight:700;color:#1a1a1a;margin:16px 0 5px;
+    text-transform:uppercase;letter-spacing:1px;}
+  .md-render code{background:#f3f0ee;border:1px solid #e6ddd7;border-radius:4px;padding:1px 6px;
+    font-family:monospace;font-size:11.5px;color:#c0451b;}
+  .md-render pre{background:#1f2024;color:#e8e8e8;border-radius:7px;padding:13px 15px;overflow-x:auto;
+    font-size:11px;line-height:1.55;margin:0 0 14px;}
+  .md-render pre code{background:none;border:none;color:inherit;padding:0;}
+  .md-render blockquote{border-left:3px solid var(--accent);background:#fff8f4;margin:0 0 12px;
+    padding:9px 14px;border-radius:0 6px 6px 0;color:#5f6067;}
+  .md-render table{border-collapse:collapse;width:100%;margin:0 0 14px;font-size:12px;}
+  .md-render th,.md-render td{border:1px solid #e6e6e6;padding:7px 10px;text-align:left;vertical-align:top;}
+  .md-render th{background:#f7f4f2;font-family:'Montserrat';font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+  .md-render hr{border:0;border-top:1px solid #eaeaee;margin:20px 0;}
+  .md-render ul,.md-render ol{margin:0 0 12px 22px;}
+  .md-render li{margin-bottom:4px;}
+
   /* ─── rail: newsletter starter ─── */
   .rail-starter{display:flex;align-items:center;gap:10px;width:calc(100% - 28px);margin:8px 14px 2px;
     padding:11px 12px;background:linear-gradient(135deg,rgba(224,90,27,.16),rgba(224,90,27,.06));
@@ -512,6 +546,8 @@
         <div class="set-sep"></div>
         <button class="set-item" data-pane="github"><span class="ic">&#9881;</span><span class="tx">GitHub</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Feedback</span><span class="ch">›</span></button>
       </nav>
       <div class="set-foot">
         <span id="setRepoHint">&mdash;</span>
@@ -548,6 +584,39 @@
         <div class="set-pane" data-pane="newsec" id="pane-newsec"></div>
         <div class="set-pane" data-pane="github" id="pane-github"></div>
         <div class="set-pane" data-pane="docs" id="pane-docs"></div>
+
+        <div class="set-pane" data-pane="about" id="pane-about">
+          <div class="ver-hero">
+            <div class="ver-badge" id="verBadge">v0.0</div>
+            <div class="ver-meta">
+              <b>LNGVTY Builder</b>
+              <span id="verSub">&mdash;</span>
+            </div>
+            <button class="tb-btn" onclick="copyVersionInfo()" title="Copy version details to paste into a feedback form">&#128203; Copy version info</button>
+          </div>
+          <p class="set-lede">Full change history and technical notes. Editable &mdash; written in Markdown.</p>
+          <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:10px;">
+            <button class="tb-btn" id="notesEditBtn" onclick="toggleNotesEdit()" style="font-size:10px;padding:6px 10px;">&#9998; Edit</button>
+          </div>
+          <div id="notesView" class="docs-body md-render"></div>
+          <textarea id="notesEdit" spellcheck="false" style="display:none;width:100%;box-sizing:border-box;min-height:420px;border:1px solid #e0e0e4;border-radius:8px;padding:14px;font-family:monospace;font-size:12px;line-height:1.6;background:#fafafa;color:#333;resize:vertical;"></textarea>
+          <div class="modal-foot" id="notesEditFoot" style="display:none;">
+            <button class="tb-btn" onclick="resetNotes()">&#8634; Reset to Default</button>
+            <span style="flex:1;"></span>
+            <button class="tb-btn" onclick="cancelNotesEdit()">Cancel</button>
+            <button class="tb-btn primary" onclick="saveNotesEdit()">&#128190; Save Notes</button>
+          </div>
+        </div>
+
+        <div class="set-pane" data-pane="feedback" id="pane-feedback">
+          <p class="set-lede">Found a bug, want a tweak, or have an idea? Send it here &mdash; it goes straight to Evan.</p>
+          <div class="note" style="margin-bottom:14px;">
+            Please include the version number (<b id="fbVer">&mdash;</b>) and, if something looks wrong, <b>which section</b> it happened in. That makes it far quicker to fix.
+          </div>
+          <div class="fb-wrap">
+            <iframe id="fbFrame" src="about:blank" data-src="https://docs.google.com/forms/d/e/1FAIpQLSd4qi6hkOEoONQGQGkSvU0qYcgWQQEpPp23wkjQ-KEk3pnQOQ/viewform?embedded=true" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -2318,7 +2387,9 @@ function spSaveDesc(){
 }
 const frame=document.getElementById('frame');
 let dragSrc=null;
-function refreshState(){document.getElementById('emptyHint').style.display=frame.querySelector('.sec')?'none':'block';const c=frame.querySelectorAll('.sec').length;document.getElementById('secCount').textContent=c+(c===1?' section':' sections');refreshPlaceholders();}
+function refreshState(){
+  if(typeof dirty!=='undefined')dirty=true;   // any structural change dirties the doc
+document.getElementById('emptyHint').style.display=frame.querySelector('.sec')?'none':'block';const c=frame.querySelectorAll('.sec').length;document.getElementById('secCount').textContent=c+(c===1?' section':' sections');refreshPlaceholders();}
 function controlsHTML(){
   return `<div class="sec-tag"></div>
     <div class="sec-controls">
@@ -2424,14 +2495,39 @@ function startEKG(){
   /* Layered traces at different depths. Slower speeds and staggered cycle lengths
      mean the lines drift across each other rather than marching in lockstep, which
      reads as depth — some passing in front, some behind. */
-  const LAYERS=[
-    {hue:'160,160,168', y:0.16, speed:5,  amp:34, alpha:0.10, width:1.0, cycle:520, phase:0.10}, // gray, far
-    {hue:'224,90,27',   y:0.30, speed:7,  amp:46, alpha:0.16, width:1.3, cycle:470, phase:0.62}, // orange
-    {hue:'255,255,255', y:0.46, speed:6,  amp:30, alpha:0.07, width:1.0, cycle:610, phase:0.28}, // white, far
-    {hue:'224,90,27',   y:0.60, speed:10, amp:66, alpha:0.26, width:1.9, cycle:430, phase:0.00}, // orange, near
-    {hue:'160,160,168', y:0.74, speed:8,  amp:40, alpha:0.11, width:1.2, cycle:560, phase:0.45}, // gray
-    {hue:'255,255,255', y:0.88, speed:9,  amp:26, alpha:0.06, width:0.9, cycle:500, phase:0.80}, // white
+  /* A SEA of traces. Rather than a handful of hand-placed lines, generate a dense
+     field and sort it by depth: far lines are slow, thin, faint and low-amplitude;
+     near lines are faster, thicker, brighter and taller. Drawing far-to-near means
+     the near ones genuinely pass in front, which is what sells the parallax. */
+  const PALETTE=[
+    {name:'gray',  hue:'150,152,160'},
+    {name:'orange',hue:'224,90,27'},
+    {name:'white', hue:'255,255,255'},
   ];
+  const LAYERS=(()=>{
+    const out=[];
+    const N=18;
+    for(let i=0;i<N;i++){
+      const depth=i/(N-1);                       // 0 = far, 1 = near
+      // orange dominates the mid/near field; gray and white fill the depths
+      const pick = (i%3===1) ? PALETTE[1] : (i%3===0 ? PALETTE[0] : PALETTE[2]);
+      const near = depth;
+      out.push({
+        hue   : pick.hue,
+        name  : pick.name,
+        y     : 0.04 + (i*0.055) + (i%2?0.012:-0.012),      // spread down the page, slightly jittered
+        speed : 14 + near*40,                                // px/sec — noticeable but ambient
+        amp   : 16 + near*62,
+        width : 0.7 + near*1.6,
+        cycle : 640 - near*230,                              // near beats are tighter
+        phase : (i*0.37)%1,
+        alpha : (pick.name==='orange' ? 0.05+near*0.24
+               : pick.name==='gray'   ? 0.04+near*0.11
+               :                        0.025+near*0.07),
+      });
+    }
+    return out.sort((a,b)=>a.amp-b.amp);          // far (small) first, near (tall) last
+  })();
 
   let last=performance.now(), t=0;
   function draw(now){
@@ -2441,7 +2537,7 @@ function startEKG(){
     size();
     ctx.clearRect(0,0,w,h);
     LAYERS.forEach(L=>{
-      const baseY=h*L.y;
+      const baseY=h*((L.y%1)+ (L.y<0?1:0));
       const grad=ctx.createLinearGradient(0,0,w,0);
       grad.addColorStop(0,   'rgba('+L.hue+',0)');
       grad.addColorStop(0.14,'rgba('+L.hue+','+L.alpha+')');
@@ -2935,6 +3031,139 @@ function resetTheme(){Object.entries(THEME_DEFAULT).forEach(([k,v])=>{const inp=
 
 /* ═══════════ CUSTOMIZE (theme + typography + text clean-up) ═══════════ */
 let docsEditing=false;
+let notesEditing=false;
+
+/* ═══════════ BUILD INFO ═══════════
+   Bump BUILD.version whenever something ships. It surfaces in Settings →
+   Version & Notes and is quoted on the feedback form, so a bug report always
+   carries the build it came from. */
+const BUILD={
+  version : 'v16.0',
+  name    : 'Sea of Signals',
+  date    : '13 July 2026',
+};
+
+/* ── a small, dependency-free Markdown renderer ──
+   Handles what the release notes actually use: headings, bold/italic/code,
+   fenced code, tables, lists, quotes, rules, and links. Not a full CommonMark
+   implementation, and doesn't need to be. */
+function renderMarkdown(md){
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline=t=>esc(t)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+  const lines=String(md||'').replace(/\r\n/g,'\n').split('\n');
+  const out=[];
+  let i=0;
+  while(i<lines.length){
+    const L=lines[i];
+
+    // fenced code
+    if(/^```/.test(L)){
+      const buf=[];i++;
+      while(i<lines.length && !/^```/.test(lines[i])){buf.push(lines[i]);i++;}
+      i++;
+      out.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>');
+      continue;
+    }
+    // table
+    if(/^\|/.test(L) && /^\|[\s:|-]+\|?\s*$/.test(lines[i+1]||'')){
+      const cells=r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const head=cells(L);
+      i+=2;
+      const rows=[];
+      while(i<lines.length && /^\|/.test(lines[i])){rows.push(cells(lines[i]));i++;}
+      out.push('<table><tr>'+head.map(h=>'<th>'+inline(h)+'</th>').join('')+'</tr>'+
+        rows.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</table>');
+      continue;
+    }
+    // heading / rule / quote
+    let m;
+    if((m=L.match(/^(#{1,4})\s+(.*)$/))){out.push('<h'+m[1].length+'>'+inline(m[2])+'</h'+m[1].length+'>');i++;continue;}
+    if(/^(-{3,}|\*{3,})\s*$/.test(L)){out.push('<hr/>');i++;continue;}
+    if(/^>\s?/.test(L)){
+      const buf=[];
+      while(i<lines.length && /^>\s?/.test(lines[i])){buf.push(lines[i].replace(/^>\s?/,''));i++;}
+      out.push('<blockquote>'+inline(buf.join(' '))+'</blockquote>');
+      continue;
+    }
+    // lists
+    if(/^\s*[-*+]\s+/.test(L)){
+      const buf=[];
+      while(i<lines.length && /^\s*[-*+]\s+/.test(lines[i])){buf.push(lines[i].replace(/^\s*[-*+]\s+/,''));i++;}
+      out.push('<ul>'+buf.map(b=>'<li>'+inline(b)+'</li>').join('')+'</ul>');
+      continue;
+    }
+    if(/^\s*\d+\.\s+/.test(L)){
+      const buf=[];
+      while(i<lines.length && /^\s*\d+\.\s+/.test(lines[i])){buf.push(lines[i].replace(/^\s*\d+\.\s+/,''));i++;}
+      out.push('<ol>'+buf.map(b=>'<li>'+inline(b)+'</li>').join('')+'</ol>');
+      continue;
+    }
+    // blank
+    if(!L.trim()){i++;continue;}
+    // paragraph
+    const buf=[];
+    while(i<lines.length && lines[i].trim() && !/^(#{1,4}\s|```|\||>|\s*[-*+]\s|\s*\d+\.\s|-{3,})/.test(lines[i])){
+      buf.push(lines[i]);i++;
+    }
+    out.push('<p>'+inline(buf.join(' '))+'</p>');
+  }
+  return out.join('\n');
+}
+
+/* ── release notes: stored, editable, resettable ── */
+function getNotes(){try{return localStorage.getItem('lngvty_notes')||defaultNotes();}catch(e){return defaultNotes();}}
+function toggleNotesEdit(){
+  const view=document.getElementById('notesView');
+  const ed=document.getElementById('notesEdit');
+  const foot=document.getElementById('notesEditFoot');
+  const btn=document.getElementById('notesEditBtn');
+  notesEditing=!notesEditing;
+  if(notesEditing){
+    ed.value=getNotes();
+    view.style.display='none';ed.style.display='block';foot.style.display='flex';
+    btn.innerHTML='&#128065; Preview';ed.focus();
+  }else{
+    view.innerHTML=renderMarkdown(ed.value);
+    view.style.display='block';ed.style.display='none';foot.style.display='none';
+    btn.innerHTML='&#9998; Edit';
+  }
+}
+function cancelNotesEdit(){
+  notesEditing=false;
+  document.getElementById('notesView').style.display='block';
+  document.getElementById('notesEdit').style.display='none';
+  document.getElementById('notesEditFoot').style.display='none';
+  document.getElementById('notesEditBtn').innerHTML='&#9998; Edit';
+  document.getElementById('notesView').innerHTML=renderMarkdown(getNotes());
+}
+function saveNotesEdit(){
+  const val=document.getElementById('notesEdit').value;
+  try{localStorage.setItem('lngvty_notes',val);}catch(e){}
+  cancelNotesEdit();
+  toast('Notes saved');
+}
+function resetNotes(){
+  if(!confirm('Reset the release notes to the default?'))return;
+  try{localStorage.removeItem('lngvty_notes');}catch(e){}
+  document.getElementById('notesEdit').value=defaultNotes();
+  cancelNotesEdit();
+  toast('Notes reset');
+}
+function copyVersionInfo(){
+  const c=ghConfig();
+  copyText(
+    'LNGVTY Builder '+BUILD.version+' ('+BUILD.name+', '+BUILD.date+')\n'+
+    'Repo: '+(c.owner||'?')+'/'+(c.repo||'?')+' \u00b7 folder: '+ghDir()+'/\n'+
+    'Browser: '+navigator.userAgent,
+    'Version info copied'
+  );
+}
+
 
 /* ═══════════ SETTINGS SHELL ═══════════
    The settings dialog doesn't duplicate any UI. On first open it MOVES the body
@@ -2949,6 +3178,8 @@ const SET_PANES={
   newsec : {title:'New Section',  src:'addBg'},
   github : {title:'GitHub',       src:'githubBg'},
   docs   : {title:'Docs',         src:'docsBg'},
+  about  : {title:'Version & Notes', src:null},   // authored inline
+  feedback:{title:'Feedback',     src:null},      // authored inline
 };
 let settingsHydrated=false;
 
@@ -3010,6 +3241,21 @@ function setPane(key){
     const content=getDocs();
     if(view && !docsEditing)view.innerHTML=content;
     if(ed && !docsEditing)ed.value=content;
+  }
+  if(key==='about'){
+    document.getElementById('verBadge').textContent=BUILD.version;
+    document.getElementById('verSub').textContent=BUILD.name+' \u00b7 '+BUILD.date;
+    if(!notesEditing){
+      const md=getNotes();
+      document.getElementById('notesEdit').value=md;
+      document.getElementById('notesView').innerHTML=renderMarkdown(md);
+    }
+  }
+  if(key==='feedback'){
+    const el=document.getElementById('fbVer');if(el)el.textContent=BUILD.version;
+    // load the form lazily — no reason to hit Google until the pane is opened
+    const f=document.getElementById('fbFrame');
+    if(f && f.getAttribute('src')==='about:blank')f.setAttribute('src',f.dataset.src);
   }
   if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
     const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
@@ -4066,6 +4312,201 @@ LNGVTY-JSON-->`;
 })();
 
 /* ═══════════ DOCUMENTATION ═══════════ */
+/* ═══════════ RELEASE NOTES (Markdown) ═══════════ */
+function defaultNotes(){return `# LNGVTY Builder — Release Notes
+
+A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
+One static HTML file. No server, no build step, no runtime cost.
+
+**Current build:** v16.0 "Sea of Signals" · 13 July 2026
+
+---
+
+## How it works, briefly
+
+The builder holds a library of **72 brand-locked components**. You assemble a
+document from them, and it exports **email-safe HTML** — table-based, inline-styled,
+and tested to render in Outlook, Gmail, and Apple Mail.
+
+The important architectural decision: **structured section data, not exported HTML,
+is the source of truth.** Export is a lossy transform — it flattens a "Calendar" and
+a "Recipe" into anonymous nested tables. If you save the HTML and re-parse it later,
+you cannot recover what the markup *meant*, and every block comes back as a dead
+"Imported" lump. So documents are saved as JSON describing the sections, and the HTML
+is regenerated on demand. The round trip is lossless by construction.
+
+> **Principle:** never persist the output of a lossy transform as your source of
+> truth. Persist the input; re-derive the output.
+
+---
+
+## v16.0 — Sea of Signals · 13 July 2026
+
+- **EKG backdrop rebuilt** as a dense, depth-sorted field of 18 traces in orange,
+  gray, and white. Near lines are faster, thicker, and brighter; far lines are slow,
+  thin, and faint. Drawn far-to-near so the near ones genuinely pass in front.
+- **Feedback pane** added under Settings, with the bug/idea form embedded. The form
+  loads lazily — it doesn't touch Google until you open the pane.
+- **Version & Notes pane** added. Shows the current build and holds this document,
+  editable in Markdown with a live preview.
+- **Unsaved-changes guard.** Closing or reloading the tab with unsaved edits now
+  prompts before you lose the work.
+- README rewritten as a durable project description rather than a changelog.
+
+## v15.0 — Newsletter Starter & Drag-to-Place · 13 July 2026
+
+- **Fixed all copy buttons.** \`navigator.clipboard.writeText()\` rejects *silently*
+  when the document isn't focused — a modal or a toast is enough to cause it — and the
+  rejection was unhandled. Nothing reached the clipboard and nothing said so. Every
+  copy path now runs through one hardened helper with an \`execCommand\` fallback.
+- **Start a Newsletter** button: lays down the standard skeleton in reading order —
+  header, note, schedule, tips, recipe, events, footer.
+- **Drag-to-place.** Click a rail section to append it; *click and hold* to drag it
+  between existing sections, with a drop indicator and a fall-in animation.
+- **EKG backdrop** introduced, with a white shell around the document.
+- Footer and Intro Box made available in Newsletter mode.
+- Restored \`extractNewsletterJSON\` and \`readGhForm\`, silently dropped by an earlier
+  refactor — Import and GitHub settings were both throwing.
+
+## v14.0 — Settings Shell · 13 July 2026
+
+- Toolbar cut to the three actions used constantly: **Save**, **Preview**, **Copy HTML**.
+- Everything else moved behind a single **Settings** dialog — a sidebar of sections on
+  the left, the chosen pane on the right.
+- The dialog does **not** duplicate any UI. On first open it *relocates* each existing
+  modal's body into its pane, so every control keeps its id and handler. There is
+  exactly one of each input in the DOM.
+- Global theme restored, under **Theme & Type**.
+
+## v13.0 — Toolbar, Images & Customization · 13 July 2026
+
+- **Image library** backed by the repo's \`images/\` folder, with thumbnails and upload.
+  Photos are referenced **by URL**, not embedded as base64 — embedded images bloat the
+  payload and get Gmail to clip the message.
+- **Reset All Text to Brand Styling** — strips the fonts, sizes, and colors that come
+  along when you paste from Word, Docs, or the web.
+- Fixed **tag pills merging into one orange bar** on export. The gap between them came
+  from the editor's flex \`gap\`, which is stripped on export; spacing now rides on each
+  pill as an inline margin.
+- Fixed the GitHub folder default (\`templates\` → \`saved\`), which only surfaced on a
+  cleared cache or in incognito.
+- Hardcoded the real Facebook / Instagram / Website URLs into all footers.
+- Typography controls (heading font, body font, size, line height).
+- Saved documents gained **thumbnail previews** and a **Preview** button that renders a
+  document *without* loading it over your current work.
+
+## v12.0 — Featured Recipe Imagery · 13 July 2026
+
+- Optional, toggleable photo on the Featured Recipe section.
+- Export is conditional in both directions: the block is omitted when the toggle is off
+  *and* when it's on but no image was chosen — so a broken image can never ship.
+
+## v11.0 — Keto Campaign & Library Expansion
+
+- Authored a four-email drip campaign (days 7, 14, 21, 30), then harvested **18 new
+  components** from it into the library, bringing the total to 72.
+- Distributed the reusable pieces into their natural groups (lists, strips, embeds,
+  offers, CTAs) rather than siloing them under one campaign heading.
+- Saved-document library made to auto-refresh, so **Load** works without a manual reload.
+- **View HTML** made editable for last-mile tweaks.
+
+## v10.0 — Interface & Interchange
+
+- Rail tab strip replaced with a dropdown; Tags pinned separately.
+- Duplicate event sections consolidated; weekday field added under the date.
+- **Copy Bundle** (HTML + section data) and **Import** on structured JSON.
+- Tag and status persisted inside the document, so they survive a cache wipe.
+
+## v9.0 — Layout Hardening
+
+The flex-to-table converter produced the most instructive bugs in the project:
+
+- **\`align-items: stretch\` → \`height:100%\`.** Flexbox stretches children to equal
+  height implicitly; tables don't. Without the mapping, colored side-bars rendered only
+  as tall as their own empty content, exposing the background through the gap.
+- **\`flex: 1\` → \`width:100%\`.** A table shrinks to its content unless told otherwise,
+  so white content cards stopped wherever the text ended.
+- **Flex containers with no element children** — a numbered badge centering its own digit
+  — are no longer tableized. Doing so produced a table with no cells and an empty circle.
+  They're centered with \`text-align\` and \`line-height\` instead.
+- Schedule and event rows **rewritten as hand-written tables**, removing them from the
+  converter's remit entirely. A heuristic that must be right is a liability; explicit
+  markup that cannot drift is an asset.
+
+## v8.0 — GitHub Migration & the Structured Data Model
+
+The architectural turning point.
+
+- Retired **Airtable and Make**. The GitHub Contents API became the datastore: documents
+  are JSON files under \`saved/\`, and Git supplies version history and backups for free.
+- **Removed HTML import entirely**, eliminating the "Imported section" class of bug at
+  its root.
+- Defined the canonical schema (\`lngvty.newsletter/v1\`) and unified save/load onto a
+  single lossless code path.
+
+## v7.0 — Email-Safe Export
+
+- Built the flex→table conversion, style inlining, and CSS-variable resolution pipeline.
+- Established the automated structural audit across the whole library.
+
+## v6.0 — Persistence (Airtable & Make)
+
+- Saved-graphics library with name/tag/status/notes, via Make webhooks into Airtable.
+
+## v5.0 — Newsletter Mode
+
+- Graphics / Newsletter / Webpage modes sharing one component library and one canvas.
+- Newsletter components ported and their fixed form fields converted to ghost text.
+
+## v4.0 — Reordering & Layout Corrections
+
+- Drag reordering; CTA alignment fixes; removable buttons; results-timeline toggle.
+
+## v3.0 — Embeds, Links & Custom Sections
+
+- Embed sections (GHL forms, MP4, MP3); editable hrefs everywhere; live preview.
+- **Custom section builder**: paste HTML to create a new reusable component.
+
+## v2.0 — Content Model & Dynamic Sections
+
+- **Ghost text**: default copy became a visible suggestion that never leaks into export.
+- Dynamic lists; per-section theming; merge-tag hotkeys; per-character color.
+
+## v1.0 — First Interactive Builder
+
+- Toggleable sections, fixed order, no persistence. Validated the concept before further
+  investment.
+
+## Phase 0 — Hand-Edited Templates
+
+- Static HTML edited by hand per campaign. Established the design system.
+
+---
+
+## Known limitations
+
+| Item | Detail |
+|---|---|
+| Token in \`localStorage\` | Writes need a GitHub token, held client-side. Accepted for a private two-person tool; a serverless proxy is the fix before any wider exposure. |
+| No visual regression testing | Correctness is verified structurally, not visually. A section can pass every check and still look wrong. |
+| Manual list numbering | Reordering a numbered list doesn't renumber its items. |
+| View HTML edits are one-way | Tweaks there don't flow back to the canvas — by design. Reverse-parsing is the exact failure mode the architecture exists to avoid. |
+
+## Verification
+
+Every change is checked against the whole library, not just the part that was touched:
+
+- all 72 sections export with no residual \`display:flex\`
+- no builder-only chrome (controls, drop lines, list affordances) survives export
+- no empty table rows — the signature of a failed component conversion
+- no ghost-text prose leaks into the output
+- every \`onclick\` in the DOM resolves to a real function *(this check exists because a
+  refactor twice silently deleted adjacent functions)*
+- section type identity survives a serialize → apply round trip
+
+None of it substitutes for sending yourself a test email.
+`;}
+
 function defaultDocs(){return `<div class="docs-body">
 
 <div class="tocard">
@@ -4752,6 +5193,7 @@ async function confirmSave(){
   btn.disabled=false;btn.innerHTML='&#128190; Save';
   if(ok){
     closeSaveModal();
+    markClean();
     toast('\u2713 Saved to GitHub');
   }else{
     statusEl.textContent=errMsg;
@@ -4777,6 +5219,22 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();saveState();}
   if(e.key==='Escape'){closeModal();closeLinkModal();closeAddSection();closePreview();closeImport();closeDocs();closeSaved();closeSaveModal();closeGithubSettings();closeCustomize();closeImageLib();closeTextLink();closeEmbedModal&&closeEmbedModal();closeMediaModal&&closeMediaModal();}
 });
+
+/* ═══════════ UNSAVED-CHANGES GUARD ═══════════
+   The canvas autosaves locally, but "saved" here means saved to GitHub. Track
+   whether the document has drifted since the last real save and warn on the way out. */
+let dirty=false;
+function markDirty(){dirty=true;}
+function markClean(){dirty=false;}
+window.addEventListener('beforeunload',e=>{
+  if(!dirty)return;
+  if(!frame || !frame.querySelector('.sec'))return;   // nothing to lose
+  e.preventDefault();
+  e.returnValue='';        // browsers show their own wording; this opts in
+  return '';
+});
+/* any edit to the canvas marks it dirty */
+document.addEventListener('input',e=>{if(frame&&frame.contains(e.target))markDirty();});
 
 /* INIT */
 loadCustom();
