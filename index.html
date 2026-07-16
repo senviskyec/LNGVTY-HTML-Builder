@@ -548,6 +548,7 @@
         <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Feedback</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
       </nav>
       <div class="set-foot">
         <span id="setRepoHint">&mdash;</span>
@@ -615,6 +616,16 @@
           </div>
           <div class="fb-wrap">
             <iframe id="fbFrame" src="about:blank" data-src="https://docs.google.com/forms/d/e/1FAIpQLSd4qi6hkOEoONQGQGkSvU0qYcgWQQEpPp23wkjQ-KEk3pnQOQ/viewform?embedded=true" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+          </div>
+        </div>
+
+        <div class="set-pane" data-pane="backlog" id="pane-backlog">
+          <p class="set-lede">The rotating content bank &mdash; tips, swaps, budget proteins, recipes, and quotes to pull from each week. Mark an item <b>USED</b> once it runs so it isn't repeated.</p>
+          <div class="note" style="margin-bottom:14px;">
+            The <b>Dashboard</b> tab shows what's queued next for each category. This is a live view &mdash; edits made in the Google Sheet show up here. To add or cross off items, <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRw_2boXbkkbr51zqlCIqThdYpGVN8_TtyXkSgDOZiEq_sTH2eqS61tAlCXRV-VBw/pubhtml" target="_blank" rel="noopener">open the sheet in a new tab &#8599;</a>.
+          </div>
+          <div class="fb-wrap">
+            <iframe id="blFrame" src="about:blank" data-src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRw_2boXbkkbr51zqlCIqThdYpGVN8_TtyXkSgDOZiEq_sTH2eqS61tAlCXRV-VBw/pubhtml?widget=true&amp;headers=false" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
           </div>
         </div>
       </div>
@@ -3038,9 +3049,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v16.0',
-  name    : 'Sea of Signals',
-  date    : '13 July 2026',
+  version : 'v17.0',
+  name    : 'The Backlog',
+  date    : '16 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -3180,6 +3191,7 @@ const SET_PANES={
   docs   : {title:'Docs',         src:'docsBg'},
   about  : {title:'Version & Notes', src:null},   // authored inline
   feedback:{title:'Feedback',     src:null},      // authored inline
+  backlog :{title:'Content Backlog', src:null},   // authored inline
 };
 let settingsHydrated=false;
 
@@ -3256,6 +3268,11 @@ function setPane(key){
     // load the form lazily — no reason to hit Google until the pane is opened
     const f=document.getElementById('fbFrame');
     if(f && f.getAttribute('src')==='about:blank')f.setAttribute('src',f.dataset.src);
+  }
+  if(key==='backlog'){
+    // load the sheet lazily — same reasoning as the feedback form
+    const b=document.getElementById('blFrame');
+    if(b && b.getAttribute('src')==='about:blank')b.setAttribute('src',b.dataset.src);
   }
   if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
     const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
@@ -4318,7 +4335,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v16.0 "Sea of Signals" · 13 July 2026
+**Current build:** v17.0 "The Backlog" · 16 July 2026
 
 ---
 
@@ -4339,6 +4356,16 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v17.0 — The Backlog · 16 July 2026
+
+- **Content Backlog pane** added under Settings, embedding the published Google
+  Sheet content bank — Tip Tuesday, Smarter Swaps, Budget Proteins, Recipes,
+  Quotes, and more, plus a Dashboard tab showing what's queued next for each
+  category. Items marked \`USED\` gray out and strike through so nothing repeats.
+- Same lazy-load pattern as the Feedback pane — it doesn't touch Google until you
+  open the pane. The sheet stays editable in its own tab via a link in the pane.
+- Docs updated with a Content Backlog row in the Settings reference.
 
 ## v16.0 — Sea of Signals · 13 July 2026
 
@@ -4639,6 +4666,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><td><b>&#10010; New Section</b></td><td>Build your own reusable block by pasting in HTML.</td></tr>
   <tr><td><b>&#9881; GitHub</b></td><td>Where documents are stored. Set up once, then forget it.</td></tr>
   <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
+  <tr><td><b>&#128203; Content Backlog</b></td><td>The rotating bank of tips, smarter swaps, budget proteins, recipes, and quotes. The <b>Dashboard</b> tab shows what's queued next. Mark an item <b>USED</b> after it runs so it isn't repeated.</td></tr>
 </table>
 
 <div class="note">
