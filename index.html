@@ -1577,7 +1577,7 @@ const SECTIONS = {
         </div>
       </div>
       <div style="background:var(--accent);padding:18px 48px 20px;">
-        ${ph("Another week, another chance to show up for yourself.","font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.4;")}
+        ${ph("Insert this week's quote here.","font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.4;")}
       </div>`},
 
   nlschedule:{group:'Newsletter',norder:2,icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
@@ -1611,7 +1611,7 @@ const SECTIONS = {
         ${ph('Same time, every week — no excuses.',"font-size:12px;color:#aaa;font-weight:300;margin-bottom:20px;")}
         <div style="background:#fafafa;padding:24px;">
           ${ph('Recurring Weekly Events',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;color:#bbb;text-transform:uppercase;margin-bottom:16px;")}
-          <div class="sched-list">${listBlock([mk('Sunday','','',''),mk('Monday','','',''),mk('Tuesday','','',''),mk('Wednesday','','',''),mk('Thursday','','',''),mk('Friday','','',''),mk('Saturday','','','')],mk('Day','Date','Event Name','Time & details'),'Add day')}</div>
+          <div class="sched-list">${listBlock([mk('Sunday','Date','Event Name','Time & details'),mk('Monday','Date','Event Name','Time & details'),mk('Tuesday','Date','Event Name','Time & details'),mk('Wednesday','Date','Event Name','Time & details'),mk('Thursday','Date','Event Name','Time & details'),mk('Friday','Date','Event Name','Time & details'),mk('Saturday','Date','Event Name','Time & details')],mk('Day','Date','Event Name','Time & details'),'Add day')}</div>
         </div>
       </div>`;}},
 
@@ -1720,7 +1720,7 @@ const SECTIONS = {
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Special Events',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Mark Your Calendar',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:20px;line-height:1.1;")}
-        ${listBlock([ev('','','Sunday','','','',''),ev('','','Monday','','','',''),ev('','','Tuesday','','','',''),ev('','','Wednesday','','','',''),ev('','','Thursday','','','',''),ev('','','Friday','','','',''),ev('','','Saturday','','','','')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
+        ${listBlock([ev('MON','00','Sunday','Event Name','Time','Short description.','Tag'),ev('MON','00','Monday','Event Name','Time','Short description.','Tag'),ev('MON','00','Tuesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Wednesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Thursday','Event Name','Time','Short description.','Tag'),ev('MON','00','Friday','Event Name','Time','Short description.','Tag'),ev('MON','00','Saturday','Event Name','Time','Short description.','Tag')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
       </div>`;}},
 
   nl90:{group:'CTA',icon:'◷',name:'Coming Up on 90 Days?',theme:'white',mode:'both',
@@ -2632,11 +2632,53 @@ function buildNewsletterSkeleton(dateStr){
       if(eds[1])eds[1].setAttribute('data-ph','A Note From Tim,');
     }
   });
+  prefillNewsletterStatics();
   const picked=parseLocalDate(dateStr);
   if(picked)applyNewsletterDates(picked);
   saveStateLocal();
   frame.scrollIntoView({behavior:'smooth',block:'start'});
-  toast(picked?'\u2713 Newsletter started — dates filled for the week':'\u2713 Newsletter started — add your date, quote, and content');
+  toast(picked?'\u2713 Newsletter started — dates filled for the week':'\u2713 Newsletter started — add your quote and content');
+}
+
+/* Pre-fill the fields that are the SAME on every newsletter (brand identity and
+   section labels) as real text, so the operator isn't retyping "LNGVTY Hub" or
+   "Upcoming Schedule" each week. Fields that change weekly — the quote, event
+   names/times, tips, recipe, member content — are LEFT as ghost text so it's
+   always clear what belongs there. Matching is by the placeholder text, so this
+   is resilient to section reordering.
+
+   Each entry: [placeholder-to-match] -> real value to type in. */
+const NL_STATIC_PREFILL={
+  // header (constant brand identity — never changes week to week)
+  'LNGVTY Hub — Weekly Member Newsletter':'LNGVTY Hub — Weekly Newsletter',
+  'LNGVTY':'LNGVTY',
+  'Longevity Hub':'Longevity Hub',
+  'Weekly Newsletter':'Weekly Newsletter',
+  // intro
+  'Welcome':'Welcome',
+  'A Note From Tim,':'A Note From Tim,',
+  // schedule
+  'Every Week at LNGVTY':'This Week at LNGVTY',
+  'Upcoming Schedule':'Upcoming Schedule',
+  'Same time, every week — no excuses.':'Everything happening this week!',
+  'Recurring Weekly Events':"What's Happening",
+  // tip tuesday
+  'Tip Tuesday':'Tip Tuesday',
+  // recipe
+  'Recipe Corner':'Recipe Corner',
+  "This Week's Featured Recipe":"This Week's Featured Recipe",
+  // events
+  'Special Events':'Upcoming Events',
+  'Mark Your Calendar':'Mark Your Calendar',
+};
+function prefillNewsletterStatics(){
+  frame.querySelectorAll('.sec [contenteditable][data-ph]').forEach(el=>{
+    const ph=el.getAttribute('data-ph')||'';
+    if(Object.prototype.hasOwnProperty.call(NL_STATIC_PREFILL,ph) && el.textContent.trim()===''){
+      el.textContent=NL_STATIC_PREFILL[ph];
+      markEmpty(el);
+    }
+  });
 }
 
 /* Fill every date-driven field from the chosen send date:
@@ -3281,7 +3323,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v18.0',
+  version : 'v18.1',
   name    : 'Autopilot',
   date    : '20 July 2026',
 };
@@ -4567,7 +4609,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v18.0 "Autopilot" · 20 July 2026
+**Current build:** v18.1 "Autopilot" · 20 July 2026
 
 ---
 
@@ -4588,6 +4630,19 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v18.1 — Autopilot (fix) · 20 July 2026
+
+- **Ghost text no longer disappears in the newsletter starter.** The date auto-fill
+  in v18.0 was blanking the placeholders on the schedule and events blocks, so the
+  event-name/time fields came up empty with nothing to show what went there. Every
+  varying field now keeps its ghost text (Event Name, Time & details, etc.).
+- **Static brand + section text is now pre-filled for real** when you start a
+  newsletter: the header identity (LNGVTY Hub, Longevity Hub, Weekly Newsletter),
+  the intro labels (Welcome, A Note From Tim), and each section's eyebrow/title
+  (Upcoming Schedule, Recipe Corner, Mark Your Calendar, etc.). You're no longer
+  retyping the same headings every week — only the quote, dates auto-fill, and the
+  week's actual content are left to you. Weekly-varying fields stay ghost text.
 
 ## v18.0 — Autopilot · 20 July 2026
 
