@@ -31,6 +31,20 @@
   .rail-modes-select-wrap.muted::after{color:#666;}
   .rail-modes-select-wrap.muted .rail-mode-select{border-bottom-color:#34353a;color:#888;}
   .rail-mode-pinned{flex:0 0 auto;border-left:1px solid #34353a;background:#202126;}
+  /* Tags hangs slightly off the right edge of the rail so it reads as a pull-tab. */
+  .rail-mode-tags{position:relative;margin-right:-14px;padding-right:16px;border-top-right-radius:6px;border-bottom-right-radius:6px;background:#26272c;box-shadow:2px 0 6px rgba(0,0,0,.25);z-index:2;}
+  .rail-mode-tags.active{background:#2c2d33;}
+  /* Widgets pane */
+  .wg-section{padding:14px;}
+  .wg-title{font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin:6px 0 6px;}
+  .wg-hint{font-size:11px;color:#7a7a7a;line-height:1.5;margin-bottom:12px;}
+  .wg-list{display:flex;flex-direction:column;gap:8px;}
+  .wg-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#202126;border:1px solid #34353a;border-radius:7px;padding:11px 13px;cursor:pointer;transition:.12s;}
+  .wg-item:hover{border-color:var(--accent);background:#26272c;}
+  .wg-item .wg-ic{width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;border-radius:5px;font-size:14px;}
+  .wg-item .wg-tx{display:flex;flex-direction:column;min-width:0;}
+  .wg-item .wg-nm{font-family:'Montserrat';font-size:12px;font-weight:700;color:#eee;letter-spacing:.3px;}
+  .wg-item .wg-ds{font-size:10.5px;color:#888;line-height:1.35;margin-top:1px;}
   .builder-toggle{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 12px;border-bottom:1px solid #34353a;background:#202126;}
   .builder-toggle .bt-label{font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;transition:.15s;}
   .builder-toggle .bt-label.on{color:var(--accent);}
@@ -475,7 +489,8 @@
         <option value="blog">Webpage</option>
       </select>
     </div>
-    <div class="rail-mode rail-mode-pinned" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
+    <div class="rail-mode rail-mode-pinned" id="mode-widgets" onclick="setRailMode('widgets')">Widgets</div>
+    <div class="rail-mode rail-mode-pinned rail-mode-tags" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
   </div>
   <div class="rail-body active" id="railSections">
     <div class="rail-sublabel" id="railSubLabel">Graphics Sections</div>
@@ -496,6 +511,13 @@
         <button onclick="addHotkey()">Add</button>
       </div>
       <div class="hk-hint">Click into any text box first, then click a tag to drop it where your cursor is. New tags get saved automatically and wrapped in {{ }} if you forget.</div>
+    </div>
+  </div>
+  <div class="rail-body" id="pane-widgets">
+    <div class="wg-section">
+      <div class="wg-title">Insert a widget</div>
+      <div class="wg-hint">Drop-in blocks you can add to any section. Click one to append it to the canvas.</div>
+      <div class="wg-list" id="wgList"></div>
     </div>
   </div>
 </div>
@@ -769,6 +791,24 @@
 </div>
 
 <!-- LINK editor modal -->
+<!-- NEWSLETTER DATE modal -->
+<div class="modal-bg" id="nlDateBg">
+  <div class="modal" style="width:420px;">
+    <div class="modal-head"><h3>&#128197; Newsletter Week</h3><button onclick="closeNlDate()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="field-row">
+        <label>Pick the newsletter date</label>
+        <input type="date" id="nlDateInput"/>
+      </div>
+      <div class="panel-note" id="nlDateNote" style="margin-top:0;">Pick any day in the week you're sending. We'll snap to that week's <b>Sunday</b> and auto-fill the header date, the seven schedule days, and next week's <b>Mark Your Calendar</b> dates.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="startNewsletterNoDate()">Skip dates</button>
+      <button class="tb-btn primary" onclick="confirmNlDate()">Start Newsletter</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="linkModalBg">
   <div class="modal" style="width:460px;">
     <div class="modal-head"><h3>Edit Link</h3><button onclick="closeLinkModal()">&times;</button></div>
@@ -1571,7 +1611,7 @@ const SECTIONS = {
         ${ph('Same time, every week — no excuses.',"font-size:12px;color:#aaa;font-weight:300;margin-bottom:20px;")}
         <div style="background:#fafafa;padding:24px;">
           ${ph('Recurring Weekly Events',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;color:#bbb;text-transform:uppercase;margin-bottom:16px;")}
-          ${listBlock([mk('Monday','Jun 16','6am Class','6:00 AM — Open to all'),mk('Wednesday','Jun 18','HYROX Prep','5:30 PM — All levels'),mk('Saturday','Jun 21','Community WOD','9:00 AM — Bring a friend')],mk('Day','Date','Event Name','Time & details'),'Add day')}
+          <div class="sched-list">${listBlock([mk('Sunday','','',''),mk('Monday','','',''),mk('Tuesday','','',''),mk('Wednesday','','',''),mk('Thursday','','',''),mk('Friday','','',''),mk('Saturday','','','')],mk('Day','Date','Event Name','Time & details'),'Add day')}</div>
         </div>
       </div>`;}},
 
@@ -1596,7 +1636,8 @@ const SECTIONS = {
   nlrecipe:{group:'Recipe',icon:'🍳',name:'Featured Recipe',theme:'white',mode:'newsletter',
     html:()=>{
       const ing=(v)=>`<div class="li-wrap" style="flex:1 1 45%;min-width:160px;color:#ccc;font-size:12px;font-weight:300;padding:2px 0;position:relative;"><span style="color:var(--accent);">—</span> ${ph(v,"display:inline;color:#ccc;",'span')}<button class="li-del" onclick="delLi(this)">×</button></div>`;
-      const step=(n,v)=>`<div class="li-wrap" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;">${ph(n,"background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;")}${ph(v,"font-size:13px;color:#666;line-height:1.6;font-weight:300;flex:1;padding-top:3px;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      // Step number is auto-managed (non-editable) — renumbered on add/delete/reorder.
+      const step=(n,v)=>`<div class="li-wrap" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;"><div class="step-num" style="background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${n}</div>${ph(v,"font-size:13px;color:#666;line-height:1.6;font-weight:300;flex:1;padding-top:3px;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Recipe Corner',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph("This Week's Featured Recipe","font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
@@ -1618,7 +1659,7 @@ const SECTIONS = {
         </div>
         <div class="nl-steps" data-on="0" style="display:none;background:#fafafa;border-top:3px solid var(--accent);padding:18px 20px;">
           ${ph('Instructions',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:12px;")}
-          ${listBlock([step('1','Preheat oven to 425°F and line a sheet pan.'),step('2','Toss chicken and veggies with olive oil and seasoning.'),step('3','Roast 30–35 minutes until cooked through.')],step('N','New step'),'Add step')}
+          <div class="steps-list">${listBlock([step('1','Preheat oven to 425°F and line a sheet pan.'),step('2','Toss chicken and veggies with olive oil and seasoning.'),step('3','Roast 30–35 minutes until cooked through.')],step('','New step'),'Add step')}</div>
         </div>
         <button class="nl-steptoggle" type="button" onclick="toggleRecipeSteps(this)" style="margin-top:10px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;">+ Show Instructions Steps</button>
       </div>`;}},
@@ -1679,7 +1720,7 @@ const SECTIONS = {
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Special Events',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Mark Your Calendar',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:20px;line-height:1.1;")}
-        ${listBlock([ev('OCT','16','Thursday','HYROX Training Day','9:00 AM','Full simulation with timing and coaching.','Members Only'),ev('OCT','28','Tuesday','Member Potluck','6:30 PM','Bring a dish, meet the community.','All Welcome')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
+        ${listBlock([ev('','','Sunday','','','',''),ev('','','Monday','','','',''),ev('','','Tuesday','','','',''),ev('','','Wednesday','','','',''),ev('','','Thursday','','','',''),ev('','','Friday','','','',''),ev('','','Saturday','','','','')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
       </div>`;}},
 
   nl90:{group:'CTA',icon:'◷',name:'Coming Up on 90 Days?',theme:'white',mode:'both',
@@ -2234,14 +2275,17 @@ function setBuilderMode(mode){
 function setRailMode(m){
   railMode=m;
   const isSections=(m==='graphics'||m==='newsletter'||m==='blog');
-  // keep the dropdown showing the active content mode (Tags is a separate pin)
+  // keep the dropdown showing the active content mode (Tags/Widgets are separate pins)
   const sel=document.getElementById('railModeSelect');
   if(sel&&isSections)sel.value=m;
   document.getElementById('mode-hotkeys').classList.toggle('active',m==='hotkeys');
-  // dim the dropdown's underline when Tags is the active pane
-  document.getElementById('railModeSelect')?.parentElement?.classList.toggle('muted',m==='hotkeys');
+  document.getElementById('mode-widgets')?.classList.toggle('active',m==='widgets');
+  // dim the dropdown's underline when a pinned pane (Tags/Widgets) is active
+  document.getElementById('railModeSelect')?.parentElement?.classList.toggle('muted',m==='hotkeys'||m==='widgets');
   document.getElementById('railSections').classList.toggle('active',isSections);
   document.getElementById('pane-hotkeys').classList.toggle('active',m==='hotkeys');
+  document.getElementById('pane-widgets')?.classList.toggle('active',m==='widgets');
+  if(m==='widgets')renderWidgets();
   const sl=document.getElementById('railSubLabel');
   if(sl&&isSections){
     sl.textContent=(m==='newsletter')?'Newsletter Sections':(m==='blog')?'Webpage / Blog Sections':'Graphics Sections';
@@ -2254,7 +2298,7 @@ function setRailMode(m){
    sections list — a <select> onchange won't fire if the same value is re-picked,
    so this gives the user a reliable way back out of Tags. */
 function exitTagsPane(){
-  if(railMode!=='hotkeys')return;
+  if(railMode!=='hotkeys'&&railMode!=='widgets')return;
   const sel=document.getElementById('railModeSelect');
   setRailMode((sel&&sel.value)||'graphics');
 }
@@ -2424,6 +2468,67 @@ function wireSec(sec){
   }
   // restore any saved media/embed in this section
   hydrateMedia(sec);
+  wireParagraphKeys(sec);
+}
+
+/* ═══════════ PARAGRAPH ENTER BEHAVIOR ═══════════
+   Inside multi-line paragraph fields (the "Note from Tim" intro, and any other
+   paragraph list), a single Enter should continue the SAME line style (a plain
+   <br>, not a browser-default <div> that resets font/size/color). Pressing Enter
+   on an already-empty line spawns a fresh paragraph block via the list's own
+   +Add, so two Enters = new paragraph. This keeps every line identical to the
+   first and removes the need to add paragraph blocks by hand. */
+function wireParagraphKeys(sec){
+  sec.querySelectorAll('.li-list').forEach(list=>{
+    const proto=list.getAttribute('data-proto')||'';
+    if(!/<p\b/i.test(proto))return;                 // only paragraph-style lists
+    if(list.dataset.pkeys==='1')return;             // wire once
+    list.dataset.pkeys='1';
+    list.addEventListener('keydown',e=>{
+      if(e.key!=='Enter'||e.shiftKey)return;
+      const p=e.target.closest('p[contenteditable]');
+      if(!p||!list.contains(p))return;
+      e.preventDefault();
+      const txt=p.textContent.replace(/\u200b/g,'');
+      const caretAtEmptyLine=isCaretOnEmptyTrailingLine(p);
+      if(caretAtEmptyLine){
+        // second Enter on a blank line → strip that trailing break, make a new paragraph
+        stripTrailingBreak(p);
+        const addBtn=list.nextElementSibling;
+        if(addBtn&&addBtn.classList.contains('li-add')){addLi(addBtn);}
+        return;
+      }
+      // single Enter → same-style line break
+      insertBreakAtCaret();
+    });
+  });
+}
+/* true when the caret sits on a final, empty visual line (i.e. the char before it is a <br>) */
+function isCaretOnEmptyTrailingLine(p){
+  const sel=window.getSelection();if(!sel||!sel.rangeCount)return false;
+  const r=sel.getRangeAt(0);
+  if(!r.collapsed)return false;
+  // caret must be at the very end of the paragraph's content
+  const end=document.createRange();end.selectNodeContents(p);end.setStart(r.endContainer,r.endOffset);
+  if(end.toString().replace(/\u200b/g,'').length!==0)return false;
+  // and the paragraph must already end in a <br> (a line we just made)
+  const html=p.innerHTML.replace(/\u200b/g,'');
+  return /<br\s*\/?>\s*$/i.test(html);
+}
+function stripTrailingBreak(p){
+  p.innerHTML=p.innerHTML.replace(/(<br\s*\/?>\s*)+$/i,'');
+  markEmpty(p);
+}
+function insertBreakAtCaret(){
+  const sel=window.getSelection();if(!sel||!sel.rangeCount)return;
+  const r=sel.getRangeAt(0);r.deleteContents();
+  const br=document.createElement('br');
+  r.insertNode(br);
+  // a trailing zero-width space keeps the caret visible on the new empty line
+  const zwsp=document.createTextNode('\u200b');
+  br.after(zwsp);
+  r.setStartAfter(zwsp);r.setEndAfter(zwsp);
+  sel.removeAllRanges();sel.addRange(r);
 }
 function clearDrop(){frame.querySelectorAll('.sec').forEach(s=>s.classList.remove('dragover-top','dragover-bot'));}
 function addSection(key,before){
@@ -2440,13 +2545,83 @@ function addSection(key,before){
   return sec;
 }
 
+/* ═══════════ WIDGETS ═══════════
+   Small drop-in blocks the operator can add to any layout. Each is a standalone
+   .sec so it exports, themes, and reorders like everything else. The flagship
+   widget is a brand-orange, fully linkable button (same primitive as the CTA
+   sections' button — editable label + href via the link modal). */
+const WIDGETS={
+  button:{icon:'▶',name:'Button',desc:'Orange, linkable call-to-action button.',
+    html:()=>`<div style="background:var(--secbg);padding:28px 48px;text-align:center;border-bottom:1px solid #eee;">
+      ${btn('» Button Label',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:16px 40px;border-radius:4px;",'https://lngvtyhub.com/')}
+    </div>`}
+};
+function renderWidgets(){
+  const host=document.getElementById('wgList');if(!host)return;
+  host.innerHTML='';
+  Object.entries(WIDGETS).forEach(([key,w])=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='wg-item';b.onclick=()=>insertWidget(key);
+    b.innerHTML=`<span class="wg-ic">${w.icon}</span><span class="wg-tx"><span class="wg-nm">${w.name}</span><span class="wg-ds">${w.desc}</span></span>`;
+    host.appendChild(b);
+  });
+}
+/* append a widget to the canvas as its own themed, exportable section */
+function insertWidget(key){
+  const w=WIDGETS[key];if(!w)return;
+  const sec=document.createElement('div');sec.className='sec';sec.dataset.key='widget-'+key;
+  sec.innerHTML=w.html()+controlsHTML();
+  const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=w.name+' (widget)';
+  frame.appendChild(sec);
+  applySecTheme(sec,'white');
+  wireSec(sec);refreshState();saveStateLocal();
+  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  toast('\u2713 '+w.name+' added — set its label and link');
+}
+
 /* ═══════════ NEWSLETTER STARTER ═══════════
-   Drops in the standard weekly-newsletter skeleton in reading order, so the
-   only things left to fill in are the date, the quote, and the week's content. */
+   Drops in the standard weekly-newsletter skeleton in reading order. The starter
+   first asks for the send date, then snaps to that week's Sunday and auto-fills
+   the header date, the seven schedule day-dates, and next week's Mark-Your-Calendar
+   dates — so the only things left to fill are the quote and the week's content. */
 const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nltip','nlrecipe','nlevents','footer'];
+
+/* Entry point from the "Start a newsletter" button — asks for the date first. */
 function buildNewsletterTemplate(){
   const existing=frame.querySelectorAll('.sec').length;
   if(existing && !confirm('Replace the '+existing+' section(s) on the canvas with a fresh newsletter?'))return;
+  openNlDate();
+}
+function openNlDate(){
+  const inp=document.getElementById('nlDateInput');
+  if(inp && !inp.value){
+    // default to the upcoming Sunday
+    const t=new Date();const d=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+    d.setDate(d.getDate()+((7-d.getDay())%7));
+    inp.value=isoDate(d);
+  }
+  document.getElementById('nlDateBg').classList.add('show');
+  setTimeout(()=>inp&&inp.focus(),50);
+}
+function closeNlDate(){document.getElementById('nlDateBg').classList.remove('show');}
+function confirmNlDate(){
+  const v=document.getElementById('nlDateInput').value;
+  closeNlDate();
+  buildNewsletterSkeleton(v||null);
+}
+function startNewsletterNoDate(){closeNlDate();buildNewsletterSkeleton(null);}
+
+/* ISO yyyy-mm-dd for a local Date (no timezone drift) */
+function isoDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+/* parse a yyyy-mm-dd string as a LOCAL date (avoids the UTC-midnight off-by-one) */
+function parseLocalDate(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);if(!y||!m||!d)return null;return new Date(y,m-1,d);}
+const NL_MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const NL_MON3=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const NL_DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+/* the Sunday that begins the week containing d */
+function weekSunday(d){const s=new Date(d.getFullYear(),d.getMonth(),d.getDate());s.setDate(s.getDate()-s.getDay());return s;}
+
+function buildNewsletterSkeleton(dateStr){
   frame.querySelectorAll('.sec').forEach(s=>s.remove());
   NEWSLETTER_TEMPLATE.forEach(k=>{
     const sec=addSection(k);
@@ -2457,10 +2632,55 @@ function buildNewsletterTemplate(){
       if(eds[1])eds[1].setAttribute('data-ph','A Note From Tim,');
     }
   });
+  const picked=parseLocalDate(dateStr);
+  if(picked)applyNewsletterDates(picked);
   saveStateLocal();
   frame.scrollIntoView({behavior:'smooth',block:'start'});
-  toast('\u2713 Newsletter started — add your date, quote, and content');
+  toast(picked?'\u2713 Newsletter started — dates filled for the week':'\u2713 Newsletter started — add your date, quote, and content');
 }
+
+/* Fill every date-driven field from the chosen send date:
+   • header date  → "Month D, YYYY" (the picked date)
+   • schedule     → this week's Sun–Sat dates under each day label
+   • events       → NEXT week's Sun–Sat date boxes (Mark Your Calendar) */
+function applyNewsletterDates(picked){
+  const sun=weekSunday(picked);
+  // header date
+  const header=frame.querySelector('.sec[data-key="nlheader"]');
+  if(header){
+    const eds=[...header.querySelectorAll('[contenteditable][data-ph]')];
+    // the date field is the accent one that defaults to a "Month D, YYYY" placeholder
+    const dateEd=eds.find(e=>/\b\d{4}\b/.test(e.getAttribute('data-ph')||'')) || eds[3];
+    if(dateEd){dateEd.textContent=NL_MONTHS[picked.getMonth()]+' '+picked.getDate()+', '+picked.getFullYear();markEmpty(dateEd);}
+  }
+  // schedule: fill the small date line under each day (rows are Sun..Sat in order)
+  const sched=frame.querySelector('.sec[data-key="nlschedule"]');
+  if(sched){
+    const rows=[...sched.querySelectorAll('.li-list > .li-wrap')];
+    rows.forEach((row,i)=>{
+      const cells=row.querySelectorAll('[contenteditable][data-ph]');
+      // cell 0 = day label, cell 1 = date line
+      const day=new Date(sun);day.setDate(sun.getDate()+i);
+      if(cells[0]){cells[0].textContent=NL_DAYS[day.getDay()];markEmpty(cells[0]);}
+      if(cells[1]){cells[1].textContent=NL_MON3[day.getMonth()]+' '+day.getDate();markEmpty(cells[1]);}
+    });
+  }
+  // events: prefill NEXT week's seven day-boxes (month / day# / weekday)
+  const events=frame.querySelector('.sec[data-key="nlevents"]');
+  if(events){
+    const nextSun=new Date(sun);nextSun.setDate(sun.getDate()+7);
+    const rows=[...events.querySelectorAll('.li-list > .li-wrap')];
+    rows.forEach((row,i)=>{
+      const box=row.querySelectorAll('td [contenteditable][data-ph]');
+      const day=new Date(nextSun);day.setDate(nextSun.getDate()+i);
+      // box 0 = month, 1 = day number, 2 = weekday
+      if(box[0]){box[0].textContent=NL_MON3[day.getMonth()];markEmpty(box[0]);}
+      if(box[1]){box[1].textContent=String(day.getDate());markEmpty(box[1]);}
+      if(box[2]){box[2].textContent=NL_DAYS[day.getDay()];markEmpty(box[2]);}
+    });
+  }
+}
+
 
 /* ═══════════ EKG BACKDROP ═══════════
    A faint orange heartbeat trace behind the canvas. Purely ambient: it sits in a
@@ -2685,12 +2905,14 @@ function delLi(btn){
   const wrap=btn.closest('.li-wrap');const list=wrap.parentElement;
   if(list.querySelectorAll(':scope > .li-wrap').length<=1){toast('Keep at least one item');return;}
   wrap.remove();
+  renumberSteps(list);
 }
 function addLi(btn){
   const list=btn.previousElementSibling;
   const proto=list.getAttribute('data-proto');if(!proto)return;
   const tmp=document.createElement('div');tmp.innerHTML=proto;
   const node=tmp.firstElementChild;list.appendChild(node);
+  renumberSteps(list);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
 }
 /* reorder a list item within its list */
@@ -2698,6 +2920,16 @@ function moveLi(btn,dir){
   const wrap=btn.closest('.li-wrap');if(!wrap)return;
   if(dir<0){const prev=wrap.previousElementSibling;if(prev&&prev.classList.contains('li-wrap'))prev.before(wrap);}
   else{const next=wrap.nextElementSibling;if(next&&next.classList.contains('li-wrap'))next.after(wrap);}
+  renumberSteps(wrap.parentElement);
+}
+/* Auto-number any list of steps (recipe instructions). The number badges carry a
+   .step-num class and are non-editable, so ordering is always 1..n with no manual
+   fixing after add/delete/reorder. No-op for lists that have no .step-num badges. */
+function renumberSteps(list){
+  if(!list)return;
+  const nums=list.querySelectorAll(':scope > .li-wrap > .step-num');
+  if(!nums.length)return;
+  nums.forEach((n,i)=>{n.textContent=String(i+1);});
 }
 /* add an inline tag pill into a .tag-wrap (uses its data-proto) */
 function addTag(btn){
@@ -3049,9 +3281,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v17.0',
-  name    : 'The Backlog',
-  date    : '16 July 2026',
+  version : 'v18.0',
+  name    : 'Autopilot',
+  date    : '20 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -4104,7 +4336,7 @@ function doImport(){
   if(!sections){status.textContent='That JSON has no "sections" array.';return;}
   // validate section keys against known sections
   const known=allSections();
-  const good=sections.filter(s=>s&&s.key&&known[s.key]);
+  const good=sections.filter(s=>s&&s.key&&(known[s.key]||s.key.startsWith('widget-')));
   const skipped=sections.length-good.length;
   if(!good.length){status.textContent='None of the sections match known section types.';return;}
   const replace=document.getElementById('importReplace').checked;
@@ -4335,7 +4567,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v17.0 "The Backlog" · 16 July 2026
+**Current build:** v18.0 "Autopilot" · 20 July 2026
 
 ---
 
@@ -4356,6 +4588,27 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v18.0 — Autopilot · 20 July 2026
+
+- **Newsletter starter now asks for the date first.** Pick any day in the send
+  week and the starter snaps to that week's Sunday, then auto-fills the header
+  date, all seven schedule day-dates (Sun–Sat), and next week's **Mark Your
+  Calendar** date boxes. Empty days are just deleted — no typing dates by hand.
+  "Skip dates" still builds a blank skeleton.
+- **Widgets pane** added beside the mode dropdown (Tags moved to a pull-tab that
+  hangs off the right edge). First widget: an orange, fully linkable **Button**
+  you can drop into any layout — same editable label + link as the CTA sections.
+- **Paragraph typing fixed.** In the "Note from Tim" (and any paragraph block),
+  Enter now continues the *same* line style instead of resetting font/size/color.
+  Enter on a blank line starts a new paragraph — so two Enters = new paragraph,
+  no more adding paragraph blocks by hand.
+- **Recipe steps auto-number.** Step badges renumber 1..n automatically on add,
+  delete, and reorder. The number is no longer an editable field.
+- **Remove individual schedule events** (the ✕ on each event under a day) and
+  **remove recipe stats** (the ✕ on each stat) — no need to delete the whole day
+  or rebuild the stat row.
+- Weekly Schedule and Upcoming Events now start with all seven days laid out.
 
 ## v17.0 — The Backlog · 16 July 2026
 
@@ -4550,7 +4803,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><th style="width:24%;">Where</th><th>What it's for</th></tr>
   <tr>
     <td><b>Left rail</b></td>
-    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Tags</b> (next to it) holds merge fields like the member's first name.</td>
+    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Widgets</b> (next to it) holds drop-in pieces like a linkable orange button. <b>Tags</b> (the pull-tab on the right edge) holds merge fields like the member's first name.</td>
   </tr>
   <tr>
     <td><b>Middle canvas</b></td>
@@ -4575,31 +4828,31 @@ function defaultDocs(){return `<div class="docs-body">
 
 <div class="bigstep"><div class="num">2</div><div class="stxt">
   <b>Click <span class="btnrep orange">&#9889; Start a Newsletter</span></b>
-  It's the orange box at the top of the left rail. This drops in the whole standard newsletter, already in the right order:
+  It's the orange box at the top of the left rail. First it asks for the <b>newsletter date</b> &mdash; pick any day in the week you're sending. It then drops in the whole standard newsletter, already in the right order:
   <br><br>
   Header + Quote &rarr; A Note From Tim &rarr; Weekly Schedule &rarr; Tip Tuesday &rarr; Featured Recipe &rarr; Upcoming Events &rarr; Footer
   <br><br>
-  Everything is there as faded placeholder text. Now you just fill it in.
+  Because you gave it the date, it also fills in the header date, all seven schedule day-dates for that week, and next week's <b>Mark Your Calendar</b> dates automatically. Everything else is faded placeholder text you fill in. (Use <b>Skip dates</b> if you'd rather do it by hand.)
 </div></div>
 
 <div class="bigstep"><div class="num">3</div><div class="stxt">
   <b>Fill in the header</b>
-  Click the <b>Date</b> and type this week's date. Click the <b>"Quote"</b> line and type the week's quote. Everything else in the header is already correct.
+  The <b>Date</b> is already filled from the week you picked. Click the <b>"Quote"</b> line and type the week's quote. Everything else in the header is already correct.
 </div></div>
 
 <div class="bigstep"><div class="num">4</div><div class="stxt">
   <b>Write the note from Tim</b>
-  Click the paragraph and type. Need another paragraph? Click <span class="btnrep">+ Add Paragraph</span> underneath. To remove one, hover it and click the <span class="chip red">&times;</span>.
+  Click the paragraph and type. <b>Press Enter for a new line</b> in the same style; press Enter again on a blank line to start a fresh paragraph &mdash; you don't need to add paragraph blocks by hand. You still can with <span class="btnrep">+ Add Paragraph</span>; remove one by hovering it and clicking the <span class="chip red">&times;</span>.
 </div></div>
 
 <div class="bigstep"><div class="num">5</div><div class="stxt">
   <b>Fill in the weekly schedule</b>
-  Each row is one day. Click the day, the date, the event name, and the time to edit them.
+  All seven days are laid out with this week's dates already filled. Click the event name and time to edit them. Any day with nothing on it, just delete.
   <ul>
     <li><span class="btnrep">+ Add Day</span> &mdash; adds another row.</li>
-    <li><span class="btnrep">&#65291; event</span> &mdash; puts a <b>second event on the same day</b> (no new row needed).</li>
+    <li><span class="btnrep">&#65291; event</span> &mdash; puts a <b>second event on the same day</b> (no new row needed). Each event has its own <span class="chip red">&times;</span> to remove just that one.</li>
     <li><span class="chip">&#9650;</span> <span class="chip">&#9660;</span> &mdash; move a day up or down. Hover the row to see them.</li>
-    <li><span class="chip red">&times;</span> &mdash; delete the row.</li>
+    <li><span class="chip red">&times;</span> &mdash; delete the whole day.</li>
   </ul>
 </div></div>
 
@@ -4608,7 +4861,9 @@ function defaultDocs(){return `<div class="docs-body">
   All three work the same way: click text to change it, and use the dashed <span class="btnrep">+ Add</span> buttons to add tips, ingredients, steps, or events. A few extras worth knowing:
   <ul>
     <li><b>Recipe photo</b> &mdash; click <span class="btnrep">+ Show Recipe Photo</span>, then pick an image from the library.</li>
-    <li><b>Recipe steps</b> &mdash; click <span class="btnrep">+ Show Instructions Steps</span> if you want to include them.</li>
+    <li><b>Recipe steps number themselves</b> &mdash; add, remove, or reorder steps and they stay 1, 2, 3&hellip; automatically. No typing numbers.</li>
+    <li><b>Recipe stats</b> &mdash; add stats with <span class="btnrep">+ stat</span>; remove any one with its <span class="chip red">&times;</span>.</li>
+    <li><b>Mark Your Calendar</b> &mdash; starts with next week's seven dates already filled. Type in the events you have and delete the empty days.</li>
     <li><b>Tags</b> (like <span class="chip pill orange">Members Only</span>) &mdash; click <span class="btnrep">+ tag</span> to add one. Leave a tag blank and it simply won't show up.</li>
   </ul>
 </div></div>
@@ -4650,7 +4905,10 @@ function defaultDocs(){return `<div class="docs-body">
 </div>
 
 <h3>Merge fields (first name, etc.)</h3>
-<p>Click into a text box where you want it, then open <b>Tags</b> (top-left, beside the mode dropdown) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
+<p>Click into a text box where you want it, then open <b>Tags</b> (the pull-tab hanging off the right edge of the left rail) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
+
+<h3>Widgets</h3>
+<p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
 
 <h2>5. Settings</h2>
 
@@ -4697,7 +4955,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><td>Pasted text is the wrong font or color</td><td>Settings &rarr; Theme &amp; Type &rarr; <b>Reset All Text to Brand Styling</b>.</td></tr>
   <tr><td>Copy button doesn't seem to do anything</td><td>Click on the page once, then try again. If it still fails, use Settings &rarr; View HTML and copy from there.</td></tr>
   <tr><td>Saved list is empty</td><td>Settings &rarr; GitHub, and check the connection.</td></tr>
-  <tr><td>Stuck in the Tags panel</td><td>Click the dropdown (Newsletter / Graphics / Webpage) to get back to the blocks.</td></tr>
+  <tr><td>Stuck in the Tags or Widgets panel</td><td>Click the dropdown (Newsletter / Graphics / Webpage) to get back to the blocks.</td></tr>
   <tr><td>Email looks broken in the inbox</td><td>Note which block, and send it over. That's a bug worth fixing, not something you did wrong.</td></tr>
 </table>
 
@@ -4945,7 +5203,12 @@ function loadSections(sections,append){
   (sections||[]).forEach(s=>{
     const sec=document.createElement('div');sec.className='sec';sec.dataset.key=s.key;
     sec.innerHTML=s.html+controlsHTML();
-    const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=S[s.key]?.name||'';
+    const tag=sec.querySelector('.sec-tag');
+    if(tag){
+      let nm=S[s.key]?.name||'';
+      if(!nm && s.key && s.key.startsWith('widget-')){const wk=s.key.slice(7);nm=(WIDGETS[wk]?.name||'Widget')+' (widget)';}
+      tag.textContent=nm;
+    }
     applySecTheme(sec,s.theme);wireSec(sec);frame.appendChild(sec);
   });
   refreshState();
