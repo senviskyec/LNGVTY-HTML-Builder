@@ -1163,6 +1163,35 @@
 </div>
 
 <script>
+/* ─── SAFE STORAGE SHIM ───
+   Some environments make localStorage throw on ANY access — Safari Private mode,
+   storage disabled by policy, or over-quota. That would break the whole app since
+   dozens of functions read/write it. This wraps it so it can NEVER throw: if the
+   real localStorage is unavailable we transparently fall back to an in-memory
+   store for the session. Everything downstream keeps working; only cross-reload
+   persistence is lost (with a one-time heads-up). */
+(function(){
+  var mem={};
+  var safe={
+    getItem:function(k){try{return window.__realLS.getItem(k);}catch(e){return (k in mem)?mem[k]:null;}},
+    setItem:function(k,v){try{window.__realLS.setItem(k,String(v));}catch(e){mem[k]=String(v);}},
+    removeItem:function(k){try{window.__realLS.removeItem(k);}catch(e){delete mem[k];}},
+    clear:function(){try{window.__realLS.clear();}catch(e){mem={};}}
+  };
+  var ok=false;
+  try{
+    window.__realLS=window.localStorage;
+    var t='__ls_test__'+Math.random();
+    window.__realLS.setItem(t,'1');window.__realLS.removeItem(t);
+    ok=true;
+  }catch(e){ok=false;}
+  if(!ok){
+    // real storage is unusable — replace it with the memory-backed shim
+    try{Object.defineProperty(window,'localStorage',{configurable:true,get:function(){return safe;}});}
+    catch(e){try{window.localStorage=safe;}catch(e2){}}
+    window.__lsMemoryOnly=true;
+  }
+})();
 /* ─── helpers ─── */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
 function ph(text,style,tag){tag=tag||'div';return `<${tag} contenteditable="true" data-ph="${esc(text)}" style="${style}"></${tag}>`;}
@@ -3425,7 +3454,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v19.6',
+  version : 'v19.7',
   name    : 'Content Library',
   date    : '21 July 2026',
 };
@@ -4723,7 +4752,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v19.6 "Content Library" · 21 July 2026
+**Current build:** v19.7 "Content Library" · 21 July 2026
 
 ---
 
@@ -4744,6 +4773,17 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v19.7 — Private-mode fix (the dead buttons) · 21 July 2026
+
+- **Fixed the frozen toolbar.** In Safari Private mode — and any browser where storage
+  is disabled or over quota — <code>localStorage</code> throws the moment it's touched,
+  which was quietly killing Save, Preview, Saved, and Start-a-Newsletter (the console
+  showed no error because the failures were swallowed). All storage now goes through a
+  crash-proof shim that falls back to in-memory storage for the session, so every button
+  keeps working. This was the cause of the "buttons do nothing" reports.
+- When running in that memory-only mode, a one-time note reminds you that local
+  auto-save is off, so use <b>Save</b> (to GitHub) to keep your work.
 
 ## v19.6 — Diagnostics · 21 July 2026
 
@@ -6279,6 +6319,9 @@ window.addEventListener('error',function(ev){showFatalBanner('Error',ev.error||e
   step('hotkeys',()=>{loadHotkeys();renderHotkeys();});
   step('loadState',loadState);
   step('refreshState',refreshState);
+  // If browser storage is unavailable (e.g. private mode), tell the user once —
+  // the app still works, but saves won't survive a reload until they use GitHub.
+  if(window.__lsMemoryOnly){setTimeout(()=>toast("Private/restricted mode: work won't auto-save locally — use Save to GitHub"),800);}
 })();
 </script>
 </body>
