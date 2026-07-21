@@ -3425,7 +3425,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v19.5',
+  version : 'v19.6',
   name    : 'Content Library',
   date    : '21 July 2026',
 };
@@ -4723,7 +4723,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v19.5 "Content Library" · 21 July 2026
+**Current build:** v19.6 "Content Library" · 21 July 2026
 
 ---
 
@@ -4744,6 +4744,16 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v19.6 — Diagnostics · 21 July 2026
+
+- **Startup is now guarded and self-reporting.** If anything goes wrong while the page
+  loads — most often a corrupt saved draft left over from an older version — you now get
+  a red banner at the top naming the exact problem, plus a one-click <b>Reset &amp;
+  reload</b> that clears the stored data and starts fresh. No more buttons that silently
+  do nothing.
+- Each startup step is isolated, so one bad step can't take down the rest of the page
+  (the toolbar keeps working even if a saved draft won't load).
 
 ## v19.5 — Reliability (buttons & toasts) · 21 July 2026
 
@@ -6205,11 +6215,6 @@ function loadState(){
 
 /* toast + keys */
 let toastTimer;
-// Surface any uncaught error as a toast instead of a silently dead button.
-window.addEventListener('error',function(ev){
-  try{toast('Something hit a snag — try again ('+((ev.error&&ev.error.message)||ev.message||'error')+')');}catch(e){}
-});
-window.addEventListener('unhandledrejection',function(){/* clipboard etc.—handled locally */});
 function toast(msg){
   try{
     let t=document.getElementById('toast');
@@ -6249,12 +6254,32 @@ window.addEventListener('beforeunload',e=>{
 /* any edit to the canvas marks it dirty */
 document.addEventListener('input',e=>{if(frame&&frame.contains(e.target))markDirty();});
 
-/* INIT */
-loadCustom();
-setRailMode('newsletter');   // newsletter is the default tab (also renders the rail)
-loadHotkeys();renderHotkeys();
-loadState();
-refreshState();
+/* Show a visible banner if anything goes wrong, instead of a silently dead page.
+   This is the diagnostic that turns "buttons do nothing" into a readable cause. */
+function showFatalBanner(where,err){
+  try{
+    let b=document.getElementById('fatalBanner');
+    if(!b){
+      b=document.createElement('div');b.id='fatalBanner';
+      b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:100000;background:#b02a37;color:#fff;font-family:Montserrat,Arial,sans-serif;font-size:13px;padding:10px 16px;box-shadow:0 2px 10px rgba(0,0,0,.4);display:flex;gap:12px;align-items:center;';
+      b.innerHTML='<b style="white-space:nowrap;">⚠ Startup issue</b><span id="fatalMsg" style="flex:1;"></span><button onclick="try{localStorage.clear();}catch(e){}location.reload();" style="background:#fff;color:#b02a37;border:0;border-radius:5px;font-weight:700;padding:6px 12px;cursor:pointer;white-space:nowrap;">Reset &amp; reload</button><button onclick="this.parentElement.remove()" style="background:transparent;color:#fff;border:1px solid #fff;border-radius:5px;padding:6px 10px;cursor:pointer;">Dismiss</button>';
+      document.body.appendChild(b);
+    }
+    document.getElementById('fatalMsg').textContent=where+': '+((err&&err.message)||err||'unknown error')+' — if this keeps happening, click Reset & reload.';
+  }catch(e){}
+}
+window.addEventListener('error',function(ev){showFatalBanner('Error',ev.error||ev.message);});
+
+/* INIT — each step guarded so one bad step can't take down the whole page
+   (e.g. a corrupt saved doc from an older version shouldn't kill the toolbar). */
+(function runInit(){
+  const step=(name,fn)=>{try{fn();}catch(e){console.error('INIT '+name,e);showFatalBanner('Init/'+name,e);}};
+  step('loadCustom',loadCustom);
+  step('setRailMode',()=>setRailMode('newsletter'));
+  step('hotkeys',()=>{loadHotkeys();renderHotkeys();});
+  step('loadState',loadState);
+  step('refreshState',refreshState);
+})();
 </script>
 </body>
 </html>
