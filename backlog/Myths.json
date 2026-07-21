@@ -1,10 +1,10 @@
 {
   "schema": "lngvty.content/v1",
-  "type": "tips",
+  "type": "myths",
   "updatedAt": "2026-07-20T00:00:00Z",
   "items": [
     {
-      "id": "tip-001",
+      "id": "myth-001",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -12,16 +12,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Consistency beats intensity — show up for the small habit every day.",
-        "hydration": "Down 16oz water the moment you wake up before coffee.",
-        "protein": "Anchor 30g protein to breakfast to blunt afternoon cravings.",
-        "sleep": "Same bedtime 7 nights a week beats sleeping in on weekends.",
-        "mobility": "Do 5 slow cat-cows before you get out of bed.",
-        "misc": "Stack a new habit onto an existing one — floss after brushing."
+        "myth": "Lifting weights makes you bulky.",
+        "truth": "Building large muscle takes years of deliberate effort; strength work mostly makes you leaner and stronger.",
+        "source": ""
       }
     },
     {
-      "id": "tip-002",
+      "id": "myth-002",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -29,16 +26,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Progress is data, not a verdict — track it, don't judge it.",
-        "hydration": "Add a pinch of salt to water after sweaty workouts to hold hydration.",
-        "protein": "Keep a rotisserie chicken in the fridge for instant protein.",
-        "sleep": "Cut screens 30 min before bed; blue light delays melatonin.",
-        "mobility": "Hang from a bar 30 sec a day to decompress your spine.",
-        "misc": "Weigh at the same time each morning for a clean trend line."
+        "myth": "You have to do cardio to lose fat.",
+        "truth": "Fat loss is driven by overall energy balance; strength training + diet works without endless cardio.",
+        "source": ""
       }
     },
     {
-      "id": "tip-003",
+      "id": "myth-003",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -46,16 +40,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Don't fear the scale — fear not knowing your numbers.",
-        "hydration": "Coffee counts toward fluids, but water still leads the day.",
-        "protein": "Greek yogurt has ~2x the protein of regular yogurt.",
-        "sleep": "A dark, cool room (65-68F) is worth an extra sleep stage.",
-        "mobility": "Ankle circles under your desk keep the joint mobile.",
-        "misc": "Photograph your plate for a week — awareness alone shifts habits."
+        "myth": "Eating late at night causes weight gain.",
+        "truth": "Total daily calories matter far more than the clock; late eating isn't inherently fattening.",
+        "source": ""
       }
     },
     {
-      "id": "tip-004",
+      "id": "myth-004",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -63,16 +54,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "The best workout is the one you'll actually repeat.",
-        "hydration": "Herbal tea in the evening hydrates without the caffeine hit.",
-        "protein": "Cottage cheese is a slept-on high-protein late snack.",
-        "sleep": "10 min of morning sun helps set your sleep clock.",
-        "mobility": "Deep squat hold for 60 sec resets hips after sitting all day.",
-        "misc": "Prep two protein sources on Sunday to coast through the week."
+        "myth": "Carbs are the enemy.",
+        "truth": "Carbs fuel training and recovery; quality and quantity matter, not blanket avoidance.",
+        "source": ""
       }
     },
     {
-      "id": "tip-005",
+      "id": "myth-005",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -80,16 +68,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Recovery is where the results actually get built.",
-        "hydration": "Eat your water — cucumber, watermelon, and oranges count.",
-        "protein": "Aim for a palm of protein at every meal as a simple gauge.",
-        "sleep": "Magnesium before bed can ease you into deeper sleep.",
-        "mobility": "Thoracic rotations open a stiff upper back in 2 minutes.",
-        "misc": "Keep protein bars in your gym bag for the drive home."
+        "myth": "You can spot-reduce belly fat.",
+        "truth": "You can't choose where fat comes off; overall fat loss reveals definition everywhere.",
+        "source": ""
       }
     },
     {
-      "id": "tip-006",
+      "id": "myth-006",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -97,16 +82,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Small swaps compound — you don't need a full overhaul.",
-        "hydration": "Carry a marked bottle so you can see your intake at a glance.",
-        "protein": "Eggs are the gold standard — cheap, complete, versatile protein.",
-        "sleep": "If you nap, keep it under 25 min so it doesn't hit night sleep.",
-        "mobility": "Wall slides rebuild shoulder mobility for overhead work.",
-        "misc": "Plan your treat — a planned indulgence isn't a slip."
+        "myth": "More sweat means a better workout.",
+        "truth": "Sweat measures cooling, not effort or calories burned.",
+        "source": ""
       }
     },
     {
-      "id": "tip-007",
+      "id": "myth-007",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -114,16 +96,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Mobility is the retirement plan for your joints.",
-        "hydration": "Front-load water early; back off 2 hrs before bed to sleep through.",
-        "protein": "Canned tuna and salmon are shelf-stable protein wins.",
-        "sleep": "Consistent wake time anchors everything — even after a bad night.",
-        "mobility": "90/90 hip switches keep your hips young.",
-        "misc": "Batch-cook grains once; reheat all week."
+        "myth": "Soreness means the workout worked.",
+        "truth": "Soreness reflects novelty/damage, not progress; you can grow without being sore.",
+        "source": ""
       }
     },
     {
-      "id": "tip-008",
+      "id": "myth-008",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -131,16 +110,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Fuel the work — under-eating protein stalls everything.",
-        "hydration": "Add electrolytes on days over 45 min of hard training.",
-        "protein": "Lean ground turkey stretches protein across many meals cheaply.",
-        "sleep": "Write tomorrow's to-do list to quiet a racing bedtime brain.",
-        "mobility": "Calf raises at the sink build ankle resilience.",
-        "misc": "Keep cut veggies at eye level in the fridge."
+        "myth": "Protein hurts your kidneys.",
+        "truth": "In healthy people, higher protein intake is safe and supports muscle and satiety.",
+        "source": ""
       }
     },
     {
-      "id": "tip-009",
+      "id": "myth-009",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -148,16 +124,13 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "You can't out-train a body you never let rest.",
-        "hydration": "Sip, don't chug — steady intake beats one big glass.",
-        "protein": "Edamame is a plant-protein snack with fiber built in.",
-        "sleep": "Keep the bedroom for sleep — it trains the brain to power down.",
-        "mobility": "Doorway pec stretch counters the desk hunch.",
-        "misc": "Freeze single-serve smoothie packs for zero-effort breakfasts."
+        "myth": "Stretching before lifting prevents injury.",
+        "truth": "Dynamic warm-ups beat static stretching pre-workout; save long holds for after.",
+        "source": ""
       }
     },
     {
-      "id": "tip-010",
+      "id": "myth-010",
       "status": "available",
       "reservedBy": null,
       "publishedIn": null,
@@ -165,97 +138,9 @@
       "createdAt": "2026-07-20T00:00:00Z",
       "updatedAt": "2026-07-20T00:00:00Z",
       "content": {
-        "main": "Show up on the hard days — those are the ones that count double.",
-        "hydration": "Room-temp water goes down easier than ice-cold for big volume.",
-        "protein": "A scoop of whey in oatmeal is an easy 20g bump.",
-        "sleep": "Even 20 extra minutes of sleep improves next-day willpower.",
-        "mobility": "Standing hip flexor stretch undoes hours of sitting.",
-        "misc": "Use smaller plates — portion control without the math."
-      }
-    },
-    {
-      "id": "tip-011",
-      "status": "available",
-      "reservedBy": null,
-      "publishedIn": null,
-      "publishedDate": null,
-      "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
-      "content": {
-        "main": "Your future self is built by today's boring choices.",
-        "hydration": "Track hydration for one week to learn your real baseline.",
-        "protein": "Lentils deliver protein AND fiber for pennies per serving.",
-        "sleep": "A wind-down routine signals your body it's time to sleep.",
-        "mobility": "Foam-roll your quads 60 sec before leg day.",
-        "misc": "Keep a 'done' list, not just a to-do list, for motivation."
-      }
-    },
-    {
-      "id": "tip-012",
-      "status": "available",
-      "reservedBy": null,
-      "publishedIn": null,
-      "publishedDate": null,
-      "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
-      "content": {
-        "main": "Strong is the goal — lean is the byproduct.",
-        "hydration": "Add lemon or cucumber if plain water bores you into skipping it.",
-        "protein": "Shrimp cooks in 3 minutes and packs 20g protein per serving.",
-        "sleep": "Alcohol wrecks deep sleep — space it from bedtime.",
-        "mobility": "Scapular push-ups wake up a sleepy upper back.",
-        "misc": "Shop the perimeter of the store first."
-      }
-    },
-    {
-      "id": "tip-013",
-      "status": "available",
-      "reservedBy": null,
-      "publishedIn": null,
-      "publishedDate": null,
-      "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
-      "content": {
-        "main": "Motivation gets you started; systems keep you going.",
-        "hydration": "A water bottle you actually like is the cheapest health upgrade.",
-        "protein": "Beef jerky (low sugar) is portable, high-protein road fuel.",
-        "sleep": "Same routine, every night — repetition is the sleep hack.",
-        "mobility": "Cossack squats build hip and ankle range together.",
-        "misc": "Pre-log your meals the night before to remove decisions."
-      }
-    },
-    {
-      "id": "tip-014",
-      "status": "available",
-      "reservedBy": null,
-      "publishedIn": null,
-      "publishedDate": null,
-      "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
-      "content": {
-        "main": "The goal isn't perfect — it's never two misses in a row.",
-        "hydration": "Match water to activity: more movement, more fluid.",
-        "protein": "Tofu soaks up any flavor and rivals meat on protein per dollar.",
-        "sleep": "Reading beats scrolling as a wind-down — pick paper.",
-        "mobility": "Neck CARs keep a desk-stiff neck mobile.",
-        "misc": "Keep healthy defaults visible; hide the rest."
-      }
-    },
-    {
-      "id": "tip-015",
-      "status": "available",
-      "reservedBy": null,
-      "publishedIn": null,
-      "publishedDate": null,
-      "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
-      "content": {
-        "main": "Discipline is remembering what you actually want.",
-        "hydration": "Start hydrating an hour before a workout, not during.",
-        "protein": "Milk (or fortified soy) is an easy protein-and-calcium combo.",
-        "sleep": "Cool shower before bed can help you fall asleep faster.",
-        "mobility": "Standing forward fold decompresses the whole back chain.",
-        "misc": "Meal-prep containers you can see through get eaten first."
+        "myth": "You need supplements to see results.",
+        "truth": "Whole foods cover most needs; supplements fill gaps, they don't replace the basics.",
+        "source": ""
       }
     }
   ]
