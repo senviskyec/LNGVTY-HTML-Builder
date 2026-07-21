@@ -259,6 +259,31 @@
   .set-body{flex:1;overflow-y:auto;padding:24px;}
   .set-pane{display:none;}
   .set-pane.active{display:block;animation:paneIn .24s cubic-bezier(.2,.8,.2,1) both;}
+  /* Content Library page */
+  .lib-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .lib-tab{font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.3px;color:#555;background:#f0f0f0;border:1px solid #e0e0e0;border-radius:20px;padding:6px 13px;cursor:pointer;transition:.12s;}
+  .lib-tab:hover{border-color:var(--accent);color:var(--accent);}
+  .lib-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .lib-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+  .lib-toolbar input[type=search],.lib-toolbar select{padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;}
+  .lib-toolbar input[type=search]{flex:1;min-width:140px;}
+  .lib-btn{font-family:'Montserrat';font-size:12px;font-weight:700;color:#333;background:#fff;border:1px solid #ccc;border-radius:6px;padding:8px 12px;cursor:pointer;}
+  .lib-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .lib-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .lib-list{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow:auto;}
+  .lib-empty{color:#999;font-size:13px;padding:24px;text-align:center;}
+  .lib-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #eee;border-radius:7px;background:#fff;}
+  .lib-row:hover{border-color:#ddd;background:#fafafa;}
+  .lib-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .lib-dot.gray{background:#c4c4c4;}
+  .lib-dot.yellow{background:#e8b53a;}
+  .lib-dot.green{background:#3faa5a;}
+  .lib-row-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .lib-row-title{font-size:13px;color:#2a2a2a;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lib-row-sub{font-size:10.5px;color:#999;font-family:'Montserrat';letter-spacing:.3px;}
+  .lib-mini{font-family:'Montserrat';font-size:11px;font-weight:700;color:#555;background:#f2f2f2;border:1px solid #e0e0e0;border-radius:5px;padding:5px 10px;cursor:pointer;}
+  .lib-mini:hover{border-color:var(--accent);color:var(--accent);}
+  .lib-mini.danger:hover{border-color:#c0392b;color:#c0392b;}
   @keyframes paneIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
   .set-lede{font-size:13px;color:#77787f;line-height:1.6;margin-bottom:18px;}
   /* cards inside panes */
@@ -307,6 +332,16 @@
   .sc-btn.drag{cursor:grab;}
   .sec-tag{position:absolute;top:6px;left:6px;background:rgba(26,26,26,.85);color:#fff;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:40;display:none;}
   .sec:hover .sec-tag{display:block;}
+  /* content-library fill bar (builder-only, stripped on export) */
+  .fill-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:#1f2024;border:1px solid #34353a;border-radius:8px;padding:7px 10px;margin:0 0 10px;position:relative;z-index:20;}
+  .fill-bar .fb-label{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#cfcfcf;margin-right:2px;}
+  .fill-bar .fb-mini-label{font-size:10px;color:#888;margin:0 2px 0 4px;}
+  .fill-bar .fb-sep{width:1px;height:16px;background:#3a3b40;margin:0 4px;}
+  .fill-bar .fb-btn{font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.3px;color:#eee;background:#2a2b30;border:1px solid #3a3b40;border-radius:5px;padding:5px 10px;cursor:pointer;transition:.12s;}
+  .fill-bar .fb-btn:hover{border-color:var(--accent);background:#33343a;}
+  .fill-bar .fb-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .fill-bar .fb-btn.primary:hover{background:#c94e14;}
+  .fill-bar .fb-btn.mini{font-size:10px;font-weight:600;padding:3px 8px;text-transform:capitalize;color:#bbb;}
 
   [contenteditable]{outline:none;transition:.1s;}
   [contenteditable]:hover{box-shadow:inset 0 0 0 1px rgba(224,90,27,.35);}
@@ -571,6 +606,7 @@
         <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Feedback</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
       </nav>
       <div class="set-foot">
         <span id="setRepoHint">&mdash;</span>
@@ -650,12 +686,40 @@
             <iframe id="blFrame" src="about:blank" data-src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRw_2boXbkkbr51zqlCIqThdYpGVN8_TtyXkSgDOZiEq_sTH2eqS61tAlCXRV-VBw/pubhtml?widget=true&amp;headers=false" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
           </div>
         </div>
+
+        <div class="set-pane" data-pane="library" id="pane-library">
+          <p class="set-lede">Your content library &mdash; every tip, quote, recipe, swap, protein, and myth, with its lifecycle status. Add and edit items here; the builder pulls from them with <b>Generate</b>.</p>
+          <div class="note" id="libGhNote" style="margin-bottom:12px;">Stored as JSON in <code>/backlog</code> on GitHub. <span id="libGhState">Connect a repo in &#9881; GitHub to load.</span></div>
+          <div class="lib-tabs" id="libTabs"></div>
+          <div class="lib-toolbar">
+            <input type="search" id="libSearch" placeholder="Search…" oninput="libRenderList()"/>
+            <select id="libFilter" onchange="libRenderList()">
+              <option value="">All statuses</option>
+              <option value="available">Available</option>
+              <option value="reserved">Reserved</option>
+              <option value="published">Published</option>
+            </select>
+            <button class="lib-btn primary" onclick="libOpenEditor()">+ Add</button>
+            <button class="lib-btn" onclick="libReloadCurrent()">&#8635; Reload</button>
+          </div>
+          <div class="lib-list" id="libList"><div class="lib-empty">Loading…</div></div>
+        </div>
       </div>
     </section>
   </div>
 </div>
 
-<!-- CUSTOMIZE modal (global theme, typography, text clean-up) -->
+<!-- CONTENT LIBRARY editor modal -->
+<div class="modal-bg" id="libEditBg">
+  <div class="modal" style="width:560px;">
+    <div class="modal-head"><h3 id="libEditTitle">Add Item</h3><button onclick="closeLibEditor()">&times;</button></div>
+    <div class="modal-scroll" id="libEditFields"></div>
+    <div class="modal-foot">
+      <span id="libEditStatus" style="flex:1;font-size:12px;color:#888;"></span>
+      <button class="tb-btn" onclick="closeLibEditor()">Cancel</button>
+      <button class="tb-btn primary" id="libEditSave" onclick="libSaveEditor()">Save</button>
+    </div>
+  </div>
 <div class="modal-bg" id="customizeBg">
   <div class="modal" style="width:640px;">
     <div class="modal-head"><h3>&#127912; Customize</h3><button onclick="closeCustomize()">&times;</button></div>
@@ -2386,7 +2450,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -2469,6 +2533,37 @@ function wireSec(sec){
   // restore any saved media/embed in this section
   hydrateMedia(sec);
   wireParagraphKeys(sec);
+  injectFillBar(sec);
+}
+
+/* ═══════════ CONTENT-LIBRARY FILL BAR ═══════════
+   A small in-editor toolbar added to the content sections that can pull from the
+   Content Library. "Generate" reserves + drops in an item; "Next" swaps it. Tip
+   Tuesday additionally gets per-field cycle buttons so you can reroll just the
+   hydration/protein/sleep/mobility line without changing the rest. The bar is
+   builder-only chrome (class fill-bar) and is stripped on export. */
+const SEC_FILL={
+  nltip   :{type:'tips',   label:'Tip'},
+  nlheader:{type:'quotes', label:'Quote'},
+  nlrecipe:{type:'recipes',label:'Recipe'}
+};
+function injectFillBar(sec){
+  const key=sec.dataset.key;
+  const cfg=SEC_FILL[key];
+  if(!cfg)return;
+  if(sec.querySelector(':scope > .fill-bar'))return;   // once
+  const bar=document.createElement('div');
+  bar.className='fill-bar';
+  bar.setAttribute('contenteditable','false');
+  let html=`<span class="fb-label">📚 ${cfg.label}</span>
+    <button class="fb-btn primary" type="button" onclick="libGenerate('${cfg.type}')">🎲 Generate</button>
+    <button class="fb-btn" type="button" onclick="libNext('${cfg.type}')">🔄 Next</button>`;
+  if(key==='nltip'){
+    html+=`<span class="fb-sep"></span><span class="fb-mini-label">reroll one:</span>`+
+      ['hydration','protein','sleep','mobility'].map(f=>`<button class="fb-btn mini" type="button" onclick="libNextTipField('${f}')">${f}</button>`).join('');
+  }
+  bar.innerHTML=html;
+  sec.insertBefore(bar,sec.firstChild);
 }
 
 /* ═══════════ PARAGRAPH ENTER BEHAVIOR ═══════════
@@ -3323,8 +3418,8 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v18.1',
-  name    : 'Autopilot',
+  version : 'v19.0',
+  name    : 'Content Library',
   date    : '20 July 2026',
 };
 
@@ -3466,6 +3561,7 @@ const SET_PANES={
   about  : {title:'Version & Notes', src:null},   // authored inline
   feedback:{title:'Feedback',     src:null},      // authored inline
   backlog :{title:'Content Backlog', src:null},   // authored inline
+  library :{title:'Content Library',  src:null},   // authored inline
 };
 let settingsHydrated=false;
 
@@ -3548,6 +3644,7 @@ function setPane(key){
     const b=document.getElementById('blFrame');
     if(b && b.getAttribute('src')==='about:blank')b.setAttribute('src',b.dataset.src);
   }
+  if(key==='library'){libInitPane();}
   if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
     const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
   if(key==='github'){const c=ghConfig();
@@ -3798,7 +3895,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -4609,7 +4706,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v18.1 "Autopilot" · 20 July 2026
+**Current build:** v19.0 "Content Library" · 20 July 2026
 
 ---
 
@@ -4630,6 +4727,27 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v19.0 — Content Library · 20 July 2026
+
+- **The builder now has a real content library.** Your Tip Tuesday tips, quotes,
+  recipes, smarter swaps, budget proteins, and myth-busters live as JSON files in
+  the repo's `/backlog` folder, each item carrying a lifecycle status:
+  **available → reserved → published**.
+- **Generate & Next, right in the sections.** Tip Tuesday, the header quote, and the
+  recipe each got a small fill bar. **🎲 Generate** pulls an unused item and drops it
+  in; **🔄 Next** swaps it for another (the skipped one comes back to the pool — it's
+  only skipped for the current session, never lost).
+- **Reroll one line of Tip Tuesday.** Beyond cycling the whole tip, you can reroll just
+  the hydration, protein, sleep, or mobility line from that field's own pool.
+- **Nothing is used up until you send.** Generating an item marks it *reserved* for the
+  draft. When you save the newsletter with status **Sent**, every item it reserved is
+  marked *published* with the issue name and date. Change your mind before sending and
+  the reservations just release — no permanent "used" flag flipped by accident.
+- **Content Library page** under Settings → 🌐 Content Library. Tabs per content type,
+  search + status filter, and full add / edit / delete. Green dot = published, yellow =
+  reserved, gray = available. No JSON editing by hand — the page does the file writes.
+- Everything still lives in GitHub. No database, no Airtable, no Make, no monthly fees.
 
 ## v18.1 — Autopilot (fix) · 20 July 2026
 
@@ -4965,6 +5083,15 @@ function defaultDocs(){return `<div class="docs-body">
 <h3>Widgets</h3>
 <p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
 
+<h3>Filling from the content library</h3>
+<p>Tip Tuesday, the header quote, and the recipe section each have a small dark bar at the top with <b>&#127922; Generate</b> and <b>&#128260; Next</b>.</p>
+<ul>
+  <li><b>&#127922; Generate</b> drops in an unused item from your library and reserves it for this newsletter.</li>
+  <li><b>&#128260; Next</b> swaps it for a different one. The one you skipped goes back in the pool &mdash; it's only set aside for this session, never lost.</li>
+  <li>On Tip Tuesday, the small <b>reroll one</b> buttons change just the hydration, protein, sleep, or mobility line without touching the rest.</li>
+</ul>
+<p>Items you generate stay <b>reserved</b> until you save the newsletter with status <b>Sent</b> &mdash; then they're marked <b>published</b> so they don't come up again. Manage all of it (and add new content) under <b>Settings &rarr; &#127760; Content Library</b>.</p>
+
 <h2>5. Settings</h2>
 
 <p>Click <span class="btnrep">&#9881; Settings</span> in the top bar. Pick a section on the left; it opens on the right.</p>
@@ -4980,6 +5107,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><td><b>&#9881; GitHub</b></td><td>Where documents are stored. Set up once, then forget it.</td></tr>
   <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
   <tr><td><b>&#128203; Content Backlog</b></td><td>The rotating bank of tips, smarter swaps, budget proteins, recipes, and quotes. The <b>Dashboard</b> tab shows what's queued next. Mark an item <b>USED</b> after it runs so it isn't repeated.</td></tr>
+  <tr><td><b>&#127760; Content Library</b></td><td>The editable version of that bank, stored as JSON in <code>/backlog</code>. Add, edit, or delete tips, quotes, recipes, swaps, proteins, and myths. Sections pull from here with <b>&#127922; Generate</b>; items go <b>reserved</b> when pulled and <b>published</b> when the newsletter is sent.</td></tr>
 </table>
 
 <div class="note">
@@ -5211,7 +5339,7 @@ function slugify(name){
 function serializeSections(){
   return [...frame.querySelectorAll('.sec')].map(s=>{
     const c=s.cloneNode(true);
-    c.querySelectorAll('.sec-controls,.sec-tag').forEach(e=>e.remove());
+    c.querySelectorAll('.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
     return {key:s.dataset.key,theme:s.dataset.theme||'white',html:c.innerHTML};
   });
 }
@@ -5397,6 +5525,385 @@ async function ghDelete(path,sha){
   return await res.json();
 }
 
+/* ════════════════════════════════════════════════════════════════════════
+   CONTENT LIBRARY  ·  /backlog/*.json
+   A lightweight CMS on top of the same GitHub Contents API. Each content type
+   is one JSON file whose items share a lifecycle:
+     available → reserved (pulled into a draft) → published (newsletter sent)
+   "Generate" reserves an available item; "Next" skips it for THIS session only
+   (in-memory) and reserves another; sending the newsletter publishes every
+   item reserved by it; deleting/!sent releases them back to available.
+   ════════════════════════════════════════════════════════════════════════ */
+const LIB_TYPES={
+  tips     :{file:'tips.json',     label:'Tip Tuesday',      noun:'tip'},
+  swaps    :{file:'swaps.json',    label:'Smarter Swaps',    noun:'swap'},
+  proteins :{file:'proteins.json', label:'Budget Proteins',  noun:'protein'},
+  recipes  :{file:'recipes.json',  label:'Recipes',          noun:'recipe'},
+  quotes   :{file:'quotes.json',   label:'Quotes',           noun:'quote'},
+  myths    :{file:'myths.json',    label:'Myth Busters',     noun:'myth'}
+};
+const LIB_DIR='backlog';
+/* in-memory cache of each loaded file: {type:{doc, sha}} */
+const LIB_CACHE={};
+/* items skipped via "Next" this session only — released, not persisted-skipped */
+const LIB_SKIPPED={};   // {type: Set(ids)}
+function libSkipSet(type){return (LIB_SKIPPED[type]||(LIB_SKIPPED[type]=new Set()));}
+
+function libPath(type){return LIB_DIR+'/'+LIB_TYPES[type].file;}
+function libEmptyDoc(type){return {schema:'lngvty.content/v1',type,updatedAt:new Date().toISOString(),items:[]};}
+
+/* fetch a content file (cached). Falls back to an empty doc if it doesn't exist. */
+async function libLoad(type,force){
+  if(!force && LIB_CACHE[type])return LIB_CACHE[type];
+  if(!ghReady())throw new Error('Connect GitHub first (⚙ GitHub).');
+  const res=await fetch(ghContentsURL(libPath(type)),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404){LIB_CACHE[type]={doc:libEmptyDoc(type),sha:null};return LIB_CACHE[type];}
+  if(!res.ok)throw new Error('Library load failed ('+res.status+')');
+  const j=await res.json();
+  let doc;try{doc=JSON.parse(b64decode(j.content));}catch(e){doc=libEmptyDoc(type);}
+  if(!doc.items)doc.items=[];
+  LIB_CACHE[type]={doc,sha:j.sha||null};
+  return LIB_CACHE[type];
+}
+/* write a content file back to GitHub (updates cache sha) */
+async function libSave(type,message){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to update the library.');
+  const entry=LIB_CACHE[type];if(!entry)throw new Error('Nothing loaded for '+type);
+  entry.doc.updatedAt=new Date().toISOString();
+  const body={message:message||('library: update '+type),content:b64encode(JSON.stringify(entry.doc,null,2))};
+  if(c.branch)body.branch=c.branch;
+  if(entry.sha)body.sha=entry.sha;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${libPath(type)}`,{
+    method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Library save failed ('+res.status+') '+m);}
+  const j=await res.json();entry.sha=j.content&&j.content.sha||entry.sha;
+  return j;
+}
+function libItems(type){return (LIB_CACHE[type]&&LIB_CACHE[type].doc.items)||[];}
+function libFind(type,id){return libItems(type).find(x=>x.id===id);}
+function libAvailable(type){
+  const skip=libSkipSet(type);
+  return libItems(type).filter(x=>x.status==='available' && !skip.has(x.id));
+}
+function libNextId(type,noun){
+  const items=libItems(type);let n=0;
+  items.forEach(x=>{const m=String(x.id).match(/(\d+)$/);if(m)n=Math.max(n,+m[1]);});
+  return (noun||LIB_TYPES[type].noun)+'-'+String(n+1).padStart(3,'0');
+}
+
+/* Reserve the next available item of a type for the current newsletter.
+   Returns the reserved item, or null if the pool is empty. Persists to GitHub. */
+async function libReserve(type){
+  await libLoad(type);
+  const pool=libAvailable(type);
+  if(!pool.length)return null;
+  const item=pool[Math.floor(Math.random()*pool.length)];
+  item.status='reserved';
+  item.reservedBy=currentNewsletterKey();
+  item.updatedAt=new Date().toISOString();
+  try{await libSave(type,'library: reserve '+item.id);}catch(e){toast('Reserved locally — GitHub sync failed');}
+  return item;
+}
+/* Release a specific reserved item back to available (used by "Next" + unpublish). */
+async function libRelease(type,id,persist){
+  const item=libFind(type,id);if(!item)return;
+  if(item.status==='reserved'){item.status='available';item.reservedBy=null;item.updatedAt=new Date().toISOString();
+    if(persist){try{await libSave(type,'library: release '+id);}catch(e){}}}
+}
+/* identifier for the newsletter currently in the editor (used as reservedBy). */
+function currentNewsletterKey(){
+  const nm=(currentMeta&&currentMeta.name)||'';
+  return nm?slugify(nm):'draft';
+}
+
+/* When a newsletter is SENT: publish every item this newsletter reserved.
+   When it's NOT sent (draft/review): leave reservations intact so they're held.
+   Call from confirmSave with the chosen status + issue label. */
+async function libSyncOnSave(status,issueLabel){
+  const key=currentNewsletterKey();
+  const sent=/sent|publish/i.test(status||'');
+  // items may have been reserved before the newsletter had a name (key "draft"),
+  // so a Sent newsletter claims anything reserved under its own key OR "draft".
+  const claims=id=>id===key||id==='draft';
+  for(const type of Object.keys(LIB_TYPES)){
+    const entry=LIB_CACHE[type];if(!entry)continue;
+    let changed=false;
+    entry.doc.items.forEach(it=>{
+      if(it.status==='reserved' && claims(it.reservedBy) && sent){
+        it.status='published';it.publishedIn=issueLabel||key;it.publishedDate=isoDate(new Date());it.updatedAt=new Date().toISOString();changed=true;
+      } else if(it.status==='reserved' && it.reservedBy==='draft' && key!=='draft'){
+        // newsletter now has a name — claim its draft reservations so a later
+        // send (or a release) can find them by the newsletter's key.
+        it.reservedBy=key;it.updatedAt=new Date().toISOString();changed=true;
+      }
+    });
+    if(changed){try{await libSave(type,'library: sync for '+ (issueLabel||key));}catch(e){}}
+  }
+}
+
+/* ── Rendering a reserved item into the active section on the canvas ── */
+/* Each returns true on success. They locate the matching section by data-key
+   and set field text (real content, not ghost), then mark non-empty. */
+function libSetField(el,val){if(!el)return;el.textContent=val==null?'':String(val);markEmpty(el);}
+function sectionByKey(key){return frame.querySelector('.sec[data-key="'+key+'"]');}
+
+function fillTip(item,only){
+  const sec=sectionByKey('nltip');if(!sec)return false;
+  const c=item.content||{};
+  const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+  // Map by placeholder text so reordering doesn't break it.
+  const byPh=ph=>eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===ph);
+  // main headline + body
+  if(!only||only==='main'){
+    const title=eds.find(e=>/this week's focus|recovery/i.test(e.getAttribute('data-ph')||''))||eds[1];
+    if(c.main)libSetField(title,c.main);
+  }
+  // sub-tips: match the four cards by their accent label
+  const subs=[['hydration',c.hydration],['protein',c.protein],['sleep',c.sleep],['mobility',c.mobility]];
+  subs.forEach(([label,val])=>{
+    if(only && only!==label && only!=='all')return;
+    // find the card whose label cell equals the category, set the detail cell under it
+    const labelCell=eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===label);
+    if(labelCell){
+      const card=labelCell.closest('.li-wrap')||labelCell.parentElement;
+      // detail is the LAST contenteditable in the card (icon, label, detail)
+      const cends=card?[...card.querySelectorAll('[contenteditable]')]:[];
+      const detail=cends[cends.length-1];
+      if(detail&&detail!==labelCell&&val)libSetField(detail,val);
+    }
+  });
+  return true;
+}
+function fillQuote(item){
+  const sec=sectionByKey('nlheader');if(!sec)return false;
+  const c=item.content||{};
+  const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+  const q=eds.find(e=>/quote/i.test(e.getAttribute('data-ph')||''));
+  if(q)libSetField(q,c.credit?('"'+c.quote+'" — '+c.credit):('"'+c.quote+'"'));
+  return true;
+}
+function fillSwap(item){
+  const sec=sectionByKey('nltip');   // swaps often live in a tip/callout; fall back to a toast
+  const c=item.content||{};
+  toast('Swap: '+c.instead+' → '+c.swap);
+  return insertContentBlock('Smarter Swap',
+    `<b>${c.instead}</b> (${c.insteadCals} cal) → <b>${c.swap}</b> (${c.swapCals} cal) · saves ${c.saved} cal`);
+}
+function fillProtein(item){
+  const c=item.content||{};
+  return insertContentBlock('Budget Protein',
+    `<b>${c.name}</b> — ${c.protein}g protein / ${c.serving} · ${c.price} (${c.per10g}/10g)`);
+}
+function fillMyth(item){
+  const c=item.content||{};
+  return insertContentBlock('Myth Buster',
+    `<b>MYTH:</b> ${c.myth}<br><b>TRUTH:</b> ${c.truth}`);
+}
+function fillRecipe(item){
+  const sec=sectionByKey('nlrecipe');const c=item.content||{};
+  if(!sec){toast('Add a Recipe section first');return false;}
+  const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+  const name=eds.find(e=>/sheet pan|recipe name/i.test(e.getAttribute('data-ph')||''));
+  if(name)libSetField(name,c.name);
+  // description
+  const desc=eds.find(e=>/one-pan|simple, high-protein/i.test(e.getAttribute('data-ph')||''));
+  if(desc && c.time)libSetField(desc,`${c.time} · ${c.servings} servings`);
+  // stats: protein / calories / cost
+  const setStat=(labelRe,val)=>{const lab=eds.find(e=>labelRe.test(e.getAttribute('data-ph')||''));if(lab){const cell=lab.closest('.stat-cell');const num=cell?cell.querySelector('[contenteditable]'):null;if(num&&val)libSetField(num,val);}};
+  setStat(/protein/i,c.protein&&c.protein+'g');
+  setStat(/calor/i,c.calories);
+  setStat(/per serving|cost/i,c.cost);
+  // ingredients + steps into their lists
+  fillListInto(sec,'grocery|ingredient',c.ingredients);
+  fillListInto(sec,'instruction|step',c.steps);
+  return true;
+}
+/* fill a li-list (matched by a nearby label) with array values */
+function fillListInto(sec,labelRe,arr){
+  if(!arr||!arr.length)return;
+  const lists=[...sec.querySelectorAll('.li-list')];
+  const re=new RegExp(labelRe,'i');
+  // choose the list whose preceding label matches
+  let target=null;
+  lists.forEach(l=>{
+    const prevLabel=l.previousElementSibling&&l.previousElementSibling.textContent||'';
+    const near=l.closest('div')&&l.closest('div').textContent||'';
+    if(re.test(prevLabel)||re.test(near))target=target||l;
+  });
+  target=target||lists[0];if(!target)return;
+  const wraps=[...target.querySelectorAll(':scope > .li-wrap')];
+  const addBtn=target.nextElementSibling;
+  arr.forEach((val,i)=>{
+    let wrap=wraps[i];
+    if(!wrap&&addBtn&&addBtn.classList.contains('li-add')){addLi(addBtn);wrap=target.querySelectorAll(':scope > .li-wrap')[i];}
+    if(wrap){const ed=wrap.querySelector('[contenteditable]:not(.step-num)');if(ed)libSetField(ed,val);}
+  });
+}
+/* generic: append a simple content block section to the canvas */
+function insertContentBlock(label,html){
+  const sec=document.createElement('div');sec.className='sec';sec.dataset.key='content-block';
+  sec.innerHTML=`<div style="background:var(--secbg);padding:24px 48px;border-bottom:1px solid #eee;">
+    <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">${label}</div>
+    <div contenteditable="true" style="font-size:14px;color:var(--sectext);line-height:1.7;">${html}</div>
+  </div>`+controlsHTML();
+  const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=label;
+  frame.appendChild(sec);applySecTheme(sec,'white');wireSec(sec);refreshState();saveStateLocal();
+  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  return true;
+}
+
+const LIB_FILLERS={tips:fillTip,quotes:fillQuote,swaps:fillSwap,proteins:fillProtein,myths:fillMyth,recipes:fillRecipe};
+
+/* PUBLIC: Generate — reserve an available item and drop it into the section.
+   Tracks which item is currently placed per type so "Next" can release it. */
+const LIB_PLACED={};   // {type:id}
+async function libGenerate(type,only){
+  try{
+    const item=await libReserve(type);
+    if(!item){toast('No available '+LIB_TYPES[type].label+' left — add more in the Content Library');return;}
+    LIB_PLACED[type]=item.id;
+    (LIB_FILLERS[type]||(()=>{}))(item,only);
+    refreshState();saveStateLocal();
+    toast('\u2713 '+LIB_TYPES[type].label+' filled');
+  }catch(e){toast(e.message||'Could not generate');}
+}
+/* PUBLIC: Next — skip the current item this session, reserve+place another. */
+async function libNext(type,only){
+  const cur=LIB_PLACED[type];
+  if(cur){libSkipSet(type).add(cur);await libRelease(type,cur,true);}
+  await libGenerate(type,only);
+}
+/* PUBLIC: cycle just one Tip sub-field from the per-field pool (hydration…). */
+async function libNextTipField(field){
+  try{
+    await libLoad('tips');
+    const pool=libItems('tips').map(x=>x.content&&x.content[field]).filter(Boolean);
+    if(!pool.length){toast('No '+field+' tips available');return;}
+    const val=pool[Math.floor(Math.random()*pool.length)];
+    const sec=sectionByKey('nltip');if(!sec)return;
+    const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+    const labelCell=eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===field);
+    if(labelCell){const card=labelCell.closest('.li-wrap')||labelCell.parentElement;const cends=card?[...card.querySelectorAll('[contenteditable]')]:[];const detail=cends[cends.length-1];if(detail&&detail!==labelCell)libSetField(detail,val);}
+    saveStateLocal();toast('\u2713 New '+field+' tip');
+  }catch(e){toast(e.message||'Could not cycle');}
+}
+
+/* ── CONTENT LIBRARY settings page (CRUD) ── */
+/* Field schema per type: [key,label,type] where type = text|textarea|list */
+const LIB_FIELDS={
+  tips:[['main','Main Tip (headline)','textarea'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
+  swaps:[['instead','Instead of…','text'],['insteadCals','Cals (A)','text'],['swap','Try this…','text'],['swapCals','Cals (B)','text'],['saved','Cals saved','text']],
+  proteins:[['name','Protein source','text'],['serving','Serving','text'],['protein','Protein (g)','text'],['price','Price / serving','text'],['per10g','$ per 10g','text'],['notes','Notes','textarea']],
+  recipes:[['name','Recipe name','text'],['image','Image URL','text'],['protein','Protein (g)','text'],['calories','Calories','text'],['cost','Cost / serving','text'],['servings','Servings','text'],['time','Prep + cook','text'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
+  quotes:[['quote','Quote','textarea'],['credit','Credit','text']],
+  myths:[['myth','The myth','textarea'],['truth','The truth','textarea'],['source','Source / note','text']]
+};
+const LIB_TITLE={tips:'main',swaps:'instead',proteins:'name',recipes:'name',quotes:'quote',myths:'myth'};
+let libCurrentType='tips';
+let libEditingId=null;
+
+function libInitPane(){
+  // build type tabs once
+  const tabs=document.getElementById('libTabs');
+  if(tabs && !tabs.children.length){
+    Object.entries(LIB_TYPES).forEach(([type,cfg])=>{
+      const b=document.createElement('button');
+      b.className='lib-tab'+(type===libCurrentType?' active':'');
+      b.textContent=cfg.label;b.dataset.type=type;
+      b.onclick=()=>{libCurrentType=type;document.querySelectorAll('#libTabs .lib-tab').forEach(x=>x.classList.toggle('active',x.dataset.type===type));libReloadCurrent();};
+      tabs.appendChild(b);
+    });
+  }
+  const st=document.getElementById('libGhState');
+  if(st)st.textContent=ghReady()?('Connected to '+ghConfig().owner+'/'+ghConfig().repo+' · /'+LIB_DIR):'Connect a repo in ⚙ GitHub to load.';
+  libReloadCurrent();
+}
+async function libReloadCurrent(){
+  const list=document.getElementById('libList');
+  if(!ghReady()){list.innerHTML='<div class="lib-empty">Connect GitHub to load your library.</div>';return;}
+  list.innerHTML='<div class="lib-empty">Loading…</div>';
+  try{await libLoad(libCurrentType,true);libRenderList();}
+  catch(e){list.innerHTML='<div class="lib-empty">Could not load: '+(e.message||e)+'</div>';}
+}
+function libRenderList(){
+  const list=document.getElementById('libList');if(!list)return;
+  const q=(document.getElementById('libSearch').value||'').toLowerCase();
+  const filt=document.getElementById('libFilter').value;
+  const titleKey=LIB_TITLE[libCurrentType];
+  let items=libItems(libCurrentType);
+  if(filt)items=items.filter(x=>x.status===filt);
+  if(q)items=items.filter(x=>JSON.stringify(x.content).toLowerCase().includes(q));
+  if(!items.length){list.innerHTML='<div class="lib-empty">No items. Click <b>+ Add</b> to create one.</div>';return;}
+  const dot={available:'gray',reserved:'yellow',published:'green'};
+  list.innerHTML=items.map(it=>{
+    const title=(it.content&&it.content[titleKey])||'(untitled)';
+    const sub=it.status==='published'?('Published · '+(it.publishedIn||'')):(it.status==='reserved'?('Reserved · '+(it.reservedBy||'')):'Available');
+    return `<div class="lib-row">
+      <span class="lib-dot ${dot[it.status]||'gray'}" title="${it.status}"></span>
+      <span class="lib-row-main"><span class="lib-row-title">${escapeHtml(String(title).slice(0,90))}</span><span class="lib-row-sub">${it.id} · ${sub}</span></span>
+      <button class="lib-mini" onclick="libOpenEditor('${it.id}')">Edit</button>
+      <button class="lib-mini danger" onclick="libDeleteItem('${it.id}')">Del</button>
+    </div>`;
+  }).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function libOpenEditor(id){
+  libEditingId=id||null;
+  const fields=LIB_FIELDS[libCurrentType];
+  const item=id?libFind(libCurrentType,id):null;
+  document.getElementById('libEditTitle').textContent=(id?'Edit ':'Add ')+LIB_TYPES[libCurrentType].label;
+  const host=document.getElementById('libEditFields');
+  host.innerHTML=fields.map(([key,label,type])=>{
+    let val=item&&item.content?item.content[key]:'';
+    if(type==='list'&&Array.isArray(val))val=val.join('\n');
+    if(type==='textarea'||type==='list')
+      return `<div class="field-row"><label>${label}</label><textarea id="lf_${key}" style="width:100%;min-height:${type==='list'?90:60}px;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;">${escapeHtml(val||'')}</textarea></div>`;
+    return `<div class="field-row"><label>${label}</label><input id="lf_${key}" type="text" value="${escapeHtml(val||'')}" style="width:100%;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;"/></div>`;
+  }).join('');
+  document.getElementById('libEditStatus').textContent='';
+  document.getElementById('libEditBg').classList.add('show');
+}
+function closeLibEditor(){document.getElementById('libEditBg').classList.remove('show');}
+async function libSaveEditor(){
+  const fields=LIB_FIELDS[libCurrentType];
+  const content={};
+  fields.forEach(([key,label,type])=>{
+    const el=document.getElementById('lf_'+key);let v=el?el.value:'';
+    if(type==='list')content[key]=v.split('\n').map(s=>s.trim()).filter(Boolean);
+    else content[key]=v.trim();
+  });
+  const btn=document.getElementById('libEditSave');const st=document.getElementById('libEditStatus');
+  btn.disabled=true;st.textContent='Saving…';
+  try{
+    await libLoad(libCurrentType);
+    if(libEditingId){
+      const it=libFind(libCurrentType,libEditingId);
+      if(it){it.content=content;it.updatedAt=new Date().toISOString();}
+    }else{
+      LIB_CACHE[libCurrentType].doc.items.push({
+        id:libNextId(libCurrentType),status:'available',reservedBy:null,publishedIn:null,publishedDate:null,
+        createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),content
+      });
+    }
+    await libSave(libCurrentType,'library: '+(libEditingId?'edit ':'add ')+libCurrentType);
+    closeLibEditor();libRenderList();toast('\u2713 Saved to library');
+  }catch(e){st.textContent=e.message||'Save failed';}
+  btn.disabled=false;
+}
+async function libDeleteItem(id){
+  if(!confirm('Delete '+id+' from the library? This cannot be undone.'))return;
+  try{
+    await libLoad(libCurrentType);
+    const doc=LIB_CACHE[libCurrentType].doc;
+    doc.items=doc.items.filter(x=>x.id!==id);
+    await libSave(libCurrentType,'library: delete '+id);
+    libRenderList();toast('Deleted '+id);
+  }catch(e){toast(e.message||'Delete failed');}
+}
+
 /* ── GitHub settings modal ── */
 function openGithubSettings(note){
   openSettings('github');
@@ -5536,6 +6043,8 @@ async function confirmSave(){
   let ok=false,errMsg='';
   try{await ghPut(nl);ok=true;}
   catch(e){ok=false;errMsg=e.message||String(e);}
+  // sync content-library lifecycle: publish reserved items if this issue is Sent
+  try{await libSyncOnSave(status,name);}catch(e){}
   btn.disabled=false;btn.innerHTML='&#128190; Save';
   if(ok){
     closeSaveModal();
