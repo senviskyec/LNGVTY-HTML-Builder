@@ -1,0 +1,407 @@
+{
+  "schema": "lngvty.content/v1",
+  "type": "swaps",
+  "updatedAt": "2026-07-20T00:00:00Z",
+  "items": [
+    {
+      "id": "swap-001",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Bagel w/ cream cheese",
+        "insteadCals": "450",
+        "swap": "Ezekiel toast w/ avocado",
+        "swapCals": "250",
+        "saved": "200"
+      }
+    },
+    {
+      "id": "swap-002",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Soda (12oz)",
+        "insteadCals": "150",
+        "swap": "Sparkling water + lime",
+        "swapCals": "5",
+        "saved": "145"
+      }
+    },
+    {
+      "id": "swap-003",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Fried chicken sandwich",
+        "insteadCals": "700",
+        "swap": "Grilled chicken sandwich",
+        "swapCals": "400",
+        "saved": "300"
+      }
+    },
+    {
+      "id": "swap-004",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Flavored latte (16oz)",
+        "insteadCals": "300",
+        "swap": "Americano w/ splash of milk",
+        "swapCals": "30",
+        "saved": "270"
+      }
+    },
+    {
+      "id": "swap-005",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Potato chips (1oz)",
+        "insteadCals": "160",
+        "swap": "Air-popped popcorn (3 cups)",
+        "swapCals": "90",
+        "saved": "70"
+      }
+    },
+    {
+      "id": "swap-006",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Sour cream on tacos",
+        "insteadCals": "120",
+        "swap": "Greek yogurt topping",
+        "swapCals": "35",
+        "saved": "85"
+      }
+    },
+    {
+      "id": "swap-007",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "White pasta (2 cups)",
+        "insteadCals": "400",
+        "swap": "Zucchini noodles + a little pasta",
+        "swapCals": "180",
+        "saved": "220"
+      }
+    },
+    {
+      "id": "swap-008",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Ranch dressing (2 tbsp)",
+        "insteadCals": "140",
+        "swap": "Greek-yogurt ranch",
+        "swapCals": "45",
+        "saved": "95"
+      }
+    },
+    {
+      "id": "swap-009",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Ice cream (1 cup)",
+        "insteadCals": "275",
+        "swap": "Greek yogurt + berries frozen",
+        "swapCals": "130",
+        "saved": "145"
+      }
+    },
+    {
+      "id": "swap-010",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Granola (1/2 cup)",
+        "insteadCals": "250",
+        "swap": "Steel-cut oats + nuts",
+        "swapCals": "180",
+        "saved": "70"
+      }
+    },
+    {
+      "id": "swap-011",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Beef burger patty",
+        "insteadCals": "300",
+        "swap": "Turkey burger patty",
+        "swapCals": "190",
+        "saved": "110"
+      }
+    },
+    {
+      "id": "swap-012",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Mayo on sandwich (2 tbsp)",
+        "insteadCals": "190",
+        "swap": "Mashed avocado",
+        "swapCals": "80",
+        "saved": "110"
+      }
+    },
+    {
+      "id": "swap-013",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Sugary cereal (1 cup)",
+        "insteadCals": "200",
+        "swap": "Plain oats + cinnamon + fruit",
+        "swapCals": "150",
+        "saved": "50"
+      }
+    },
+    {
+      "id": "swap-014",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Store smoothie (20oz)",
+        "insteadCals": "400",
+        "swap": "Home protein smoothie",
+        "swapCals": "250",
+        "saved": "150"
+      }
+    },
+    {
+      "id": "swap-015",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "French fries (medium)",
+        "insteadCals": "380",
+        "swap": "Roasted potato wedges",
+        "swapCals": "200",
+        "saved": "180"
+      }
+    },
+    {
+      "id": "swap-016",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Candy bar",
+        "insteadCals": "250",
+        "swap": "Square of dark chocolate + almonds",
+        "swapCals": "120",
+        "saved": "130"
+      }
+    },
+    {
+      "id": "swap-017",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Full-fat cheese (2 slices)",
+        "insteadCals": "220",
+        "swap": "Part-skim mozzarella",
+        "swapCals": "140",
+        "saved": "80"
+      }
+    },
+    {
+      "id": "swap-018",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Croutons on salad",
+        "insteadCals": "100",
+        "swap": "Toasted chickpeas",
+        "swapCals": "60",
+        "saved": "40"
+      }
+    },
+    {
+      "id": "swap-019",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Sweet tea (16oz)",
+        "insteadCals": "180",
+        "swap": "Unsweet tea + lemon",
+        "swapCals": "5",
+        "saved": "175"
+      }
+    },
+    {
+      "id": "swap-020",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Butter on toast",
+        "insteadCals": "100",
+        "swap": "Mashed avocado thin layer",
+        "swapCals": "50",
+        "saved": "50"
+      }
+    },
+    {
+      "id": "swap-021",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Pretzels (1oz)",
+        "insteadCals": "110",
+        "swap": "Baby carrots + hummus",
+        "swapCals": "70",
+        "saved": "40"
+      }
+    },
+    {
+      "id": "swap-022",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Milk chocolate (bar)",
+        "insteadCals": "230",
+        "swap": "85% dark chocolate (2 squares)",
+        "swapCals": "90",
+        "saved": "140"
+      }
+    },
+    {
+      "id": "swap-023",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Bacon (3 strips)",
+        "insteadCals": "130",
+        "swap": "Canadian bacon (3 slices)",
+        "swapCals": "60",
+        "saved": "70"
+      }
+    },
+    {
+      "id": "swap-024",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Regular peanut butter (2 tbsp)",
+        "insteadCals": "190",
+        "swap": "Powdered PB reconstituted",
+        "swapCals": "60",
+        "saved": "130"
+      }
+    },
+    {
+      "id": "swap-025",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "instead": "Frozen pizza (2 slices)",
+        "insteadCals": "600",
+        "swap": "Whole-wheat flatbread pizza",
+        "swapCals": "350",
+        "saved": "250"
+      }
+    }
+  ]
+}
