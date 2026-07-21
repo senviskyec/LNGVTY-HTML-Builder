@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-07-21T14:10:40.262Z",
+  "updatedAt": "2026-07-21T14:10:43.198Z",
   "items": [
     {
       "id": "recipe-001",
@@ -491,12 +491,12 @@
     },
     {
       "id": "recipe-015",
-      "status": "reserved",
-      "reservedBy": "draft",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T14:10:40.262Z",
+      "updatedAt": "2026-07-21T14:10:43.198Z",
       "content": {
         "name": "Peanut Tofu Noodles",
         "image": "",
