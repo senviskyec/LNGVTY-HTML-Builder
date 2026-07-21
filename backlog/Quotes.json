@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-20T00:00:00Z",
+  "updatedAt": "2026-07-21T13:27:45.431Z",
   "items": [
     {
       "id": "quote-001",
@@ -395,12 +395,12 @@
     },
     {
       "id": "quote-031",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "draft",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-21T13:27:45.431Z",
       "content": {
         "quote": "We are what we repeatedly do. Excellence, then, is not an act but a habit.",
         "credit": "Will Durant"
