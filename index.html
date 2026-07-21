@@ -1719,7 +1719,7 @@ const SECTIONS = {
           <div style="margin-bottom:4px;">${tagBlock(['High Protein','Prep: 35 min'],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:#fff3ef;color:var(--accent);padding:3px 8px;")}</div>
           ${ph('Sheet Pan Chicken & Veggies',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--heading);text-transform:uppercase;margin:10px 0 6px;")}
           ${ph('A simple, high-protein dinner that comes together on one pan in about 35 minutes.',"font-size:13px;color:#777;line-height:1.65;font-weight:300;margin-bottom:14px;",'p')}
-          ${statRow([['42g','Protein'],['520','Calories'],['$3.50','Per Serving']])}
+          ${statRow([['42g','Protein'],['520','Calories'],['$3.50','Per Serving'],['48g','Total Carbs'],['32g','Net Carbs'],['6g','Sugar']])}
         </div>
         <div style="background:var(--gray);padding:18px 20px;margin-bottom:14px;">
           ${ph('Grocery List',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:12px;")}
@@ -3425,7 +3425,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v19.3',
+  version : 'v19.4',
   name    : 'Content Library',
   date    : '21 July 2026',
 };
@@ -4723,7 +4723,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v19.3 "Content Library" · 21 July 2026
+**Current build:** v19.4 "Content Library" · 21 July 2026
 
 ---
 
@@ -4744,6 +4744,21 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v19.4 — Content Library (generate fixes) · 21 July 2026
+
+- **Generating a tip now fills everything.** The main headline, the description under
+  it, and the tags all populate — previously the headline text was landing on the
+  wrong line and the description/tags were left blank. Tips.json gained a proper
+  \`description\` field for this.
+- **Recipe stats expanded and fixed.** The featured recipe now shows six stats —
+  Protein, Calories, Per Serving, Total Carbs, Net Carbs, and Sugar — and the cost
+  gets its <b>$</b> back. Recipes.json carries the new carb/sugar values.
+- **Recipe ingredients and steps generate properly.** Both lists now fill from the
+  recipe (growing or trimming to the exact count), steps auto-number, and the
+  instructions panel opens on its own so the steps are visible.
+- The Content Library editors gained the matching fields (tip Description; recipe
+  Total/Net Carbs and Sugar) so new entries can set them too.
 
 ## v19.3 — Content Library (docs & notes) · 21 July 2026
 
@@ -5721,28 +5736,28 @@ function fillTip(item,only){
   const sec=sectionByKey('nltip');if(!sec)return false;
   const c=item.content||{};
   const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
-  // Map by placeholder text so reordering doesn't break it.
-  const byPh=ph=>eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===ph);
-  // main headline + body
+  const byPh=re=>eds.find(e=>re.test(e.getAttribute('data-ph')||''));
+  // main headline is the big white line ("Recovery Is Where Results Happen"),
+  // description is the muted paragraph right under it ("You don't get stronger…").
   if(!only||only==='main'){
-    const title=eds.find(e=>/this week's focus|recovery/i.test(e.getAttribute('data-ph')||''))||eds[1];
-    if(c.main)libSetField(title,c.main);
+    const headline=byPh(/where results happen|this week's headline|main tip/i);
+    if(headline && c.main)libSetField(headline,c.main);
+    const desc=byPh(/you don't get stronger|prioritize these four|short intro/i);
+    if(desc && c.description)libSetField(desc,c.description);
   }
   // sub-tips: match the four cards by their accent label
   const subs=[['hydration',c.hydration],['protein',c.protein],['sleep',c.sleep],['mobility',c.mobility]];
   subs.forEach(([label,val])=>{
     if(only && only!==label && only!=='all')return;
-    // find the card whose label cell equals the category, set the detail cell under it
     const labelCell=eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===label);
     if(labelCell){
       const card=labelCell.closest('.li-wrap')||labelCell.parentElement;
-      // detail is the LAST contenteditable in the card (icon, label, detail)
       const cends=card?[...card.querySelectorAll('[contenteditable]')]:[];
       const detail=cends[cends.length-1];
       if(detail&&detail!==labelCell&&val)libSetField(detail,val);
     }
   });
-  // tags above the main tip — replace with this tip's tags (only on a full fill)
+  // tags above the main tip
   if(!only||only==='main'){
     if(Array.isArray(c.tags))setSectionTags(sec,c.tags);
   }
@@ -5793,40 +5808,65 @@ function fillRecipe(item){
   if(!sec){toast('Add a Recipe section first');return false;}
   const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
   const name=eds.find(e=>/sheet pan|recipe name/i.test(e.getAttribute('data-ph')||''));
-  if(name)libSetField(name,c.name);
-  // description
+  if(name&&c.name)libSetField(name,c.name);
+  // subtitle → time · servings
   const desc=eds.find(e=>/one-pan|simple, high-protein/i.test(e.getAttribute('data-ph')||''));
-  if(desc && c.time)libSetField(desc,`${c.time} · ${c.servings} servings`);
-  // stats: protein / calories / cost
-  const setStat=(labelRe,val)=>{const lab=eds.find(e=>labelRe.test(e.getAttribute('data-ph')||''));if(lab){const cell=lab.closest('.stat-cell');const num=cell?cell.querySelector('[contenteditable]'):null;if(num&&val)libSetField(num,val);}};
-  setStat(/protein/i,c.protein&&c.protein+'g');
-  setStat(/calor/i,c.calories);
-  setStat(/per serving|cost/i,c.cost);
-  // ingredients + steps into their lists
-  fillListInto(sec,'grocery|ingredient',c.ingredients);
-  fillListInto(sec,'instruction|step',c.steps);
+  if(desc){const bits=[c.time,c.servings&&(c.servings+' servings')].filter(Boolean).join(' · ');if(bits)libSetField(desc,bits);}
+  // stats — set each cell by its LABEL text (works no matter the order/count).
+  const money=v=>{if(v==null||v==='')return '';v=String(v).trim();return v.charAt(0)==='$'?v:'$'+v;};
+  const g=v=>{if(v==null||v==='')return '';v=String(v).trim();return /[a-z]/i.test(v)?v:v+'g';};
+  const statMap=[
+    [/protein/i, g(c.protein)],
+    [/calor/i, c.calories],
+    [/per serving|cost/i, money(c.cost)],
+    [/total carb/i, g(c.totalCarbs)],
+    [/net carb/i, g(c.netCarbs)],
+    [/sugar/i, g(c.sugar)]
+  ];
+  statMap.forEach(([re,val])=>{
+    if(val==null||val==='')return;
+    // search ONLY within stat cells, so a matching word elsewhere (e.g. the
+    // "High protein · Easy prep" subtitle) can't steal the match.
+    const cells=[...sec.querySelectorAll('.stat-cell')];
+    const cell=cells.find(cl=>{const lab=cl.querySelectorAll('[contenteditable]')[1];return lab&&re.test(lab.getAttribute('data-ph')||'');});
+    if(cell){const num=cell.querySelectorAll('[contenteditable]')[0];if(num)libSetField(num,val);}
+  });
+  // ingredients → the non-step list; steps → the step-num list
+  const lists=[...sec.querySelectorAll('.li-list')];
+  const stepList=lists.find(l=>/step-num/.test(l.getAttribute('data-proto')||''));
+  const ingList=lists.find(l=>l!==stepList);
+  if(ingList&&Array.isArray(c.ingredients))fillList(ingList,c.ingredients);
+  if(stepList&&Array.isArray(c.steps)){
+    fillList(stepList,c.steps);
+    // steps live in a collapsed panel by default — reveal it so they show
+    const panel=sec.querySelector('.nl-steps');
+    const toggle=sec.querySelector('.nl-steptoggle');
+    if(panel&&panel.dataset.on!=='1'&&toggle)toggleRecipeSteps(toggle);
+  }
   return true;
 }
-/* fill a li-list (matched by a nearby label) with array values */
-function fillListInto(sec,labelRe,arr){
-  if(!arr||!arr.length)return;
-  const lists=[...sec.querySelectorAll('.li-list')];
-  const re=new RegExp(labelRe,'i');
-  // choose the list whose preceding label matches
-  let target=null;
-  lists.forEach(l=>{
-    const prevLabel=l.previousElementSibling&&l.previousElementSibling.textContent||'';
-    const near=l.closest('div')&&l.closest('div').textContent||'';
-    if(re.test(prevLabel)||re.test(near))target=target||l;
-  });
-  target=target||lists[0];if(!target)return;
-  const wraps=[...target.querySelectorAll(':scope > .li-wrap')];
-  const addBtn=target.nextElementSibling;
+/* fill a li-list with array values, growing/shrinking it to match the array */
+function fillList(list,arr){
+  if(!list||!Array.isArray(arr))return;
+  const addBtn=list.nextElementSibling;
+  // grow to at least arr.length rows
+  let wraps=[...list.querySelectorAll(':scope > .li-wrap')];
+  while(wraps.length<arr.length && addBtn && addBtn.classList.contains('li-add')){
+    addLi(addBtn);wraps=[...list.querySelectorAll(':scope > .li-wrap')];
+  }
+  // remove extra rows beyond arr.length (keep at least 1)
+  wraps=[...list.querySelectorAll(':scope > .li-wrap')];
+  for(let i=wraps.length-1;i>=arr.length && i>0;i--){
+    const del=wraps[i].querySelector('.li-del');if(del)delLi(del);
+  }
+  // write values
+  wraps=[...list.querySelectorAll(':scope > .li-wrap')];
   arr.forEach((val,i)=>{
-    let wrap=wraps[i];
-    if(!wrap&&addBtn&&addBtn.classList.contains('li-add')){addLi(addBtn);wrap=target.querySelectorAll(':scope > .li-wrap')[i];}
-    if(wrap){const ed=wrap.querySelector('[contenteditable]:not(.step-num)');if(ed)libSetField(ed,val);}
+    const wrap=wraps[i];if(!wrap)return;
+    const ed=wrap.querySelector('[contenteditable]:not(.step-num)');
+    if(ed)libSetField(ed,val);
   });
+  renumberSteps(list);
 }
 /* generic: append a simple content block section to the canvas */
 function insertContentBlock(label,html){
@@ -5880,10 +5920,10 @@ async function libNextTipField(field){
 /* ── CONTENT LIBRARY settings page (CRUD) ── */
 /* Field schema per type: [key,label,type] where type = text|textarea|list */
 const LIB_FIELDS={
-  tips:[['main','Main Tip (headline)','textarea'],['tags','Tags (one per line)','list'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
+  tips:[['main','Main Tip (headline)','textarea'],['description','Description','textarea'],['tags','Tags (one per line)','list'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
   swaps:[['instead','Instead of…','text'],['insteadCals','Cals (A)','text'],['swap','Try this…','text'],['swapCals','Cals (B)','text'],['saved','Cals saved','text']],
   proteins:[['name','Protein source','text'],['serving','Serving','text'],['protein','Protein (g)','text'],['price','Price / serving','text'],['per10g','$ per 10g','text'],['notes','Notes','textarea']],
-  recipes:[['name','Recipe name','text'],['image','Image URL','text'],['protein','Protein (g)','text'],['calories','Calories','text'],['cost','Cost / serving','text'],['servings','Servings','text'],['time','Prep + cook','text'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
+  recipes:[['name','Recipe name','text'],['image','Image URL','text'],['protein','Protein (g)','text'],['calories','Calories','text'],['cost','Cost / serving','text'],['totalCarbs','Total carbs (g)','text'],['netCarbs','Net carbs (g)','text'],['sugar','Sugar (g)','text'],['servings','Servings','text'],['time','Prep + cook','text'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
   quotes:[['quote','Quote','textarea'],['credit','Credit','text']],
   myths:[['myth','The myth','textarea'],['truth','The truth','textarea'],['source','Source / note','text']]
 };
