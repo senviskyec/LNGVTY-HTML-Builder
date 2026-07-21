@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-21T13:27:49.465Z",
+  "updatedAt": "2026-07-21T13:27:51.248Z",
   "items": [
     {
       "id": "quote-001",
@@ -759,12 +759,12 @@
     },
     {
       "id": "quote-059",
-      "status": "reserved",
-      "reservedBy": "draft",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T13:27:49.465Z",
+      "updatedAt": "2026-07-21T13:27:51.248Z",
       "content": {
         "quote": "The clock is always ticking; make each rep count.",
         "credit": "Unknown"
