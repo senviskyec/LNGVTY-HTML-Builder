@@ -1,0 +1,432 @@
+{
+  "schema": "lngvty.content/v1",
+  "type": "proteins",
+  "updatedAt": "2026-07-20T00:00:00Z",
+  "items": [
+    {
+      "id": "protein-001",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Eggs",
+        "serving": "2 large",
+        "protein": "12",
+        "price": "0.4",
+        "per10g": "0.333333333333333",
+        "notes": "Complete protein, endlessly versatile"
+      }
+    },
+    {
+      "id": "protein-002",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Canned tuna",
+        "serving": "1 can (5oz)",
+        "protein": "20",
+        "price": "1.1",
+        "per10g": "0.55",
+        "notes": "Shelf-stable, grab-and-go"
+      }
+    },
+    {
+      "id": "protein-003",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Chicken thighs",
+        "serving": "4oz",
+        "protein": "21",
+        "price": "0.85",
+        "per10g": "0.404761904761905",
+        "notes": "Cheaper & juicier than breast"
+      }
+    },
+    {
+      "id": "protein-004",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Lentils (dry)",
+        "serving": "1/2 cup cooked",
+        "protein": "9",
+        "price": "0.2",
+        "per10g": "0.222222222222222",
+        "notes": "Protein + fiber for pennies"
+      }
+    },
+    {
+      "id": "protein-005",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Cottage cheese",
+        "serving": "1/2 cup",
+        "protein": "13",
+        "price": "0.55",
+        "per10g": "0.423076923076923",
+        "notes": "Great late-night snack"
+      }
+    },
+    {
+      "id": "protein-006",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Greek yogurt",
+        "serving": "3/4 cup",
+        "protein": "17",
+        "price": "0.75",
+        "per10g": "0.441176470588235",
+        "notes": "2x protein of regular yogurt"
+      }
+    },
+    {
+      "id": "protein-007",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Black beans (canned)",
+        "serving": "1/2 cup",
+        "protein": "7",
+        "price": "0.3",
+        "per10g": "0.428571428571429",
+        "notes": "Rinse to cut sodium"
+      }
+    },
+    {
+      "id": "protein-008",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Tofu (firm)",
+        "serving": "3oz",
+        "protein": "8",
+        "price": "0.5",
+        "per10g": "0.625",
+        "notes": "Soaks up any flavor"
+      }
+    },
+    {
+      "id": "protein-009",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Chicken breast",
+        "serving": "4oz",
+        "protein": "26",
+        "price": "1.2",
+        "per10g": "0.461538461538462",
+        "notes": "Lean workhorse"
+      }
+    },
+    {
+      "id": "protein-010",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Ground turkey (93%)",
+        "serving": "4oz",
+        "protein": "22",
+        "price": "1.3",
+        "per10g": "0.590909090909091",
+        "notes": "Stretches across many meals"
+      }
+    },
+    {
+      "id": "protein-011",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Peanut butter",
+        "serving": "2 tbsp",
+        "protein": "8",
+        "price": "0.25",
+        "per10g": "0.3125",
+        "notes": "Calorie-dense, buy in bulk"
+      }
+    },
+    {
+      "id": "protein-012",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Milk (2%)",
+        "serving": "1 cup",
+        "protein": "8",
+        "price": "0.3",
+        "per10g": "0.375",
+        "notes": "Protein + calcium combo"
+      }
+    },
+    {
+      "id": "protein-013",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Edamame (frozen)",
+        "serving": "1/2 cup",
+        "protein": "9",
+        "price": "0.45",
+        "per10g": "0.5",
+        "notes": "Fiber-rich plant protein"
+      }
+    },
+    {
+      "id": "protein-014",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Canned salmon",
+        "serving": "1/2 can",
+        "protein": "17",
+        "price": "1.4",
+        "per10g": "0.823529411764706",
+        "notes": "Omega-3s + calcium (bones)"
+      }
+    },
+    {
+      "id": "protein-015",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Whey protein",
+        "serving": "1 scoop",
+        "protein": "24",
+        "price": "0.9",
+        "per10g": "0.375",
+        "notes": "Cheapest per gram of all"
+      }
+    },
+    {
+      "id": "protein-016",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Chickpeas (canned)",
+        "serving": "1/2 cup",
+        "protein": "7",
+        "price": "0.3",
+        "per10g": "0.428571428571429",
+        "notes": "Roast for a crunchy snack"
+      }
+    },
+    {
+      "id": "protein-017",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Turkey (deli)",
+        "serving": "3oz",
+        "protein": "15",
+        "price": "1.1",
+        "per10g": "0.733333333333333",
+        "notes": "Quick sandwich protein"
+      }
+    },
+    {
+      "id": "protein-018",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Pork loin",
+        "serving": "4oz",
+        "protein": "23",
+        "price": "1.15",
+        "per10g": "0.5",
+        "notes": "Lean and budget-friendly cut"
+      }
+    },
+    {
+      "id": "protein-019",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Edam / part-skim cheese",
+        "serving": "1oz",
+        "protein": "7",
+        "price": "0.45",
+        "per10g": "0.642857142857143",
+        "notes": "Portion-controlled protein"
+      }
+    },
+    {
+      "id": "protein-020",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Frozen shrimp",
+        "serving": "3oz",
+        "protein": "20",
+        "price": "1.6",
+        "per10g": "0.8",
+        "notes": "Cooks in 3 minutes"
+      }
+    },
+    {
+      "id": "protein-021",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Soy milk (fortified)",
+        "serving": "1 cup",
+        "protein": "7",
+        "price": "0.35",
+        "per10g": "0.5",
+        "notes": "Dairy-free protein swap"
+      }
+    },
+    {
+      "id": "protein-022",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Sardines (canned)",
+        "serving": "1 tin",
+        "protein": "22",
+        "price": "1.2",
+        "per10g": "0.545454545454545",
+        "notes": "Omega-3 powerhouse"
+      }
+    },
+    {
+      "id": "protein-023",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Ground beef (90%)",
+        "serving": "4oz",
+        "protein": "23",
+        "price": "1.5",
+        "per10g": "0.652173913043478",
+        "notes": "Batch-cook for the week"
+      }
+    },
+    {
+      "id": "protein-024",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "Quinoa (dry)",
+        "serving": "1/4 cup cooked",
+        "protein": "6",
+        "price": "0.35",
+        "per10g": "0.583333333333333",
+        "notes": "Complete plant protein"
+      }
+    },
+    {
+      "id": "protein-025",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "name": "String cheese",
+        "serving": "1 stick",
+        "protein": "7",
+        "price": "0.4",
+        "per10g": "0.571428571428572",
+        "notes": "Portable, kid-friendly"
+      }
+    }
+  ]
+}
