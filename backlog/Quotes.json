@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-21T16:56:54.300Z",
+  "updatedAt": "2026-07-21T16:56:56.330Z",
   "items": [
     {
       "id": "quote-001",
@@ -317,12 +317,12 @@
     },
     {
       "id": "quote-025",
-      "status": "reserved",
-      "reservedBy": "newsletter-7-18",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T16:56:54.300Z",
+      "updatedAt": "2026-07-21T16:56:56.330Z",
       "content": {
         "quote": "Sweat is just fat crying.",
         "credit": "Unknown"
