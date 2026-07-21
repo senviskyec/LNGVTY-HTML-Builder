@@ -1,0 +1,787 @@
+{
+  "schema": "lngvty.content/v1",
+  "type": "quotes",
+  "updatedAt": "2026-07-20T00:00:00Z",
+  "items": [
+    {
+      "id": "quote-001",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "You don't need to see the whole staircase, just take the first step.",
+        "credit": "Martin Luther King Jr."
+      }
+    },
+    {
+      "id": "quote-002",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The groundwork for all happiness is good health.",
+        "credit": "Leigh Hunt"
+      }
+    },
+    {
+      "id": "quote-003",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Take care of your body. It's the only place you have to live.",
+        "credit": "Jim Rohn"
+      }
+    },
+    {
+      "id": "quote-004",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "A year from now you may wish you had started today.",
+        "credit": "Karen Lamb"
+      }
+    },
+    {
+      "id": "quote-005",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The only bad workout is the one that didn't happen.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-006",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Success is the sum of small efforts repeated day in and day out.",
+        "credit": "Robert Collier"
+      }
+    },
+    {
+      "id": "quote-007",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "It does not matter how slowly you go as long as you do not stop.",
+        "credit": "Confucius"
+      }
+    },
+    {
+      "id": "quote-008",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Motivation is what gets you started. Habit is what keeps you going.",
+        "credit": "Jim Ryun"
+      }
+    },
+    {
+      "id": "quote-009",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Fall seven times, stand up eight.",
+        "credit": "Japanese Proverb"
+      }
+    },
+    {
+      "id": "quote-010",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The body achieves what the mind believes.",
+        "credit": "Napoleon Hill"
+      }
+    },
+    {
+      "id": "quote-011",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Strength does not come from the physical capacity. It comes from an indomitable will.",
+        "credit": "Mahatma Gandhi"
+      }
+    },
+    {
+      "id": "quote-012",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Discipline is choosing between what you want now and what you want most.",
+        "credit": "Abraham Lincoln (attrib.)"
+      }
+    },
+    {
+      "id": "quote-013",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Well done is better than well said.",
+        "credit": "Benjamin Franklin"
+      }
+    },
+    {
+      "id": "quote-014",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "An early-morning walk is a blessing for the whole day.",
+        "credit": "Henry David Thoreau"
+      }
+    },
+    {
+      "id": "quote-015",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "He who has health has hope; and he who has hope has everything.",
+        "credit": "Arabian Proverb"
+      }
+    },
+    {
+      "id": "quote-016",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The first wealth is health.",
+        "credit": "Ralph Waldo Emerson"
+      }
+    },
+    {
+      "id": "quote-017",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Little by little, a little becomes a lot.",
+        "credit": "Tanzanian Proverb"
+      }
+    },
+    {
+      "id": "quote-018",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Energy and persistence conquer all things.",
+        "credit": "Benjamin Franklin"
+      }
+    },
+    {
+      "id": "quote-019",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "What you do today can improve all your tomorrows.",
+        "credit": "Ralph Marston"
+      }
+    },
+    {
+      "id": "quote-020",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Do something today that your future self will thank you for.",
+        "credit": "Sean Patrick Flanery"
+      }
+    },
+    {
+      "id": "quote-021",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The difference between try and triumph is a little umph.",
+        "credit": "Marvin Phillips"
+      }
+    },
+    {
+      "id": "quote-022",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Wellness is the complete integration of body, mind, and spirit.",
+        "credit": "Greg Anderson"
+      }
+    },
+    {
+      "id": "quote-023",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Movement is a medicine for creating change in a person's physical, emotional, and mental states.",
+        "credit": "Carol Welch"
+      }
+    },
+    {
+      "id": "quote-024",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Your body can stand almost anything. It's your mind you have to convince.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-025",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Sweat is just fat crying.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-026",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "If it doesn't challenge you, it won't change you.",
+        "credit": "Fred DeVito"
+      }
+    },
+    {
+      "id": "quote-027",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Push yourself because no one else is going to do it for you.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-028",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "A healthy outside starts from the inside.",
+        "credit": "Robert Urich"
+      }
+    },
+    {
+      "id": "quote-029",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The greatest wealth is health.",
+        "credit": "Virgil"
+      }
+    },
+    {
+      "id": "quote-030",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "To keep the body in good health is a duty… otherwise we cannot keep the mind strong.",
+        "credit": "Buddha"
+      }
+    },
+    {
+      "id": "quote-031",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "We are what we repeatedly do. Excellence, then, is not an act but a habit.",
+        "credit": "Will Durant"
+      }
+    },
+    {
+      "id": "quote-032",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The secret of getting ahead is getting started.",
+        "credit": "Mark Twain (attrib.)"
+      }
+    },
+    {
+      "id": "quote-033",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Don't wish it were easier; wish you were better.",
+        "credit": "Jim Rohn"
+      }
+    },
+    {
+      "id": "quote-034",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Nothing will work unless you do.",
+        "credit": "Maya Angelou"
+      }
+    },
+    {
+      "id": "quote-035",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The pain you feel today will be the strength you feel tomorrow.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-036",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Believe you can and you're halfway there.",
+        "credit": "Theodore Roosevelt"
+      }
+    },
+    {
+      "id": "quote-037",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Slow progress is still progress.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-038",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Take care of your body — it's the engine that carries you through life.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-039",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The hardest lift of all is lifting yourself off the couch.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-040",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Rome wasn't built in a day, but they were laying bricks every hour.",
+        "credit": "James Clear"
+      }
+    },
+    {
+      "id": "quote-041",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "You are always one decision away from a totally different life.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-042",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "A good laugh and a long sleep are the two best cures for anything.",
+        "credit": "Irish Proverb"
+      }
+    },
+    {
+      "id": "quote-043",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Health is not valued till sickness comes.",
+        "credit": "Thomas Fuller"
+      }
+    },
+    {
+      "id": "quote-044",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Look after your body — it's where you have to live.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-045",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Every accomplishment starts with the decision to try.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-046",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The best project you'll ever work on is you.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-047",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Wake up with determination, go to bed with satisfaction.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-048",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Don't count the days, make the days count.",
+        "credit": "Muhammad Ali"
+      }
+    },
+    {
+      "id": "quote-049",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Great things are done by a series of small things brought together.",
+        "credit": "Vincent van Gogh"
+      }
+    },
+    {
+      "id": "quote-050",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Fitness is not about being better than someone else — it's about being better than you used to be.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-051",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The clock is ticking. Are you becoming the person you want to be?",
+        "credit": "Greg Plitt"
+      }
+    },
+    {
+      "id": "quote-052",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Champions keep playing until they get it right.",
+        "credit": "Billie Jean King"
+      }
+    },
+    {
+      "id": "quote-053",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "It's going to be a journey. It's not a sprint to get in shape.",
+        "credit": "Kerri Walsh Jennings"
+      }
+    },
+    {
+      "id": "quote-054",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Once you learn to quit, it becomes a habit.",
+        "credit": "Vince Lombardi"
+      }
+    },
+    {
+      "id": "quote-055",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Whether you think you can or you think you can't, you're right.",
+        "credit": "Henry Ford"
+      }
+    },
+    {
+      "id": "quote-056",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Good things come to those who sweat.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-057",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Nobody who ever gave their best regretted it.",
+        "credit": "George Halas"
+      }
+    },
+    {
+      "id": "quote-058",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Continuous effort — not strength or intelligence — is the key to unlocking our potential.",
+        "credit": "Winston Churchill"
+      }
+    },
+    {
+      "id": "quote-059",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "The clock is always ticking; make each rep count.",
+        "credit": "Unknown"
+      }
+    },
+    {
+      "id": "quote-060",
+      "status": "available",
+      "reservedBy": null,
+      "publishedIn": null,
+      "publishedDate": null,
+      "createdAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-20T00:00:00Z",
+      "content": {
+        "quote": "Persistence guarantees that results are inevitable.",
+        "credit": "Paramahansa Yogananda"
+      }
+    }
+  ]
+}
