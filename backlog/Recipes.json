@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-07-21T13:52:12.695Z",
+  "updatedAt": "2026-07-21T13:55:03.608Z",
   "items": [
     {
       "id": "recipe-001",
@@ -292,12 +292,12 @@
     },
     {
       "id": "recipe-010",
-      "status": "reserved",
-      "reservedBy": "draft",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T13:52:12.695Z",
+      "updatedAt": "2026-07-21T13:55:03.608Z",
       "content": {
         "name": "Cottage Cheese Toast",
         "image": "",
