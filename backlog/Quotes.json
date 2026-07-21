@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-21T13:27:45.431Z",
+  "updatedAt": "2026-07-21T13:27:48.506Z",
   "items": [
     {
       "id": "quote-001",
@@ -75,7 +75,7 @@
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-21T13:27:48.506Z",
       "content": {
         "quote": "Success is the sum of small efforts repeated day in and day out.",
         "credit": "Robert Collier"
