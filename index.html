@@ -333,7 +333,11 @@
   .sec-tag{position:absolute;top:6px;left:6px;background:rgba(26,26,26,.85);color:#fff;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:40;display:none;}
   .sec:hover .sec-tag{display:block;}
   /* content-library fill bar (builder-only, stripped on export) */
-  .fill-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:#1f2024;border:1px solid #34353a;border-radius:8px;padding:7px 10px;margin:0 0 10px;position:relative;z-index:20;}
+  .fill-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:#1f2024;border:1px solid #34353a;border-radius:8px;padding:7px 10px;margin:0 0 10px;position:relative;z-index:20;padding-right:180px;padding-left:96px;}
+  /* the section controls (theme/drag/move/dup/delete) slide in over the top-right
+     on hover; the reserved right padding keeps the fill-bar buttons clear of them.
+     the left padding clears the section-type tag chip that sits top-left on hover. */
+  @media(max-width:900px){.fill-bar{padding-right:10px;}}
   .fill-bar .fb-label{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#cfcfcf;margin-right:2px;}
   .fill-bar .fb-mini-label{font-size:10px;color:#888;margin:0 2px 0 4px;}
   .fill-bar .fb-sep{width:1px;height:16px;background:#3a3b40;margin:0 4px;}
@@ -3418,9 +3422,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v19.0',
+  version : 'v19.1',
   name    : 'Content Library',
-  date    : '20 July 2026',
+  date    : '21 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -4706,7 +4710,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v19.0 "Content Library" · 20 July 2026
+**Current build:** v19.1 "Content Library" · 21 July 2026
 
 ---
 
@@ -4727,6 +4731,16 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v19.1 — Content Library (fix) · 21 July 2026
+
+- **Library now finds the JSON files.** The loader was looking for lowercase
+  filenames (\`tips.json\`) but the repo files are capitalized (\`Tips.json\`), and
+  GitHub paths are case-sensitive — so every type showed "No items." It now reads
+  the capitalized names that are actually in \`/backlog\`.
+- **Fill bar no longer collides with the section controls.** The 🎲 Generate / 🔄 Next
+  / reroll buttons had space reserved on both sides so the hover controls (theme,
+  move, duplicate, delete) and the section-type tag no longer overlap them.
 
 ## v19.0 — Content Library · 20 July 2026
 
@@ -5535,12 +5549,12 @@ async function ghDelete(path,sha){
    item reserved by it; deleting/!sent releases them back to available.
    ════════════════════════════════════════════════════════════════════════ */
 const LIB_TYPES={
-  tips     :{file:'tips.json',     label:'Tip Tuesday',      noun:'tip'},
-  swaps    :{file:'swaps.json',    label:'Smarter Swaps',    noun:'swap'},
-  proteins :{file:'proteins.json', label:'Budget Proteins',  noun:'protein'},
-  recipes  :{file:'recipes.json',  label:'Recipes',          noun:'recipe'},
-  quotes   :{file:'quotes.json',   label:'Quotes',           noun:'quote'},
-  myths    :{file:'myths.json',    label:'Myth Busters',     noun:'myth'}
+  tips     :{file:'Tips.json',     label:'Tip Tuesday',      noun:'tip'},
+  swaps    :{file:'Swaps.json',    label:'Smarter Swaps',    noun:'swap'},
+  proteins :{file:'Proteins.json', label:'Budget Proteins',  noun:'protein'},
+  recipes  :{file:'Recipes.json',  label:'Recipes',          noun:'recipe'},
+  quotes   :{file:'Quotes.json',   label:'Quotes',           noun:'quote'},
+  myths    :{file:'Myths.json',    label:'Myth Busters',     noun:'myth'}
 };
 const LIB_DIR='backlog';
 /* in-memory cache of each loaded file: {type:{doc, sha}} */
