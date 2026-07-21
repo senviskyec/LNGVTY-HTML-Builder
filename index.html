@@ -32,7 +32,7 @@
   .rail-modes-select-wrap.muted .rail-mode-select{border-bottom-color:#34353a;color:#888;}
   .rail-mode-pinned{flex:0 0 auto;border-left:1px solid #34353a;background:#202126;}
   /* Tags hangs slightly off the right edge of the rail so it reads as a pull-tab. */
-  .rail-mode-tags{position:relative;margin-right:-14px;padding-right:16px;border-top-right-radius:6px;border-bottom-right-radius:6px;background:#26272c;box-shadow:2px 0 6px rgba(0,0,0,.25);z-index:2;}
+  .rail-mode-tags{background:#202126;}
   .rail-mode-tags.active{background:#2c2d33;}
   /* Widgets pane */
   .wg-section{padding:14px;}
@@ -2763,6 +2763,9 @@ const NL_STATIC_PREFILL={
   'Recurring Weekly Events':"What's Happening",
   // tip tuesday
   'Tip Tuesday':'Tip Tuesday',
+  // tip tuesday — the four mini-card icons + labels are constant, so fill them
+  '💧':'💧','🥩':'🥩','😴':'😴','🧘':'🧘',
+  'Hydration':'Hydration','Protein':'Protein','Sleep':'Sleep','Mobility':'Mobility',
   // recipe
   'Recipe Corner':'Recipe Corner',
   "This Week's Featured Recipe":"This Week's Featured Recipe",
@@ -3422,7 +3425,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v19.1',
+  version : 'v19.3',
   name    : 'Content Library',
   date    : '21 July 2026',
 };
@@ -3500,7 +3503,17 @@ function renderMarkdown(md){
 }
 
 /* ── release notes: stored, editable, resettable ── */
-function getNotes(){try{return localStorage.getItem('lngvty_notes')||defaultNotes();}catch(e){return defaultNotes();}}
+function getNotes(){
+  try{
+    const saved=localStorage.getItem('lngvty_notes');
+    const ver=localStorage.getItem('lngvty_notes_ver');
+    // If there's no saved copy, or it predates this build, show the fresh default
+    // so new release entries always appear. A user who has intentionally edited
+    // the notes in THIS build keeps their copy (ver matches).
+    if(!saved || ver!==BUILD.version)return defaultNotes();
+    return saved;
+  }catch(e){return defaultNotes();}
+}
 function toggleNotesEdit(){
   const view=document.getElementById('notesView');
   const ed=document.getElementById('notesEdit');
@@ -3527,13 +3540,13 @@ function cancelNotesEdit(){
 }
 function saveNotesEdit(){
   const val=document.getElementById('notesEdit').value;
-  try{localStorage.setItem('lngvty_notes',val);}catch(e){}
+  try{localStorage.setItem('lngvty_notes',val);localStorage.setItem('lngvty_notes_ver',BUILD.version);}catch(e){}
   cancelNotesEdit();
   toast('Notes saved');
 }
 function resetNotes(){
   if(!confirm('Reset the release notes to the default?'))return;
-  try{localStorage.removeItem('lngvty_notes');}catch(e){}
+  try{localStorage.removeItem('lngvty_notes');localStorage.removeItem('lngvty_notes_ver');}catch(e){}
   document.getElementById('notesEdit').value=defaultNotes();
   cancelNotesEdit();
   toast('Notes reset');
@@ -4710,7 +4723,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v19.1 "Content Library" · 21 July 2026
+**Current build:** v19.3 "Content Library" · 21 July 2026
 
 ---
 
@@ -4732,6 +4745,28 @@ is regenerated on demand. The round trip is lossless by construction.
 
 ---
 
+## v19.3 — Content Library (docs & notes) · 21 July 2026
+
+- **Fixed the release notes going blank.** A stray pair of backticks in the v19.0 note
+  broke the notes renderer, so the whole Version & Notes tab could come up empty. Fixed,
+  and the notes and docs now **self-heal**: if your browser is holding an older saved
+  copy, the builder shows the current built-in version instead of a stale one. Your own
+  edits (made in this build) are still kept, and <b>Reset to Default</b> restores these.
+- **Docs expanded** with a full walkthrough of <b>Generate / Next / reroll</b>, how the
+  reserved-then-published lifecycle keeps content from being used up before an issue is
+  sent, and how to add/edit/delete items in the Content Library.
+
+## v19.2 — Content Library (polish) · 21 July 2026
+
+- **Tip Tuesday mini-cards pre-fill on start.** The four category cards (💧 Hydration,
+  🥩 Protein, 😴 Sleep, 🧘 Mobility) now come in with their icon and label already
+  filled — only the tip detail under each is left as ghost text.
+- **Tips carry tags.** Each tip in the library has a Tags list, and generating a tip
+  drops its tags into the pills above the main tip automatically. You can set tags when
+  adding or editing a tip in the Content Library (one per line).
+- **Sidebar tabs tidied.** Newsletter / Widgets / Tags now sit flush and inline in the
+  left rail — the Tags pull-tab that stuck out is gone.
+
 ## v19.1 — Content Library (fix) · 21 July 2026
 
 - **Library now finds the JSON files.** The loader was looking for lowercase
@@ -4746,7 +4781,7 @@ is regenerated on demand. The round trip is lossless by construction.
 
 - **The builder now has a real content library.** Your Tip Tuesday tips, quotes,
   recipes, smarter swaps, budget proteins, and myth-busters live as JSON files in
-  the repo's `/backlog` folder, each item carrying a lifecycle status:
+  the repo's \`/backlog\` folder, each item carrying a lifecycle status:
   **available → reserved → published**.
 - **Generate & Next, right in the sections.** Tip Tuesday, the header quote, and the
   recipe each got a small fill bar. **🎲 Generate** pulls an unused item and drops it
@@ -4990,7 +5025,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><th style="width:24%;">Where</th><th>What it's for</th></tr>
   <tr>
     <td><b>Left rail</b></td>
-    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Widgets</b> (next to it) holds drop-in pieces like a linkable orange button. <b>Tags</b> (the pull-tab on the right edge) holds merge fields like the member's first name.</td>
+    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Widgets</b> (next to it) holds drop-in pieces like a linkable orange button. <b>Tags</b> (the tab beside them) holds merge fields like the member's first name.</td>
   </tr>
   <tr>
     <td><b>Middle canvas</b></td>
@@ -5092,19 +5127,30 @@ function defaultDocs(){return `<div class="docs-body">
 </div>
 
 <h3>Merge fields (first name, etc.)</h3>
-<p>Click into a text box where you want it, then open <b>Tags</b> (the pull-tab hanging off the right edge of the left rail) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
+<p>Click into a text box where you want it, then open the <b>Tags</b> tab (top-left of the rail, next to Widgets) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
 
 <h3>Widgets</h3>
 <p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
 
-<h3>Filling from the content library</h3>
-<p>Tip Tuesday, the header quote, and the recipe section each have a small dark bar at the top with <b>&#127922; Generate</b> and <b>&#128260; Next</b>.</p>
+<h3>Filling sections from the content library</h3>
+<p>Instead of typing tips, quotes, and recipes by hand every week, the builder keeps a <b>library</b> of them and drops them in for you. Tip Tuesday, the header quote, and the recipe each have a small dark <b>fill bar</b> across the top:</p>
 <ul>
-  <li><b>&#127922; Generate</b> drops in an unused item from your library and reserves it for this newsletter.</li>
-  <li><b>&#128260; Next</b> swaps it for a different one. The one you skipped goes back in the pool &mdash; it's only set aside for this session, never lost.</li>
-  <li>On Tip Tuesday, the small <b>reroll one</b> buttons change just the hydration, protein, sleep, or mobility line without touching the rest.</li>
+  <li><b>&#127922; Generate</b> &mdash; pulls a fresh, unused item from the library and fills the whole section with it. For a tip, that's the headline, all four category lines (hydration / protein / sleep / mobility), and the tags above it. For a quote, the quote and its credit. For a recipe, the name, stats, ingredients, and steps.</li>
+  <li><b>&#128260; Next</b> &mdash; don't like what came up? This swaps it for a different one. The one you passed on goes right back in the pool; it's only set aside for the rest of this sitting, so you never lose it and you won't see the same one twice while you're deciding.</li>
+  <li><b>reroll one</b> (Tip Tuesday only) &mdash; the small <b>Hydration / Protein / Sleep / Mobility</b> buttons change just that one line, pulling from that category's pool across all your tips. Handy when the main tip is perfect but one sub-line isn't.</li>
 </ul>
-<p>Items you generate stay <b>reserved</b> until you save the newsletter with status <b>Sent</b> &mdash; then they're marked <b>published</b> so they don't come up again. Manage all of it (and add new content) under <b>Settings &rarr; &#127760; Content Library</b>.</p>
+<p><b>How "used" works &mdash; the safe part.</b> Generating an item doesn't burn it. It marks it <b>reserved</b> for the newsletter you're working on. It only becomes <b>published</b> (and stops coming up again) when you <b>Save the newsletter with its status set to Sent</b>. So you can generate, reject, and regenerate all you like while drafting &mdash; nothing is permanently used until the issue actually goes out. If you change your mind before sending, the reservations just quietly release.</p>
+<p>The status of every item shows in the library as a colored dot: <b>gray = available</b>, <b>yellow = reserved</b> (in a draft), <b>green = published</b> (already sent).</p>
+
+<h3>Managing the library (add / edit / delete)</h3>
+<p>Open <b>Settings &rarr; &#127760; Content Library</b>. Across the top are tabs for each kind of content: Tip Tuesday, Smarter Swaps, Budget Proteins, Recipes, Quotes, and Myth Busters. Pick a tab to see every item in that pool.</p>
+<ul>
+  <li><b>+ Add</b> opens a form for that content type &mdash; fill it in and save. You never touch JSON; the builder writes the file for you.</li>
+  <li><b>Edit</b> on any row changes it; <b>Del</b> removes it.</li>
+  <li>Use the <b>search box</b> and the <b>status dropdown</b> to find things fast.</li>
+  <li>For tips, there's a <b>Tags</b> box (one per line) &mdash; those are the pills that appear above the main tip when it's generated.</li>
+</ul>
+<p>Everything lives as JSON files in the <code>/backlog</code> folder of your GitHub repo, so it's versioned and backed up for free, just like your saved newsletters. Adding content here means it's instantly available to <b>&#127922; Generate</b> in the builder.</p>
 
 <h2>5. Settings</h2>
 
@@ -5122,6 +5168,8 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
   <tr><td><b>&#128203; Content Backlog</b></td><td>The rotating bank of tips, smarter swaps, budget proteins, recipes, and quotes. The <b>Dashboard</b> tab shows what's queued next. Mark an item <b>USED</b> after it runs so it isn't repeated.</td></tr>
   <tr><td><b>&#127760; Content Library</b></td><td>The editable version of that bank, stored as JSON in <code>/backlog</code>. Add, edit, or delete tips, quotes, recipes, swaps, proteins, and myths. Sections pull from here with <b>&#127922; Generate</b>; items go <b>reserved</b> when pulled and <b>published</b> when the newsletter is sent.</td></tr>
+  <tr><td><b>&#128172; Feedback</b></td><td>A quick form to send notes or bug reports.</td></tr>
+  <tr><td><b>&#8505; Version &amp; Notes</b></td><td>The current build number and the full release history. <b>&#9998; Edit</b> to annotate; <b>&#8634; Reset to Default</b> restores the built-in notes.</td></tr>
 </table>
 
 <div class="note">
@@ -5162,12 +5210,18 @@ function defaultDocs(){return `<div class="docs-body">
 </div>
 
 </div>`;}
-function getDocs(){try{return localStorage.getItem('lngvty_docs')||defaultDocs();}catch(e){return defaultDocs();}}
+function getDocs(){
+  try{
+    const saved=localStorage.getItem('lngvty_docs');
+    const ver=localStorage.getItem('lngvty_docs_ver');
+    if(!saved || ver!==BUILD.version)return defaultDocs();
+    return saved;
+  }catch(e){return defaultDocs();}
+}
 function openDocs(){
   const view=document.getElementById('docsView');
   const ed=document.getElementById('docsEdit');
-  let saved=null;try{saved=localStorage.getItem('lngvty_docs');}catch(e){}
-  const content=saved||defaultDocs();
+  const content=getDocs();
   if(view)view.innerHTML=content;
   if(ed)ed.value=content;
   openSettings('docs');
@@ -5200,14 +5254,14 @@ function cancelDocsEdit(){
 }
 function saveDocsEdit(){
   const val=document.getElementById('docsEdit').value;
-  try{localStorage.setItem('lngvty_docs',val);}catch(e){}
+  try{localStorage.setItem('lngvty_docs',val);localStorage.setItem('lngvty_docs_ver',BUILD.version);}catch(e){}
   document.getElementById('docsView').innerHTML=val;
   cancelDocsEdit();
   toast('Docs saved');
 }
 function resetDocs(){
   if(!confirm('Reset documentation to the default?'))return;
-  try{localStorage.removeItem('lngvty_docs');}catch(e){}
+  try{localStorage.removeItem('lngvty_docs');localStorage.removeItem('lngvty_docs_ver');}catch(e){}
   document.getElementById('docsEdit').value=defaultDocs();
   document.getElementById('docsView').innerHTML=defaultDocs();
   toast('Docs reset');
@@ -5688,7 +5742,26 @@ function fillTip(item,only){
       if(detail&&detail!==labelCell&&val)libSetField(detail,val);
     }
   });
+  // tags above the main tip — replace with this tip's tags (only on a full fill)
+  if(!only||only==='main'){
+    if(Array.isArray(c.tags))setSectionTags(sec,c.tags);
+  }
   return true;
+}
+/* Replace the pills in a section's first tag-wrap with the given tag strings,
+   reusing the wrap's own prototype so styling/×/＋ behavior stays intact. */
+function setSectionTags(sec,tags){
+  const wrap=sec.querySelector('.tag-wrap');if(!wrap)return;
+  const proto=wrap.getAttribute('data-proto')||'';
+  const addBtn=wrap.querySelector('.tag-add');
+  wrap.querySelectorAll(':scope > .tag-pill').forEach(p=>p.remove());
+  (tags.length?tags:['']).forEach(t=>{
+    const tmp=document.createElement('div');tmp.innerHTML=proto;
+    const pill=tmp.firstElementChild;
+    const span=pill.querySelector('[contenteditable]');
+    if(span && t){span.textContent=t;markEmpty(span);}
+    if(addBtn)wrap.insertBefore(pill,addBtn);else wrap.appendChild(pill);
+  });
 }
 function fillQuote(item){
   const sec=sectionByKey('nlheader');if(!sec)return false;
@@ -5807,7 +5880,7 @@ async function libNextTipField(field){
 /* ── CONTENT LIBRARY settings page (CRUD) ── */
 /* Field schema per type: [key,label,type] where type = text|textarea|list */
 const LIB_FIELDS={
-  tips:[['main','Main Tip (headline)','textarea'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
+  tips:[['main','Main Tip (headline)','textarea'],['tags','Tags (one per line)','list'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
   swaps:[['instead','Instead of…','text'],['insteadCals','Cals (A)','text'],['swap','Try this…','text'],['swapCals','Cals (B)','text'],['saved','Cals saved','text']],
   proteins:[['name','Protein source','text'],['serving','Serving','text'],['protein','Protein (g)','text'],['price','Price / serving','text'],['per10g','$ per 10g','text'],['notes','Notes','textarea']],
   recipes:[['name','Recipe name','text'],['image','Image URL','text'],['protein','Protein (g)','text'],['calories','Calories','text'],['cost','Cost / serving','text'],['servings','Servings','text'],['time','Prep + cook','text'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
