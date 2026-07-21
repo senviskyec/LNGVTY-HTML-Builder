@@ -31,6 +31,20 @@
   .rail-modes-select-wrap.muted::after{color:#666;}
   .rail-modes-select-wrap.muted .rail-mode-select{border-bottom-color:#34353a;color:#888;}
   .rail-mode-pinned{flex:0 0 auto;border-left:1px solid #34353a;background:#202126;}
+  /* Tags hangs slightly off the right edge of the rail so it reads as a pull-tab. */
+  .rail-mode-tags{position:relative;margin-right:-14px;padding-right:16px;border-top-right-radius:6px;border-bottom-right-radius:6px;background:#26272c;box-shadow:2px 0 6px rgba(0,0,0,.25);z-index:2;}
+  .rail-mode-tags.active{background:#2c2d33;}
+  /* Widgets pane */
+  .wg-section{padding:14px;}
+  .wg-title{font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin:6px 0 6px;}
+  .wg-hint{font-size:11px;color:#7a7a7a;line-height:1.5;margin-bottom:12px;}
+  .wg-list{display:flex;flex-direction:column;gap:8px;}
+  .wg-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#202126;border:1px solid #34353a;border-radius:7px;padding:11px 13px;cursor:pointer;transition:.12s;}
+  .wg-item:hover{border-color:var(--accent);background:#26272c;}
+  .wg-item .wg-ic{width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;border-radius:5px;font-size:14px;}
+  .wg-item .wg-tx{display:flex;flex-direction:column;min-width:0;}
+  .wg-item .wg-nm{font-family:'Montserrat';font-size:12px;font-weight:700;color:#eee;letter-spacing:.3px;}
+  .wg-item .wg-ds{font-size:10.5px;color:#888;line-height:1.35;margin-top:1px;}
   .builder-toggle{display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 12px;border-bottom:1px solid #34353a;background:#202126;}
   .builder-toggle .bt-label{font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#888;transition:.15s;}
   .builder-toggle .bt-label.on{color:var(--accent);}
@@ -115,6 +129,40 @@
   #tipBox{position:fixed;z-index:1300;background:#1a1a1a;color:#fff;font-family:'Open Sans',sans-serif;font-size:11.5px;line-height:1.45;padding:8px 11px;border-radius:6px;max-width:240px;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none;display:none;}
   #tipBox::after{content:'';position:absolute;top:-5px;left:16px;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:5px solid #1a1a1a;}
   .tb-spacer{flex:1;}
+
+  /* version / notes pane */
+  .ver-hero{display:flex;align-items:center;gap:14px;background:#17181c;border-radius:12px;padding:16px 18px;margin-bottom:18px;}
+  .ver-badge{font-family:'Montserrat';font-weight:900;font-size:20px;letter-spacing:.5px;color:#fff;
+    background:var(--accent);padding:8px 14px;border-radius:9px;flex-shrink:0;}
+  .ver-meta{flex:1;display:flex;flex-direction:column;gap:2px;line-height:1.3;}
+  .ver-meta b{font-family:'Montserrat';font-size:13px;font-weight:900;letter-spacing:.6px;color:#fff;}
+  .ver-meta span{font-size:11px;color:#8d8e96;}
+  .ver-hero .tb-btn{background:#26272d;border-color:#34353b;color:#d8d9de;}
+  .ver-hero .tb-btn:hover{background:#2f3037;border-color:var(--accent);color:#fff;}
+
+  /* feedback embed */
+  .fb-wrap{border:1px solid #e6e6ea;border-radius:10px;overflow:hidden;background:#fff;}
+  .fb-wrap iframe{display:block;width:100%;max-width:100%;border:0;min-height:1100px;}
+
+  /* markdown rendered into the notes pane — reuses the docs typography */
+  .md-render h1{font-family:'Montserrat';font-size:19px;font-weight:900;color:#1a1a1a;margin:0 0 10px;letter-spacing:.4px;}
+  .md-render h2{font-family:'Montserrat';font-size:15px;font-weight:900;color:var(--accent);margin:22px 0 8px;
+    letter-spacing:.5px;border-bottom:2px solid #f0e2da;padding-bottom:5px;}
+  .md-render h3{font-family:'Montserrat';font-size:12px;font-weight:700;color:#1a1a1a;margin:16px 0 5px;
+    text-transform:uppercase;letter-spacing:1px;}
+  .md-render code{background:#f3f0ee;border:1px solid #e6ddd7;border-radius:4px;padding:1px 6px;
+    font-family:monospace;font-size:11.5px;color:#c0451b;}
+  .md-render pre{background:#1f2024;color:#e8e8e8;border-radius:7px;padding:13px 15px;overflow-x:auto;
+    font-size:11px;line-height:1.55;margin:0 0 14px;}
+  .md-render pre code{background:none;border:none;color:inherit;padding:0;}
+  .md-render blockquote{border-left:3px solid var(--accent);background:#fff8f4;margin:0 0 12px;
+    padding:9px 14px;border-radius:0 6px 6px 0;color:#5f6067;}
+  .md-render table{border-collapse:collapse;width:100%;margin:0 0 14px;font-size:12px;}
+  .md-render th,.md-render td{border:1px solid #e6e6e6;padding:7px 10px;text-align:left;vertical-align:top;}
+  .md-render th{background:#f7f4f2;font-family:'Montserrat';font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+  .md-render hr{border:0;border-top:1px solid #eaeaee;margin:20px 0;}
+  .md-render ul,.md-render ol{margin:0 0 12px 22px;}
+  .md-render li{margin-bottom:4px;}
 
   /* ─── rail: newsletter starter ─── */
   .rail-starter{display:flex;align-items:center;gap:10px;width:calc(100% - 28px);margin:8px 14px 2px;
@@ -211,6 +259,31 @@
   .set-body{flex:1;overflow-y:auto;padding:24px;}
   .set-pane{display:none;}
   .set-pane.active{display:block;animation:paneIn .24s cubic-bezier(.2,.8,.2,1) both;}
+  /* Content Library page */
+  .lib-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .lib-tab{font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.3px;color:#555;background:#f0f0f0;border:1px solid #e0e0e0;border-radius:20px;padding:6px 13px;cursor:pointer;transition:.12s;}
+  .lib-tab:hover{border-color:var(--accent);color:var(--accent);}
+  .lib-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .lib-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap;}
+  .lib-toolbar input[type=search],.lib-toolbar select{padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;}
+  .lib-toolbar input[type=search]{flex:1;min-width:140px;}
+  .lib-btn{font-family:'Montserrat';font-size:12px;font-weight:700;color:#333;background:#fff;border:1px solid #ccc;border-radius:6px;padding:8px 12px;cursor:pointer;}
+  .lib-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .lib-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .lib-list{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow:auto;}
+  .lib-empty{color:#999;font-size:13px;padding:24px;text-align:center;}
+  .lib-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #eee;border-radius:7px;background:#fff;}
+  .lib-row:hover{border-color:#ddd;background:#fafafa;}
+  .lib-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .lib-dot.gray{background:#c4c4c4;}
+  .lib-dot.yellow{background:#e8b53a;}
+  .lib-dot.green{background:#3faa5a;}
+  .lib-row-main{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .lib-row-title{font-size:13px;color:#2a2a2a;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lib-row-sub{font-size:10.5px;color:#999;font-family:'Montserrat';letter-spacing:.3px;}
+  .lib-mini{font-family:'Montserrat';font-size:11px;font-weight:700;color:#555;background:#f2f2f2;border:1px solid #e0e0e0;border-radius:5px;padding:5px 10px;cursor:pointer;}
+  .lib-mini:hover{border-color:var(--accent);color:var(--accent);}
+  .lib-mini.danger:hover{border-color:#c0392b;color:#c0392b;}
   @keyframes paneIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
   .set-lede{font-size:13px;color:#77787f;line-height:1.6;margin-bottom:18px;}
   /* cards inside panes */
@@ -259,6 +332,16 @@
   .sc-btn.drag{cursor:grab;}
   .sec-tag{position:absolute;top:6px;left:6px;background:rgba(26,26,26,.85);color:#fff;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:40;display:none;}
   .sec:hover .sec-tag{display:block;}
+  /* content-library fill bar (builder-only, stripped on export) */
+  .fill-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:#1f2024;border:1px solid #34353a;border-radius:8px;padding:7px 10px;margin:0 0 10px;position:relative;z-index:20;}
+  .fill-bar .fb-label{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#cfcfcf;margin-right:2px;}
+  .fill-bar .fb-mini-label{font-size:10px;color:#888;margin:0 2px 0 4px;}
+  .fill-bar .fb-sep{width:1px;height:16px;background:#3a3b40;margin:0 4px;}
+  .fill-bar .fb-btn{font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.3px;color:#eee;background:#2a2b30;border:1px solid #3a3b40;border-radius:5px;padding:5px 10px;cursor:pointer;transition:.12s;}
+  .fill-bar .fb-btn:hover{border-color:var(--accent);background:#33343a;}
+  .fill-bar .fb-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .fill-bar .fb-btn.primary:hover{background:#c94e14;}
+  .fill-bar .fb-btn.mini{font-size:10px;font-weight:600;padding:3px 8px;text-transform:capitalize;color:#bbb;}
 
   [contenteditable]{outline:none;transition:.1s;}
   [contenteditable]:hover{box-shadow:inset 0 0 0 1px rgba(224,90,27,.35);}
@@ -441,7 +524,8 @@
         <option value="blog">Webpage</option>
       </select>
     </div>
-    <div class="rail-mode rail-mode-pinned" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
+    <div class="rail-mode rail-mode-pinned" id="mode-widgets" onclick="setRailMode('widgets')">Widgets</div>
+    <div class="rail-mode rail-mode-pinned rail-mode-tags" id="mode-hotkeys" onclick="setRailMode('hotkeys')">Tags</div>
   </div>
   <div class="rail-body active" id="railSections">
     <div class="rail-sublabel" id="railSubLabel">Graphics Sections</div>
@@ -462,6 +546,13 @@
         <button onclick="addHotkey()">Add</button>
       </div>
       <div class="hk-hint">Click into any text box first, then click a tag to drop it where your cursor is. New tags get saved automatically and wrapped in {{ }} if you forget.</div>
+    </div>
+  </div>
+  <div class="rail-body" id="pane-widgets">
+    <div class="wg-section">
+      <div class="wg-title">Insert a widget</div>
+      <div class="wg-hint">Drop-in blocks you can add to any section. Click one to append it to the canvas.</div>
+      <div class="wg-list" id="wgList"></div>
     </div>
   </div>
 </div>
@@ -512,6 +603,10 @@
         <div class="set-sep"></div>
         <button class="set-item" data-pane="github"><span class="ic">&#9881;</span><span class="tx">GitHub</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Feedback</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
       </nav>
       <div class="set-foot">
         <span id="setRepoHint">&mdash;</span>
@@ -548,12 +643,83 @@
         <div class="set-pane" data-pane="newsec" id="pane-newsec"></div>
         <div class="set-pane" data-pane="github" id="pane-github"></div>
         <div class="set-pane" data-pane="docs" id="pane-docs"></div>
+
+        <div class="set-pane" data-pane="about" id="pane-about">
+          <div class="ver-hero">
+            <div class="ver-badge" id="verBadge">v0.0</div>
+            <div class="ver-meta">
+              <b>LNGVTY Builder</b>
+              <span id="verSub">&mdash;</span>
+            </div>
+            <button class="tb-btn" onclick="copyVersionInfo()" title="Copy version details to paste into a feedback form">&#128203; Copy version info</button>
+          </div>
+          <p class="set-lede">Full change history and technical notes. Editable &mdash; written in Markdown.</p>
+          <div style="display:flex;justify-content:flex-end;gap:6px;margin-bottom:10px;">
+            <button class="tb-btn" id="notesEditBtn" onclick="toggleNotesEdit()" style="font-size:10px;padding:6px 10px;">&#9998; Edit</button>
+          </div>
+          <div id="notesView" class="docs-body md-render"></div>
+          <textarea id="notesEdit" spellcheck="false" style="display:none;width:100%;box-sizing:border-box;min-height:420px;border:1px solid #e0e0e4;border-radius:8px;padding:14px;font-family:monospace;font-size:12px;line-height:1.6;background:#fafafa;color:#333;resize:vertical;"></textarea>
+          <div class="modal-foot" id="notesEditFoot" style="display:none;">
+            <button class="tb-btn" onclick="resetNotes()">&#8634; Reset to Default</button>
+            <span style="flex:1;"></span>
+            <button class="tb-btn" onclick="cancelNotesEdit()">Cancel</button>
+            <button class="tb-btn primary" onclick="saveNotesEdit()">&#128190; Save Notes</button>
+          </div>
+        </div>
+
+        <div class="set-pane" data-pane="feedback" id="pane-feedback">
+          <p class="set-lede">Found a bug, want a tweak, or have an idea? Send it here &mdash; it goes straight to Evan.</p>
+          <div class="note" style="margin-bottom:14px;">
+            Please include the version number (<b id="fbVer">&mdash;</b>) and, if something looks wrong, <b>which section</b> it happened in. That makes it far quicker to fix.
+          </div>
+          <div class="fb-wrap">
+            <iframe id="fbFrame" src="about:blank" data-src="https://docs.google.com/forms/d/e/1FAIpQLSd4qi6hkOEoONQGQGkSvU0qYcgWQQEpPp23wkjQ-KEk3pnQOQ/viewform?embedded=true" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+          </div>
+        </div>
+
+        <div class="set-pane" data-pane="backlog" id="pane-backlog">
+          <p class="set-lede">The rotating content bank &mdash; tips, swaps, budget proteins, recipes, and quotes to pull from each week. Mark an item <b>USED</b> once it runs so it isn't repeated.</p>
+          <div class="note" style="margin-bottom:14px;">
+            The <b>Dashboard</b> tab shows what's queued next for each category. This is a live view &mdash; edits made in the Google Sheet show up here. To add or cross off items, <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRw_2boXbkkbr51zqlCIqThdYpGVN8_TtyXkSgDOZiEq_sTH2eqS61tAlCXRV-VBw/pubhtml" target="_blank" rel="noopener">open the sheet in a new tab &#8599;</a>.
+          </div>
+          <div class="fb-wrap">
+            <iframe id="blFrame" src="about:blank" data-src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRw_2boXbkkbr51zqlCIqThdYpGVN8_TtyXkSgDOZiEq_sTH2eqS61tAlCXRV-VBw/pubhtml?widget=true&amp;headers=false" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+          </div>
+        </div>
+
+        <div class="set-pane" data-pane="library" id="pane-library">
+          <p class="set-lede">Your content library &mdash; every tip, quote, recipe, swap, protein, and myth, with its lifecycle status. Add and edit items here; the builder pulls from them with <b>Generate</b>.</p>
+          <div class="note" id="libGhNote" style="margin-bottom:12px;">Stored as JSON in <code>/backlog</code> on GitHub. <span id="libGhState">Connect a repo in &#9881; GitHub to load.</span></div>
+          <div class="lib-tabs" id="libTabs"></div>
+          <div class="lib-toolbar">
+            <input type="search" id="libSearch" placeholder="Search…" oninput="libRenderList()"/>
+            <select id="libFilter" onchange="libRenderList()">
+              <option value="">All statuses</option>
+              <option value="available">Available</option>
+              <option value="reserved">Reserved</option>
+              <option value="published">Published</option>
+            </select>
+            <button class="lib-btn primary" onclick="libOpenEditor()">+ Add</button>
+            <button class="lib-btn" onclick="libReloadCurrent()">&#8635; Reload</button>
+          </div>
+          <div class="lib-list" id="libList"><div class="lib-empty">Loading…</div></div>
+        </div>
       </div>
     </section>
   </div>
 </div>
 
-<!-- CUSTOMIZE modal (global theme, typography, text clean-up) -->
+<!-- CONTENT LIBRARY editor modal -->
+<div class="modal-bg" id="libEditBg">
+  <div class="modal" style="width:560px;">
+    <div class="modal-head"><h3 id="libEditTitle">Add Item</h3><button onclick="closeLibEditor()">&times;</button></div>
+    <div class="modal-scroll" id="libEditFields"></div>
+    <div class="modal-foot">
+      <span id="libEditStatus" style="flex:1;font-size:12px;color:#888;"></span>
+      <button class="tb-btn" onclick="closeLibEditor()">Cancel</button>
+      <button class="tb-btn primary" id="libEditSave" onclick="libSaveEditor()">Save</button>
+    </div>
+  </div>
 <div class="modal-bg" id="customizeBg">
   <div class="modal" style="width:640px;">
     <div class="modal-head"><h3>&#127912; Customize</h3><button onclick="closeCustomize()">&times;</button></div>
@@ -689,6 +855,24 @@
 </div>
 
 <!-- LINK editor modal -->
+<!-- NEWSLETTER DATE modal -->
+<div class="modal-bg" id="nlDateBg">
+  <div class="modal" style="width:420px;">
+    <div class="modal-head"><h3>&#128197; Newsletter Week</h3><button onclick="closeNlDate()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="field-row">
+        <label>Pick the newsletter date</label>
+        <input type="date" id="nlDateInput"/>
+      </div>
+      <div class="panel-note" id="nlDateNote" style="margin-top:0;">Pick any day in the week you're sending. We'll snap to that week's <b>Sunday</b> and auto-fill the header date, the seven schedule days, and next week's <b>Mark Your Calendar</b> dates.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="startNewsletterNoDate()">Skip dates</button>
+      <button class="tb-btn primary" onclick="confirmNlDate()">Start Newsletter</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="linkModalBg">
   <div class="modal" style="width:460px;">
     <div class="modal-head"><h3>Edit Link</h3><button onclick="closeLinkModal()">&times;</button></div>
@@ -1457,7 +1641,7 @@ const SECTIONS = {
         </div>
       </div>
       <div style="background:var(--accent);padding:18px 48px 20px;">
-        ${ph("Another week, another chance to show up for yourself.","font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.4;")}
+        ${ph("Insert this week's quote here.","font-family:'Montserrat',sans-serif;font-weight:700;font-size:16px;color:#fff;line-height:1.4;")}
       </div>`},
 
   nlschedule:{group:'Newsletter',norder:2,icon:'☷',name:'Weekly Schedule',theme:'white',mode:'newsletter',
@@ -1491,7 +1675,7 @@ const SECTIONS = {
         ${ph('Same time, every week — no excuses.',"font-size:12px;color:#aaa;font-weight:300;margin-bottom:20px;")}
         <div style="background:#fafafa;padding:24px;">
           ${ph('Recurring Weekly Events',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;color:#bbb;text-transform:uppercase;margin-bottom:16px;")}
-          ${listBlock([mk('Monday','Jun 16','6am Class','6:00 AM — Open to all'),mk('Wednesday','Jun 18','HYROX Prep','5:30 PM — All levels'),mk('Saturday','Jun 21','Community WOD','9:00 AM — Bring a friend')],mk('Day','Date','Event Name','Time & details'),'Add day')}
+          <div class="sched-list">${listBlock([mk('Sunday','Date','Event Name','Time & details'),mk('Monday','Date','Event Name','Time & details'),mk('Tuesday','Date','Event Name','Time & details'),mk('Wednesday','Date','Event Name','Time & details'),mk('Thursday','Date','Event Name','Time & details'),mk('Friday','Date','Event Name','Time & details'),mk('Saturday','Date','Event Name','Time & details')],mk('Day','Date','Event Name','Time & details'),'Add day')}</div>
         </div>
       </div>`;}},
 
@@ -1516,7 +1700,8 @@ const SECTIONS = {
   nlrecipe:{group:'Recipe',icon:'🍳',name:'Featured Recipe',theme:'white',mode:'newsletter',
     html:()=>{
       const ing=(v)=>`<div class="li-wrap" style="flex:1 1 45%;min-width:160px;color:#ccc;font-size:12px;font-weight:300;padding:2px 0;position:relative;"><span style="color:var(--accent);">—</span> ${ph(v,"display:inline;color:#ccc;",'span')}<button class="li-del" onclick="delLi(this)">×</button></div>`;
-      const step=(n,v)=>`<div class="li-wrap" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;">${ph(n,"background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;")}${ph(v,"font-size:13px;color:#666;line-height:1.6;font-weight:300;flex:1;padding-top:3px;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      // Step number is auto-managed (non-editable) — renumbered on add/delete/reorder.
+      const step=(n,v)=>`<div class="li-wrap" style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;"><div class="step-num" style="background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${n}</div>${ph(v,"font-size:13px;color:#666;line-height:1.6;font-weight:300;flex:1;padding-top:3px;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Recipe Corner',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph("This Week's Featured Recipe","font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:4px;line-height:1.1;")}
@@ -1538,7 +1723,7 @@ const SECTIONS = {
         </div>
         <div class="nl-steps" data-on="0" style="display:none;background:#fafafa;border-top:3px solid var(--accent);padding:18px 20px;">
           ${ph('Instructions',"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase;margin-bottom:12px;")}
-          ${listBlock([step('1','Preheat oven to 425°F and line a sheet pan.'),step('2','Toss chicken and veggies with olive oil and seasoning.'),step('3','Roast 30–35 minutes until cooked through.')],step('N','New step'),'Add step')}
+          <div class="steps-list">${listBlock([step('1','Preheat oven to 425°F and line a sheet pan.'),step('2','Toss chicken and veggies with olive oil and seasoning.'),step('3','Roast 30–35 minutes until cooked through.')],step('','New step'),'Add step')}</div>
         </div>
         <button class="nl-steptoggle" type="button" onclick="toggleRecipeSteps(this)" style="margin-top:10px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;">+ Show Instructions Steps</button>
       </div>`;}},
@@ -1599,7 +1784,7 @@ const SECTIONS = {
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Special Events',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Mark Your Calendar',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:20px;line-height:1.1;")}
-        ${listBlock([ev('OCT','16','Thursday','HYROX Training Day','9:00 AM','Full simulation with timing and coaching.','Members Only'),ev('OCT','28','Tuesday','Member Potluck','6:30 PM','Bring a dish, meet the community.','All Welcome')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
+        ${listBlock([ev('MON','00','Sunday','Event Name','Time','Short description.','Tag'),ev('MON','00','Monday','Event Name','Time','Short description.','Tag'),ev('MON','00','Tuesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Wednesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Thursday','Event Name','Time','Short description.','Tag'),ev('MON','00','Friday','Event Name','Time','Short description.','Tag'),ev('MON','00','Saturday','Event Name','Time','Short description.','Tag')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
       </div>`;}},
 
   nl90:{group:'CTA',icon:'◷',name:'Coming Up on 90 Days?',theme:'white',mode:'both',
@@ -2154,14 +2339,17 @@ function setBuilderMode(mode){
 function setRailMode(m){
   railMode=m;
   const isSections=(m==='graphics'||m==='newsletter'||m==='blog');
-  // keep the dropdown showing the active content mode (Tags is a separate pin)
+  // keep the dropdown showing the active content mode (Tags/Widgets are separate pins)
   const sel=document.getElementById('railModeSelect');
   if(sel&&isSections)sel.value=m;
   document.getElementById('mode-hotkeys').classList.toggle('active',m==='hotkeys');
-  // dim the dropdown's underline when Tags is the active pane
-  document.getElementById('railModeSelect')?.parentElement?.classList.toggle('muted',m==='hotkeys');
+  document.getElementById('mode-widgets')?.classList.toggle('active',m==='widgets');
+  // dim the dropdown's underline when a pinned pane (Tags/Widgets) is active
+  document.getElementById('railModeSelect')?.parentElement?.classList.toggle('muted',m==='hotkeys'||m==='widgets');
   document.getElementById('railSections').classList.toggle('active',isSections);
   document.getElementById('pane-hotkeys').classList.toggle('active',m==='hotkeys');
+  document.getElementById('pane-widgets')?.classList.toggle('active',m==='widgets');
+  if(m==='widgets')renderWidgets();
   const sl=document.getElementById('railSubLabel');
   if(sl&&isSections){
     sl.textContent=(m==='newsletter')?'Newsletter Sections':(m==='blog')?'Webpage / Blog Sections':'Graphics Sections';
@@ -2174,7 +2362,7 @@ function setRailMode(m){
    sections list — a <select> onchange won't fire if the same value is re-picked,
    so this gives the user a reliable way back out of Tags. */
 function exitTagsPane(){
-  if(railMode!=='hotkeys')return;
+  if(railMode!=='hotkeys'&&railMode!=='widgets')return;
   const sel=document.getElementById('railModeSelect');
   setRailMode((sel&&sel.value)||'graphics');
 }
@@ -2262,7 +2450,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -2318,7 +2506,9 @@ function spSaveDesc(){
 }
 const frame=document.getElementById('frame');
 let dragSrc=null;
-function refreshState(){document.getElementById('emptyHint').style.display=frame.querySelector('.sec')?'none':'block';const c=frame.querySelectorAll('.sec').length;document.getElementById('secCount').textContent=c+(c===1?' section':' sections');refreshPlaceholders();}
+function refreshState(){
+  if(typeof dirty!=='undefined')dirty=true;   // any structural change dirties the doc
+document.getElementById('emptyHint').style.display=frame.querySelector('.sec')?'none':'block';const c=frame.querySelectorAll('.sec').length;document.getElementById('secCount').textContent=c+(c===1?' section':' sections');refreshPlaceholders();}
 function controlsHTML(){
   return `<div class="sec-tag"></div>
     <div class="sec-controls">
@@ -2342,6 +2532,98 @@ function wireSec(sec){
   }
   // restore any saved media/embed in this section
   hydrateMedia(sec);
+  wireParagraphKeys(sec);
+  injectFillBar(sec);
+}
+
+/* ═══════════ CONTENT-LIBRARY FILL BAR ═══════════
+   A small in-editor toolbar added to the content sections that can pull from the
+   Content Library. "Generate" reserves + drops in an item; "Next" swaps it. Tip
+   Tuesday additionally gets per-field cycle buttons so you can reroll just the
+   hydration/protein/sleep/mobility line without changing the rest. The bar is
+   builder-only chrome (class fill-bar) and is stripped on export. */
+const SEC_FILL={
+  nltip   :{type:'tips',   label:'Tip'},
+  nlheader:{type:'quotes', label:'Quote'},
+  nlrecipe:{type:'recipes',label:'Recipe'}
+};
+function injectFillBar(sec){
+  const key=sec.dataset.key;
+  const cfg=SEC_FILL[key];
+  if(!cfg)return;
+  if(sec.querySelector(':scope > .fill-bar'))return;   // once
+  const bar=document.createElement('div');
+  bar.className='fill-bar';
+  bar.setAttribute('contenteditable','false');
+  let html=`<span class="fb-label">📚 ${cfg.label}</span>
+    <button class="fb-btn primary" type="button" onclick="libGenerate('${cfg.type}')">🎲 Generate</button>
+    <button class="fb-btn" type="button" onclick="libNext('${cfg.type}')">🔄 Next</button>`;
+  if(key==='nltip'){
+    html+=`<span class="fb-sep"></span><span class="fb-mini-label">reroll one:</span>`+
+      ['hydration','protein','sleep','mobility'].map(f=>`<button class="fb-btn mini" type="button" onclick="libNextTipField('${f}')">${f}</button>`).join('');
+  }
+  bar.innerHTML=html;
+  sec.insertBefore(bar,sec.firstChild);
+}
+
+/* ═══════════ PARAGRAPH ENTER BEHAVIOR ═══════════
+   Inside multi-line paragraph fields (the "Note from Tim" intro, and any other
+   paragraph list), a single Enter should continue the SAME line style (a plain
+   <br>, not a browser-default <div> that resets font/size/color). Pressing Enter
+   on an already-empty line spawns a fresh paragraph block via the list's own
+   +Add, so two Enters = new paragraph. This keeps every line identical to the
+   first and removes the need to add paragraph blocks by hand. */
+function wireParagraphKeys(sec){
+  sec.querySelectorAll('.li-list').forEach(list=>{
+    const proto=list.getAttribute('data-proto')||'';
+    if(!/<p\b/i.test(proto))return;                 // only paragraph-style lists
+    if(list.dataset.pkeys==='1')return;             // wire once
+    list.dataset.pkeys='1';
+    list.addEventListener('keydown',e=>{
+      if(e.key!=='Enter'||e.shiftKey)return;
+      const p=e.target.closest('p[contenteditable]');
+      if(!p||!list.contains(p))return;
+      e.preventDefault();
+      const txt=p.textContent.replace(/\u200b/g,'');
+      const caretAtEmptyLine=isCaretOnEmptyTrailingLine(p);
+      if(caretAtEmptyLine){
+        // second Enter on a blank line → strip that trailing break, make a new paragraph
+        stripTrailingBreak(p);
+        const addBtn=list.nextElementSibling;
+        if(addBtn&&addBtn.classList.contains('li-add')){addLi(addBtn);}
+        return;
+      }
+      // single Enter → same-style line break
+      insertBreakAtCaret();
+    });
+  });
+}
+/* true when the caret sits on a final, empty visual line (i.e. the char before it is a <br>) */
+function isCaretOnEmptyTrailingLine(p){
+  const sel=window.getSelection();if(!sel||!sel.rangeCount)return false;
+  const r=sel.getRangeAt(0);
+  if(!r.collapsed)return false;
+  // caret must be at the very end of the paragraph's content
+  const end=document.createRange();end.selectNodeContents(p);end.setStart(r.endContainer,r.endOffset);
+  if(end.toString().replace(/\u200b/g,'').length!==0)return false;
+  // and the paragraph must already end in a <br> (a line we just made)
+  const html=p.innerHTML.replace(/\u200b/g,'');
+  return /<br\s*\/?>\s*$/i.test(html);
+}
+function stripTrailingBreak(p){
+  p.innerHTML=p.innerHTML.replace(/(<br\s*\/?>\s*)+$/i,'');
+  markEmpty(p);
+}
+function insertBreakAtCaret(){
+  const sel=window.getSelection();if(!sel||!sel.rangeCount)return;
+  const r=sel.getRangeAt(0);r.deleteContents();
+  const br=document.createElement('br');
+  r.insertNode(br);
+  // a trailing zero-width space keeps the caret visible on the new empty line
+  const zwsp=document.createTextNode('\u200b');
+  br.after(zwsp);
+  r.setStartAfter(zwsp);r.setEndAfter(zwsp);
+  sel.removeAllRanges();sel.addRange(r);
 }
 function clearDrop(){frame.querySelectorAll('.sec').forEach(s=>s.classList.remove('dragover-top','dragover-bot'));}
 function addSection(key,before){
@@ -2358,13 +2640,83 @@ function addSection(key,before){
   return sec;
 }
 
+/* ═══════════ WIDGETS ═══════════
+   Small drop-in blocks the operator can add to any layout. Each is a standalone
+   .sec so it exports, themes, and reorders like everything else. The flagship
+   widget is a brand-orange, fully linkable button (same primitive as the CTA
+   sections' button — editable label + href via the link modal). */
+const WIDGETS={
+  button:{icon:'▶',name:'Button',desc:'Orange, linkable call-to-action button.',
+    html:()=>`<div style="background:var(--secbg);padding:28px 48px;text-align:center;border-bottom:1px solid #eee;">
+      ${btn('» Button Label',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:16px 40px;border-radius:4px;",'https://lngvtyhub.com/')}
+    </div>`}
+};
+function renderWidgets(){
+  const host=document.getElementById('wgList');if(!host)return;
+  host.innerHTML='';
+  Object.entries(WIDGETS).forEach(([key,w])=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='wg-item';b.onclick=()=>insertWidget(key);
+    b.innerHTML=`<span class="wg-ic">${w.icon}</span><span class="wg-tx"><span class="wg-nm">${w.name}</span><span class="wg-ds">${w.desc}</span></span>`;
+    host.appendChild(b);
+  });
+}
+/* append a widget to the canvas as its own themed, exportable section */
+function insertWidget(key){
+  const w=WIDGETS[key];if(!w)return;
+  const sec=document.createElement('div');sec.className='sec';sec.dataset.key='widget-'+key;
+  sec.innerHTML=w.html()+controlsHTML();
+  const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=w.name+' (widget)';
+  frame.appendChild(sec);
+  applySecTheme(sec,'white');
+  wireSec(sec);refreshState();saveStateLocal();
+  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  toast('\u2713 '+w.name+' added — set its label and link');
+}
+
 /* ═══════════ NEWSLETTER STARTER ═══════════
-   Drops in the standard weekly-newsletter skeleton in reading order, so the
-   only things left to fill in are the date, the quote, and the week's content. */
+   Drops in the standard weekly-newsletter skeleton in reading order. The starter
+   first asks for the send date, then snaps to that week's Sunday and auto-fills
+   the header date, the seven schedule day-dates, and next week's Mark-Your-Calendar
+   dates — so the only things left to fill are the quote and the week's content. */
 const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nltip','nlrecipe','nlevents','footer'];
+
+/* Entry point from the "Start a newsletter" button — asks for the date first. */
 function buildNewsletterTemplate(){
   const existing=frame.querySelectorAll('.sec').length;
   if(existing && !confirm('Replace the '+existing+' section(s) on the canvas with a fresh newsletter?'))return;
+  openNlDate();
+}
+function openNlDate(){
+  const inp=document.getElementById('nlDateInput');
+  if(inp && !inp.value){
+    // default to the upcoming Sunday
+    const t=new Date();const d=new Date(t.getFullYear(),t.getMonth(),t.getDate());
+    d.setDate(d.getDate()+((7-d.getDay())%7));
+    inp.value=isoDate(d);
+  }
+  document.getElementById('nlDateBg').classList.add('show');
+  setTimeout(()=>inp&&inp.focus(),50);
+}
+function closeNlDate(){document.getElementById('nlDateBg').classList.remove('show');}
+function confirmNlDate(){
+  const v=document.getElementById('nlDateInput').value;
+  closeNlDate();
+  buildNewsletterSkeleton(v||null);
+}
+function startNewsletterNoDate(){closeNlDate();buildNewsletterSkeleton(null);}
+
+/* ISO yyyy-mm-dd for a local Date (no timezone drift) */
+function isoDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+/* parse a yyyy-mm-dd string as a LOCAL date (avoids the UTC-midnight off-by-one) */
+function parseLocalDate(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);if(!y||!m||!d)return null;return new Date(y,m-1,d);}
+const NL_MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const NL_MON3=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const NL_DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+/* the Sunday that begins the week containing d */
+function weekSunday(d){const s=new Date(d.getFullYear(),d.getMonth(),d.getDate());s.setDate(s.getDate()-s.getDay());return s;}
+
+function buildNewsletterSkeleton(dateStr){
   frame.querySelectorAll('.sec').forEach(s=>s.remove());
   NEWSLETTER_TEMPLATE.forEach(k=>{
     const sec=addSection(k);
@@ -2375,10 +2727,97 @@ function buildNewsletterTemplate(){
       if(eds[1])eds[1].setAttribute('data-ph','A Note From Tim,');
     }
   });
+  prefillNewsletterStatics();
+  const picked=parseLocalDate(dateStr);
+  if(picked)applyNewsletterDates(picked);
   saveStateLocal();
   frame.scrollIntoView({behavior:'smooth',block:'start'});
-  toast('\u2713 Newsletter started — add your date, quote, and content');
+  toast(picked?'\u2713 Newsletter started — dates filled for the week':'\u2713 Newsletter started — add your quote and content');
 }
+
+/* Pre-fill the fields that are the SAME on every newsletter (brand identity and
+   section labels) as real text, so the operator isn't retyping "LNGVTY Hub" or
+   "Upcoming Schedule" each week. Fields that change weekly — the quote, event
+   names/times, tips, recipe, member content — are LEFT as ghost text so it's
+   always clear what belongs there. Matching is by the placeholder text, so this
+   is resilient to section reordering.
+
+   Each entry: [placeholder-to-match] -> real value to type in. */
+const NL_STATIC_PREFILL={
+  // header (constant brand identity — never changes week to week)
+  'LNGVTY Hub — Weekly Member Newsletter':'LNGVTY Hub — Weekly Newsletter',
+  'LNGVTY':'LNGVTY',
+  'Longevity Hub':'Longevity Hub',
+  'Weekly Newsletter':'Weekly Newsletter',
+  // intro
+  'Welcome':'Welcome',
+  'A Note From Tim,':'A Note From Tim,',
+  // schedule
+  'Every Week at LNGVTY':'This Week at LNGVTY',
+  'Upcoming Schedule':'Upcoming Schedule',
+  'Same time, every week — no excuses.':'Everything happening this week!',
+  'Recurring Weekly Events':"What's Happening",
+  // tip tuesday
+  'Tip Tuesday':'Tip Tuesday',
+  // recipe
+  'Recipe Corner':'Recipe Corner',
+  "This Week's Featured Recipe":"This Week's Featured Recipe",
+  // events
+  'Special Events':'Upcoming Events',
+  'Mark Your Calendar':'Mark Your Calendar',
+};
+function prefillNewsletterStatics(){
+  frame.querySelectorAll('.sec [contenteditable][data-ph]').forEach(el=>{
+    const ph=el.getAttribute('data-ph')||'';
+    if(Object.prototype.hasOwnProperty.call(NL_STATIC_PREFILL,ph) && el.textContent.trim()===''){
+      el.textContent=NL_STATIC_PREFILL[ph];
+      markEmpty(el);
+    }
+  });
+}
+
+/* Fill every date-driven field from the chosen send date:
+   • header date  → "Month D, YYYY" (the picked date)
+   • schedule     → this week's Sun–Sat dates under each day label
+   • events       → NEXT week's Sun–Sat date boxes (Mark Your Calendar) */
+function applyNewsletterDates(picked){
+  const sun=weekSunday(picked);
+  // header date
+  const header=frame.querySelector('.sec[data-key="nlheader"]');
+  if(header){
+    const eds=[...header.querySelectorAll('[contenteditable][data-ph]')];
+    // the date field is the accent one that defaults to a "Month D, YYYY" placeholder
+    const dateEd=eds.find(e=>/\b\d{4}\b/.test(e.getAttribute('data-ph')||'')) || eds[3];
+    if(dateEd){dateEd.textContent=NL_MONTHS[picked.getMonth()]+' '+picked.getDate()+', '+picked.getFullYear();markEmpty(dateEd);}
+  }
+  // schedule: fill the small date line under each day (rows are Sun..Sat in order)
+  const sched=frame.querySelector('.sec[data-key="nlschedule"]');
+  if(sched){
+    const rows=[...sched.querySelectorAll('.li-list > .li-wrap')];
+    rows.forEach((row,i)=>{
+      const cells=row.querySelectorAll('[contenteditable][data-ph]');
+      // cell 0 = day label, cell 1 = date line
+      const day=new Date(sun);day.setDate(sun.getDate()+i);
+      if(cells[0]){cells[0].textContent=NL_DAYS[day.getDay()];markEmpty(cells[0]);}
+      if(cells[1]){cells[1].textContent=NL_MON3[day.getMonth()]+' '+day.getDate();markEmpty(cells[1]);}
+    });
+  }
+  // events: prefill NEXT week's seven day-boxes (month / day# / weekday)
+  const events=frame.querySelector('.sec[data-key="nlevents"]');
+  if(events){
+    const nextSun=new Date(sun);nextSun.setDate(sun.getDate()+7);
+    const rows=[...events.querySelectorAll('.li-list > .li-wrap')];
+    rows.forEach((row,i)=>{
+      const box=row.querySelectorAll('td [contenteditable][data-ph]');
+      const day=new Date(nextSun);day.setDate(nextSun.getDate()+i);
+      // box 0 = month, 1 = day number, 2 = weekday
+      if(box[0]){box[0].textContent=NL_MON3[day.getMonth()];markEmpty(box[0]);}
+      if(box[1]){box[1].textContent=String(day.getDate());markEmpty(box[1]);}
+      if(box[2]){box[2].textContent=NL_DAYS[day.getDay()];markEmpty(box[2]);}
+    });
+  }
+}
+
 
 /* ═══════════ EKG BACKDROP ═══════════
    A faint orange heartbeat trace behind the canvas. Purely ambient: it sits in a
@@ -2424,14 +2863,39 @@ function startEKG(){
   /* Layered traces at different depths. Slower speeds and staggered cycle lengths
      mean the lines drift across each other rather than marching in lockstep, which
      reads as depth — some passing in front, some behind. */
-  const LAYERS=[
-    {hue:'160,160,168', y:0.16, speed:5,  amp:34, alpha:0.10, width:1.0, cycle:520, phase:0.10}, // gray, far
-    {hue:'224,90,27',   y:0.30, speed:7,  amp:46, alpha:0.16, width:1.3, cycle:470, phase:0.62}, // orange
-    {hue:'255,255,255', y:0.46, speed:6,  amp:30, alpha:0.07, width:1.0, cycle:610, phase:0.28}, // white, far
-    {hue:'224,90,27',   y:0.60, speed:10, amp:66, alpha:0.26, width:1.9, cycle:430, phase:0.00}, // orange, near
-    {hue:'160,160,168', y:0.74, speed:8,  amp:40, alpha:0.11, width:1.2, cycle:560, phase:0.45}, // gray
-    {hue:'255,255,255', y:0.88, speed:9,  amp:26, alpha:0.06, width:0.9, cycle:500, phase:0.80}, // white
+  /* A SEA of traces. Rather than a handful of hand-placed lines, generate a dense
+     field and sort it by depth: far lines are slow, thin, faint and low-amplitude;
+     near lines are faster, thicker, brighter and taller. Drawing far-to-near means
+     the near ones genuinely pass in front, which is what sells the parallax. */
+  const PALETTE=[
+    {name:'gray',  hue:'150,152,160'},
+    {name:'orange',hue:'224,90,27'},
+    {name:'white', hue:'255,255,255'},
   ];
+  const LAYERS=(()=>{
+    const out=[];
+    const N=18;
+    for(let i=0;i<N;i++){
+      const depth=i/(N-1);                       // 0 = far, 1 = near
+      // orange dominates the mid/near field; gray and white fill the depths
+      const pick = (i%3===1) ? PALETTE[1] : (i%3===0 ? PALETTE[0] : PALETTE[2]);
+      const near = depth;
+      out.push({
+        hue   : pick.hue,
+        name  : pick.name,
+        y     : 0.04 + (i*0.055) + (i%2?0.012:-0.012),      // spread down the page, slightly jittered
+        speed : 14 + near*40,                                // px/sec — noticeable but ambient
+        amp   : 16 + near*62,
+        width : 0.7 + near*1.6,
+        cycle : 640 - near*230,                              // near beats are tighter
+        phase : (i*0.37)%1,
+        alpha : (pick.name==='orange' ? 0.05+near*0.24
+               : pick.name==='gray'   ? 0.04+near*0.11
+               :                        0.025+near*0.07),
+      });
+    }
+    return out.sort((a,b)=>a.amp-b.amp);          // far (small) first, near (tall) last
+  })();
 
   let last=performance.now(), t=0;
   function draw(now){
@@ -2441,7 +2905,7 @@ function startEKG(){
     size();
     ctx.clearRect(0,0,w,h);
     LAYERS.forEach(L=>{
-      const baseY=h*L.y;
+      const baseY=h*((L.y%1)+ (L.y<0?1:0));
       const grad=ctx.createLinearGradient(0,0,w,0);
       grad.addColorStop(0,   'rgba('+L.hue+',0)');
       grad.addColorStop(0.14,'rgba('+L.hue+','+L.alpha+')');
@@ -2578,12 +3042,14 @@ function delLi(btn){
   const wrap=btn.closest('.li-wrap');const list=wrap.parentElement;
   if(list.querySelectorAll(':scope > .li-wrap').length<=1){toast('Keep at least one item');return;}
   wrap.remove();
+  renumberSteps(list);
 }
 function addLi(btn){
   const list=btn.previousElementSibling;
   const proto=list.getAttribute('data-proto');if(!proto)return;
   const tmp=document.createElement('div');tmp.innerHTML=proto;
   const node=tmp.firstElementChild;list.appendChild(node);
+  renumberSteps(list);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
 }
 /* reorder a list item within its list */
@@ -2591,6 +3057,16 @@ function moveLi(btn,dir){
   const wrap=btn.closest('.li-wrap');if(!wrap)return;
   if(dir<0){const prev=wrap.previousElementSibling;if(prev&&prev.classList.contains('li-wrap'))prev.before(wrap);}
   else{const next=wrap.nextElementSibling;if(next&&next.classList.contains('li-wrap'))next.after(wrap);}
+  renumberSteps(wrap.parentElement);
+}
+/* Auto-number any list of steps (recipe instructions). The number badges carry a
+   .step-num class and are non-editable, so ordering is always 1..n with no manual
+   fixing after add/delete/reorder. No-op for lists that have no .step-num badges. */
+function renumberSteps(list){
+  if(!list)return;
+  const nums=list.querySelectorAll(':scope > .li-wrap > .step-num');
+  if(!nums.length)return;
+  nums.forEach((n,i)=>{n.textContent=String(i+1);});
 }
 /* add an inline tag pill into a .tag-wrap (uses its data-proto) */
 function addTag(btn){
@@ -2934,6 +3410,141 @@ Object.keys(THEME_VARMAP).forEach(k=>{const inp=document.getElementById('col-'+k
 function resetTheme(){Object.entries(THEME_DEFAULT).forEach(([k,v])=>{const inp=document.getElementById('col-'+k);if(inp)inp.value=v;setVar(k,v);});toast('Theme reset');}
 
 /* ═══════════ CUSTOMIZE (theme + typography + text clean-up) ═══════════ */
+let docsEditing=false;
+let notesEditing=false;
+
+/* ═══════════ BUILD INFO ═══════════
+   Bump BUILD.version whenever something ships. It surfaces in Settings →
+   Version & Notes and is quoted on the feedback form, so a bug report always
+   carries the build it came from. */
+const BUILD={
+  version : 'v19.0',
+  name    : 'Content Library',
+  date    : '20 July 2026',
+};
+
+/* ── a small, dependency-free Markdown renderer ──
+   Handles what the release notes actually use: headings, bold/italic/code,
+   fenced code, tables, lists, quotes, rules, and links. Not a full CommonMark
+   implementation, and doesn't need to be. */
+function renderMarkdown(md){
+  const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const inline=t=>esc(t)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<em>$2</em>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+  const lines=String(md||'').replace(/\r\n/g,'\n').split('\n');
+  const out=[];
+  let i=0;
+  while(i<lines.length){
+    const L=lines[i];
+
+    // fenced code
+    if(/^```/.test(L)){
+      const buf=[];i++;
+      while(i<lines.length && !/^```/.test(lines[i])){buf.push(lines[i]);i++;}
+      i++;
+      out.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>');
+      continue;
+    }
+    // table
+    if(/^\|/.test(L) && /^\|[\s:|-]+\|?\s*$/.test(lines[i+1]||'')){
+      const cells=r=>r.replace(/^\||\|$/g,'').split('|').map(c=>c.trim());
+      const head=cells(L);
+      i+=2;
+      const rows=[];
+      while(i<lines.length && /^\|/.test(lines[i])){rows.push(cells(lines[i]));i++;}
+      out.push('<table><tr>'+head.map(h=>'<th>'+inline(h)+'</th>').join('')+'</tr>'+
+        rows.map(r=>'<tr>'+r.map(c=>'<td>'+inline(c)+'</td>').join('')+'</tr>').join('')+'</table>');
+      continue;
+    }
+    // heading / rule / quote
+    let m;
+    if((m=L.match(/^(#{1,4})\s+(.*)$/))){out.push('<h'+m[1].length+'>'+inline(m[2])+'</h'+m[1].length+'>');i++;continue;}
+    if(/^(-{3,}|\*{3,})\s*$/.test(L)){out.push('<hr/>');i++;continue;}
+    if(/^>\s?/.test(L)){
+      const buf=[];
+      while(i<lines.length && /^>\s?/.test(lines[i])){buf.push(lines[i].replace(/^>\s?/,''));i++;}
+      out.push('<blockquote>'+inline(buf.join(' '))+'</blockquote>');
+      continue;
+    }
+    // lists
+    if(/^\s*[-*+]\s+/.test(L)){
+      const buf=[];
+      while(i<lines.length && /^\s*[-*+]\s+/.test(lines[i])){buf.push(lines[i].replace(/^\s*[-*+]\s+/,''));i++;}
+      out.push('<ul>'+buf.map(b=>'<li>'+inline(b)+'</li>').join('')+'</ul>');
+      continue;
+    }
+    if(/^\s*\d+\.\s+/.test(L)){
+      const buf=[];
+      while(i<lines.length && /^\s*\d+\.\s+/.test(lines[i])){buf.push(lines[i].replace(/^\s*\d+\.\s+/,''));i++;}
+      out.push('<ol>'+buf.map(b=>'<li>'+inline(b)+'</li>').join('')+'</ol>');
+      continue;
+    }
+    // blank
+    if(!L.trim()){i++;continue;}
+    // paragraph
+    const buf=[];
+    while(i<lines.length && lines[i].trim() && !/^(#{1,4}\s|```|\||>|\s*[-*+]\s|\s*\d+\.\s|-{3,})/.test(lines[i])){
+      buf.push(lines[i]);i++;
+    }
+    out.push('<p>'+inline(buf.join(' '))+'</p>');
+  }
+  return out.join('\n');
+}
+
+/* ── release notes: stored, editable, resettable ── */
+function getNotes(){try{return localStorage.getItem('lngvty_notes')||defaultNotes();}catch(e){return defaultNotes();}}
+function toggleNotesEdit(){
+  const view=document.getElementById('notesView');
+  const ed=document.getElementById('notesEdit');
+  const foot=document.getElementById('notesEditFoot');
+  const btn=document.getElementById('notesEditBtn');
+  notesEditing=!notesEditing;
+  if(notesEditing){
+    ed.value=getNotes();
+    view.style.display='none';ed.style.display='block';foot.style.display='flex';
+    btn.innerHTML='&#128065; Preview';ed.focus();
+  }else{
+    view.innerHTML=renderMarkdown(ed.value);
+    view.style.display='block';ed.style.display='none';foot.style.display='none';
+    btn.innerHTML='&#9998; Edit';
+  }
+}
+function cancelNotesEdit(){
+  notesEditing=false;
+  document.getElementById('notesView').style.display='block';
+  document.getElementById('notesEdit').style.display='none';
+  document.getElementById('notesEditFoot').style.display='none';
+  document.getElementById('notesEditBtn').innerHTML='&#9998; Edit';
+  document.getElementById('notesView').innerHTML=renderMarkdown(getNotes());
+}
+function saveNotesEdit(){
+  const val=document.getElementById('notesEdit').value;
+  try{localStorage.setItem('lngvty_notes',val);}catch(e){}
+  cancelNotesEdit();
+  toast('Notes saved');
+}
+function resetNotes(){
+  if(!confirm('Reset the release notes to the default?'))return;
+  try{localStorage.removeItem('lngvty_notes');}catch(e){}
+  document.getElementById('notesEdit').value=defaultNotes();
+  cancelNotesEdit();
+  toast('Notes reset');
+}
+function copyVersionInfo(){
+  const c=ghConfig();
+  copyText(
+    'LNGVTY Builder '+BUILD.version+' ('+BUILD.name+', '+BUILD.date+')\n'+
+    'Repo: '+(c.owner||'?')+'/'+(c.repo||'?')+' \u00b7 folder: '+ghDir()+'/\n'+
+    'Browser: '+navigator.userAgent,
+    'Version info copied'
+  );
+}
+
+
 /* ═══════════ SETTINGS SHELL ═══════════
    The settings dialog doesn't duplicate any UI. On first open it MOVES the body
    of each existing modal into its matching pane, so every input keeps its id and
@@ -2947,6 +3558,10 @@ const SET_PANES={
   newsec : {title:'New Section',  src:'addBg'},
   github : {title:'GitHub',       src:'githubBg'},
   docs   : {title:'Docs',         src:'docsBg'},
+  about  : {title:'Version & Notes', src:null},   // authored inline
+  feedback:{title:'Feedback',     src:null},      // authored inline
+  backlog :{title:'Content Backlog', src:null},   // authored inline
+  library :{title:'Content Library',  src:null},   // authored inline
 };
 let settingsHydrated=false;
 
@@ -3001,6 +3616,35 @@ function setPane(key){
   document.getElementById('setTitle').textContent=SET_PANES[key].title;
   // pane-specific refreshes
   if(key==='images')loadImageLib();
+  if(key==='docs'){
+    // the sidebar reaches this pane directly, so it has to fill itself
+    const view=document.getElementById('docsView');
+    const ed=document.getElementById('docsEdit');
+    const content=getDocs();
+    if(view && !docsEditing)view.innerHTML=content;
+    if(ed && !docsEditing)ed.value=content;
+  }
+  if(key==='about'){
+    document.getElementById('verBadge').textContent=BUILD.version;
+    document.getElementById('verSub').textContent=BUILD.name+' \u00b7 '+BUILD.date;
+    if(!notesEditing){
+      const md=getNotes();
+      document.getElementById('notesEdit').value=md;
+      document.getElementById('notesView').innerHTML=renderMarkdown(md);
+    }
+  }
+  if(key==='feedback'){
+    const el=document.getElementById('fbVer');if(el)el.textContent=BUILD.version;
+    // load the form lazily — no reason to hit Google until the pane is opened
+    const f=document.getElementById('fbFrame');
+    if(f && f.getAttribute('src')==='about:blank')f.setAttribute('src',f.dataset.src);
+  }
+  if(key==='backlog'){
+    // load the sheet lazily — same reasoning as the feedback form
+    const b=document.getElementById('blFrame');
+    if(b && b.getAttribute('src')==='about:blank')b.setAttribute('src',b.dataset.src);
+  }
+  if(key==='library'){libInitPane();}
   if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
     const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
   if(key==='github'){const c=ghConfig();
@@ -3251,7 +3895,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -3831,7 +4475,7 @@ function doImport(){
   if(!sections){status.textContent='That JSON has no "sections" array.';return;}
   // validate section keys against known sections
   const known=allSections();
-  const good=sections.filter(s=>s&&s.key&&known[s.key]);
+  const good=sections.filter(s=>s&&s.key&&(known[s.key]||s.key.startsWith('widget-')));
   const skipped=sections.length-good.length;
   if(!good.length){status.textContent='None of the sections match known section types.';return;}
   const replace=document.getElementById('importReplace').checked;
@@ -4056,129 +4700,455 @@ LNGVTY-JSON-->`;
 })();
 
 /* ═══════════ DOCUMENTATION ═══════════ */
+/* ═══════════ RELEASE NOTES (Markdown) ═══════════ */
+function defaultNotes(){return `# LNGVTY Builder — Release Notes
+
+A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
+One static HTML file. No server, no build step, no runtime cost.
+
+**Current build:** v19.0 "Content Library" · 20 July 2026
+
+---
+
+## How it works, briefly
+
+The builder holds a library of **72 brand-locked components**. You assemble a
+document from them, and it exports **email-safe HTML** — table-based, inline-styled,
+and tested to render in Outlook, Gmail, and Apple Mail.
+
+The important architectural decision: **structured section data, not exported HTML,
+is the source of truth.** Export is a lossy transform — it flattens a "Calendar" and
+a "Recipe" into anonymous nested tables. If you save the HTML and re-parse it later,
+you cannot recover what the markup *meant*, and every block comes back as a dead
+"Imported" lump. So documents are saved as JSON describing the sections, and the HTML
+is regenerated on demand. The round trip is lossless by construction.
+
+> **Principle:** never persist the output of a lossy transform as your source of
+> truth. Persist the input; re-derive the output.
+
+---
+
+## v19.0 — Content Library · 20 July 2026
+
+- **The builder now has a real content library.** Your Tip Tuesday tips, quotes,
+  recipes, smarter swaps, budget proteins, and myth-busters live as JSON files in
+  the repo's `/backlog` folder, each item carrying a lifecycle status:
+  **available → reserved → published**.
+- **Generate & Next, right in the sections.** Tip Tuesday, the header quote, and the
+  recipe each got a small fill bar. **🎲 Generate** pulls an unused item and drops it
+  in; **🔄 Next** swaps it for another (the skipped one comes back to the pool — it's
+  only skipped for the current session, never lost).
+- **Reroll one line of Tip Tuesday.** Beyond cycling the whole tip, you can reroll just
+  the hydration, protein, sleep, or mobility line from that field's own pool.
+- **Nothing is used up until you send.** Generating an item marks it *reserved* for the
+  draft. When you save the newsletter with status **Sent**, every item it reserved is
+  marked *published* with the issue name and date. Change your mind before sending and
+  the reservations just release — no permanent "used" flag flipped by accident.
+- **Content Library page** under Settings → 🌐 Content Library. Tabs per content type,
+  search + status filter, and full add / edit / delete. Green dot = published, yellow =
+  reserved, gray = available. No JSON editing by hand — the page does the file writes.
+- Everything still lives in GitHub. No database, no Airtable, no Make, no monthly fees.
+
+## v18.1 — Autopilot (fix) · 20 July 2026
+
+- **Ghost text no longer disappears in the newsletter starter.** The date auto-fill
+  in v18.0 was blanking the placeholders on the schedule and events blocks, so the
+  event-name/time fields came up empty with nothing to show what went there. Every
+  varying field now keeps its ghost text (Event Name, Time & details, etc.).
+- **Static brand + section text is now pre-filled for real** when you start a
+  newsletter: the header identity (LNGVTY Hub, Longevity Hub, Weekly Newsletter),
+  the intro labels (Welcome, A Note From Tim), and each section's eyebrow/title
+  (Upcoming Schedule, Recipe Corner, Mark Your Calendar, etc.). You're no longer
+  retyping the same headings every week — only the quote, dates auto-fill, and the
+  week's actual content are left to you. Weekly-varying fields stay ghost text.
+
+## v18.0 — Autopilot · 20 July 2026
+
+- **Newsletter starter now asks for the date first.** Pick any day in the send
+  week and the starter snaps to that week's Sunday, then auto-fills the header
+  date, all seven schedule day-dates (Sun–Sat), and next week's **Mark Your
+  Calendar** date boxes. Empty days are just deleted — no typing dates by hand.
+  "Skip dates" still builds a blank skeleton.
+- **Widgets pane** added beside the mode dropdown (Tags moved to a pull-tab that
+  hangs off the right edge). First widget: an orange, fully linkable **Button**
+  you can drop into any layout — same editable label + link as the CTA sections.
+- **Paragraph typing fixed.** In the "Note from Tim" (and any paragraph block),
+  Enter now continues the *same* line style instead of resetting font/size/color.
+  Enter on a blank line starts a new paragraph — so two Enters = new paragraph,
+  no more adding paragraph blocks by hand.
+- **Recipe steps auto-number.** Step badges renumber 1..n automatically on add,
+  delete, and reorder. The number is no longer an editable field.
+- **Remove individual schedule events** (the ✕ on each event under a day) and
+  **remove recipe stats** (the ✕ on each stat) — no need to delete the whole day
+  or rebuild the stat row.
+- Weekly Schedule and Upcoming Events now start with all seven days laid out.
+
+## v17.0 — The Backlog · 16 July 2026
+
+- **Content Backlog pane** added under Settings, embedding the published Google
+  Sheet content bank — Tip Tuesday, Smarter Swaps, Budget Proteins, Recipes,
+  Quotes, and more, plus a Dashboard tab showing what's queued next for each
+  category. Items marked \`USED\` gray out and strike through so nothing repeats.
+- Same lazy-load pattern as the Feedback pane — it doesn't touch Google until you
+  open the pane. The sheet stays editable in its own tab via a link in the pane.
+- Docs updated with a Content Backlog row in the Settings reference.
+
+## v16.0 — Sea of Signals · 13 July 2026
+
+- **EKG backdrop rebuilt** as a dense, depth-sorted field of 18 traces in orange,
+  gray, and white. Near lines are faster, thicker, and brighter; far lines are slow,
+  thin, and faint. Drawn far-to-near so the near ones genuinely pass in front.
+- **Feedback pane** added under Settings, with the bug/idea form embedded. The form
+  loads lazily — it doesn't touch Google until you open the pane.
+- **Version & Notes pane** added. Shows the current build and holds this document,
+  editable in Markdown with a live preview.
+- **Unsaved-changes guard.** Closing or reloading the tab with unsaved edits now
+  prompts before you lose the work.
+- README rewritten as a durable project description rather than a changelog.
+
+## v15.0 — Newsletter Starter & Drag-to-Place · 13 July 2026
+
+- **Fixed all copy buttons.** \`navigator.clipboard.writeText()\` rejects *silently*
+  when the document isn't focused — a modal or a toast is enough to cause it — and the
+  rejection was unhandled. Nothing reached the clipboard and nothing said so. Every
+  copy path now runs through one hardened helper with an \`execCommand\` fallback.
+- **Start a Newsletter** button: lays down the standard skeleton in reading order —
+  header, note, schedule, tips, recipe, events, footer.
+- **Drag-to-place.** Click a rail section to append it; *click and hold* to drag it
+  between existing sections, with a drop indicator and a fall-in animation.
+- **EKG backdrop** introduced, with a white shell around the document.
+- Footer and Intro Box made available in Newsletter mode.
+- Restored \`extractNewsletterJSON\` and \`readGhForm\`, silently dropped by an earlier
+  refactor — Import and GitHub settings were both throwing.
+
+## v14.0 — Settings Shell · 13 July 2026
+
+- Toolbar cut to the three actions used constantly: **Save**, **Preview**, **Copy HTML**.
+- Everything else moved behind a single **Settings** dialog — a sidebar of sections on
+  the left, the chosen pane on the right.
+- The dialog does **not** duplicate any UI. On first open it *relocates* each existing
+  modal's body into its pane, so every control keeps its id and handler. There is
+  exactly one of each input in the DOM.
+- Global theme restored, under **Theme & Type**.
+
+## v13.0 — Toolbar, Images & Customization · 13 July 2026
+
+- **Image library** backed by the repo's \`images/\` folder, with thumbnails and upload.
+  Photos are referenced **by URL**, not embedded as base64 — embedded images bloat the
+  payload and get Gmail to clip the message.
+- **Reset All Text to Brand Styling** — strips the fonts, sizes, and colors that come
+  along when you paste from Word, Docs, or the web.
+- Fixed **tag pills merging into one orange bar** on export. The gap between them came
+  from the editor's flex \`gap\`, which is stripped on export; spacing now rides on each
+  pill as an inline margin.
+- Fixed the GitHub folder default (\`templates\` → \`saved\`), which only surfaced on a
+  cleared cache or in incognito.
+- Hardcoded the real Facebook / Instagram / Website URLs into all footers.
+- Typography controls (heading font, body font, size, line height).
+- Saved documents gained **thumbnail previews** and a **Preview** button that renders a
+  document *without* loading it over your current work.
+
+## v12.0 — Featured Recipe Imagery · 13 July 2026
+
+- Optional, toggleable photo on the Featured Recipe section.
+- Export is conditional in both directions: the block is omitted when the toggle is off
+  *and* when it's on but no image was chosen — so a broken image can never ship.
+
+## v11.0 — Keto Campaign & Library Expansion
+
+- Authored a four-email drip campaign (days 7, 14, 21, 30), then harvested **18 new
+  components** from it into the library, bringing the total to 72.
+- Distributed the reusable pieces into their natural groups (lists, strips, embeds,
+  offers, CTAs) rather than siloing them under one campaign heading.
+- Saved-document library made to auto-refresh, so **Load** works without a manual reload.
+- **View HTML** made editable for last-mile tweaks.
+
+## v10.0 — Interface & Interchange
+
+- Rail tab strip replaced with a dropdown; Tags pinned separately.
+- Duplicate event sections consolidated; weekday field added under the date.
+- **Copy Bundle** (HTML + section data) and **Import** on structured JSON.
+- Tag and status persisted inside the document, so they survive a cache wipe.
+
+## v9.0 — Layout Hardening
+
+The flex-to-table converter produced the most instructive bugs in the project:
+
+- **\`align-items: stretch\` → \`height:100%\`.** Flexbox stretches children to equal
+  height implicitly; tables don't. Without the mapping, colored side-bars rendered only
+  as tall as their own empty content, exposing the background through the gap.
+- **\`flex: 1\` → \`width:100%\`.** A table shrinks to its content unless told otherwise,
+  so white content cards stopped wherever the text ended.
+- **Flex containers with no element children** — a numbered badge centering its own digit
+  — are no longer tableized. Doing so produced a table with no cells and an empty circle.
+  They're centered with \`text-align\` and \`line-height\` instead.
+- Schedule and event rows **rewritten as hand-written tables**, removing them from the
+  converter's remit entirely. A heuristic that must be right is a liability; explicit
+  markup that cannot drift is an asset.
+
+## v8.0 — GitHub Migration & the Structured Data Model
+
+The architectural turning point.
+
+- Retired **Airtable and Make**. The GitHub Contents API became the datastore: documents
+  are JSON files under \`saved/\`, and Git supplies version history and backups for free.
+- **Removed HTML import entirely**, eliminating the "Imported section" class of bug at
+  its root.
+- Defined the canonical schema (\`lngvty.newsletter/v1\`) and unified save/load onto a
+  single lossless code path.
+
+## v7.0 — Email-Safe Export
+
+- Built the flex→table conversion, style inlining, and CSS-variable resolution pipeline.
+- Established the automated structural audit across the whole library.
+
+## v6.0 — Persistence (Airtable & Make)
+
+- Saved-graphics library with name/tag/status/notes, via Make webhooks into Airtable.
+
+## v5.0 — Newsletter Mode
+
+- Graphics / Newsletter / Webpage modes sharing one component library and one canvas.
+- Newsletter components ported and their fixed form fields converted to ghost text.
+
+## v4.0 — Reordering & Layout Corrections
+
+- Drag reordering; CTA alignment fixes; removable buttons; results-timeline toggle.
+
+## v3.0 — Embeds, Links & Custom Sections
+
+- Embed sections (GHL forms, MP4, MP3); editable hrefs everywhere; live preview.
+- **Custom section builder**: paste HTML to create a new reusable component.
+
+## v2.0 — Content Model & Dynamic Sections
+
+- **Ghost text**: default copy became a visible suggestion that never leaks into export.
+- Dynamic lists; per-section theming; merge-tag hotkeys; per-character color.
+
+## v1.0 — First Interactive Builder
+
+- Toggleable sections, fixed order, no persistence. Validated the concept before further
+  investment.
+
+## Phase 0 — Hand-Edited Templates
+
+- Static HTML edited by hand per campaign. Established the design system.
+
+---
+
+## Known limitations
+
+| Item | Detail |
+|---|---|
+| Token in \`localStorage\` | Writes need a GitHub token, held client-side. Accepted for a private two-person tool; a serverless proxy is the fix before any wider exposure. |
+| No visual regression testing | Correctness is verified structurally, not visually. A section can pass every check and still look wrong. |
+| Manual list numbering | Reordering a numbered list doesn't renumber its items. |
+| View HTML edits are one-way | Tweaks there don't flow back to the canvas — by design. Reverse-parsing is the exact failure mode the architecture exists to avoid. |
+
+## Verification
+
+Every change is checked against the whole library, not just the part that was touched:
+
+- all 72 sections export with no residual \`display:flex\`
+- no builder-only chrome (controls, drop lines, list affordances) survives export
+- no empty table rows — the signature of a failed component conversion
+- no ghost-text prose leaks into the output
+- every \`onclick\` in the DOM resolves to a real function *(this check exists because a
+  refactor twice silently deleted adjacent functions)*
+- section type identity survives a serialize → apply round trip
+
+None of it substitutes for sending yourself a test email.
+`;}
+
 function defaultDocs(){return `<div class="docs-body">
-<h2>📖 LNGVTY Builder — Complete Guide</h2>
-<p>This tool builds two things: <strong>graphics emails</strong> (promos, challenge announcements) and the <strong>weekly newsletter</strong>. You pick blocks, type your words over the faded "ghost" text, then send the finished HTML to GoHighLevel (GHL). Everything saves in this browser automatically — nothing is sent anywhere until you choose to.</p>
-<div class="note"><strong>New here? Read this top to bottom once.</strong> The numbered walkthrough below is written so anyone can follow it, even with zero tech experience.</div>
 
-<h2>⭐ Quick Walkthrough — Building &amp; Sending the Newsletter</h2>
+<div class="tocard">
+  <b>Start here</b><br>
+  This tool builds the weekly newsletter and one-off graphics, then hands you finished HTML to paste into GoHighLevel. You never touch code. Everything you see on the page can be clicked and typed over.
+  <br><br>
+  <b>The 60-second version</b><br>
+  Click <span class="btnrep orange">&#9889; Start a Newsletter</span> &rarr; type over the faded text &rarr; <span class="btnrep orange">&#128190; Save</span> &rarr; <span class="btnrep">&#128203; Copy HTML</span> &rarr; paste into GHL.
+</div>
 
-<div class="bigstep"><div class="num">1</div><div class="stxt"><b>Open the Newsletter tab</b>
-On the far left there are three tabs at the very top: <span class="btnrep">Graphics</span> <span class="btnrep orange">Newsletter</span> <span class="btnrep">Tags</span>. Click <strong>Newsletter</strong>. The list below now shows the newsletter blocks (Header, Schedule, Members, Recipe, and so on).</div></div>
+<h2>1. The screen, in three parts</h2>
 
-<div class="bigstep"><div class="num">2</div><div class="stxt"><b>Hover to preview any block before adding it</b>
-Move your mouse over any block name in the left list (don't click yet). A little window pops up showing <strong>what that block looks like</strong> plus a short description. This is the fastest way to find the block you want. Every block has this. <em>(The description has a <span class="btnrep">✎ Edit</span> button if you ever want to reword it.)</em></div></div>
-
-<div class="bigstep"><div class="num">3</div><div class="stxt"><b>Start with the Newsletter Header</b>
-Click <strong>Newsletter Header + Quote</strong> (hover it first to preview it). It drops onto the white canvas in the middle. This block is the orange top bar, the black LNGVTY logo area with the date, and the orange "quote of the week" band — all in one.</div></div>
-
-<div class="bigstep"><div class="num">4</div><div class="stxt"><b>Click the faded text and type over it</b>
-Any <strong>greyed-out faded text</strong> is just a suggestion ("ghost text"). Click directly on it and type to replace it. If you leave a piece of ghost text untouched, it simply won't show up in the final email — so you can ignore parts you don't need.</div></div>
-
-<div class="bigstep"><div class="num">5</div><div class="stxt"><b>Add the rest of the blocks you want</b>
-Go down the newsletter list and click each block you need: <strong>Weekly Schedule, Welcome New Members, Featured Recipe, Tip Tuesday, Smarter Swaps, Special Events, Upcoming Events,</strong> and the <strong>Footer CTA</strong>. Only add the ones you actually want this week. Fill in each one by clicking its faded text.</div></div>
-
-<div class="bigstep"><div class="num">6</div><div class="stxt"><b>Use the + Add and × buttons inside blocks</b>
-Blocks like the schedule, recipe ingredients, members, and events have a dashed <span class="btnrep orange">+ Add…</span> button to add more rows, and a red <span class="btnrep red">×</span> on each row to remove it. Hover a row to see its controls — including small <span class="chip">▲</span><span class="chip">▼</span> arrows to <strong>reorder</strong> without deleting.</div></div>
-
-<div class="bigstep"><div class="num">7</div><div class="stxt"><b>Reorder whole sections if needed</b>
-Hover over any block on the canvas to see its control bar in the top-right corner. Use <span class="chip">▲</span> / <span class="chip">▼</span> to move the whole section up or down, <span class="chip">⧉</span> to duplicate it, and the red <span class="chip red">×</span> to delete it. The <span class="chip">○ White</span> button changes just that block's color (black / grey / white).</div></div>
-
-<div class="bigstep"><div class="num">8</div><div class="stxt"><b>Preview the finished email</b>
-Click <span class="btnrep">👁 Preview</span> in the top toolbar. A window shows exactly how the email will look when it lands in someone's inbox, with <strong>Desktop</strong> and <strong>Mobile</strong> toggles. Read it carefully — check the date, names, times, and links.</div></div>
-
-<div class="bigstep"><div class="num">9</div><div class="stxt"><b>Save your work</b>
-Click <span class="btnrep orange">💾 Save</span>. A small form asks for a <strong>Name</strong> (required), a <strong>Tag</strong> (Newsletter, Graphic, etc.), a <strong>Status</strong> (Draft / In Review / Approved / Sent), and any <strong>Notes</strong>. Click Save and it's stored on this computer <em>and</em> as a JSON file in GitHub, where it shows up under <span class="btnrep">⭐ Saved Newsletters</span>. Saving again with the <strong>same name</strong> updates that same file instead of making a duplicate — and GitHub keeps the full version history automatically. <em>(Connect a repo once under <span class="btnrep">⚙ GitHub</span> — see step 13.)</em></div></div>
-
-<div class="bigstep"><div class="num">10</div><div class="stxt"><b>Copy the section data (Copy CSS)</b>
-<span class="btnrep">🧪 Copy CSS</span> copies the finished email HTML <em>plus</em> the structured section JSON (the same data saved to GitHub), bundled together. It's mainly for testing and for moving a newsletter between browsers: copy it, then paste the whole thing into <span class="btnrep">📥 Import</span> to rebuild every section, fully editable. To re-open an older newsletter normally, use <span class="btnrep">⭐ Saved Newsletters</span> (step 13).</div></div>
-
-<div class="bigstep"><div class="num">11</div><div class="stxt"><b>Send it to GoHighLevel — the manual way (Copy HTML)</b>
-If you'd rather do it by hand: click <span class="btnrep">📋 Copy HTML</span> (it copies the whole email). Then in GHL go to <strong>Marketing → Emails → Campaigns</strong>, create a campaign, choose the <strong>newsletter campaign template</strong>, and <strong>paste</strong> the HTML into the email body. (Or use <span class="btnrep">↓ Download</span> to save it as a file first.)</div></div>
-
-<div class="bigstep"><div class="num">12</div><div class="stxt"><b>Sharing a draft with someone</b>
-Everyone who connects the same GitHub repo (step 13) sees the same <span class="btnrep">⭐ Saved Newsletters</span>. To hand a draft off: <span class="btnrep orange">💾 Save</span> it, and the other person clicks <span class="btnrep">⭐ Saved Newsletters → ↻ Reload → 📥 Load</span> — they pick up exactly where you left off, with every section still fully editable. <em>(Or send them the <span class="btnrep">🧪 Copy CSS</span> output and have them paste it into <span class="btnrep">📥 Import</span>.)</em></div></div>
-
-<div class="bigstep"><div class="num">13</div><div class="stxt"><b>Connect GitHub &amp; browse Saved Newsletters</b>
-Newsletters are stored as JSON files in a GitHub repo — that gives you free version history, backups, and keeps the data right next to the builder. <strong>One-time setup:</strong> click <span class="btnrep">⚙ GitHub</span>, enter the repo <strong>Owner</strong> and <strong>Repository</strong> name, set the <strong>Folder</strong> (default <code>saved</code>), and paste a <strong>personal access token</strong> (needed for saving — create a fine-grained token at GitHub → Settings → Developer settings, scoped to just this repo with <em>Contents: Read &amp; write</em>). Hit <span class="btnrep">🔗 Test connection</span> then <strong>Save settings</strong>. After that, <span class="btnrep">⭐ Saved Newsletters → ↻ Reload</span> lists everything in the folder; <span class="btnrep">📥 Load</span> re-opens any one with all sections live and editable. <em>The token is stored only in this browser on this device.</em></div></div>
-
-<div class="bigstep"><div class="num">14</div><div class="stxt"><b>Set up &amp; send the campaign in GoHighLevel</b>
-In GHL: <strong>Marketing → Emails → Campaigns → Create Campaign</strong>. Pick the <strong>newsletter campaign template</strong>, write a subject line (e.g. "LNGVTY Hub — Week of [Date]"), choose your audience (the Members smart list for members), click <strong>Review and Send</strong>, confirm, and send. 🎉</div></div>
-
-<div class="tocard"><b>Remember</b><br>This tool only <em>builds</em> the email. The actual sending happens inside GoHighLevel — paste the <strong>Copy HTML</strong> output into a GHL campaign.</div>
-
-<h2>🧰 The Toolbar — Every Button Explained</h2>
-<p>These are the buttons across the top. <em>(Hover any of them in the app to see the same tip.)</em></p>
 <table>
-<tr><th>Button</th><th>What it does</th></tr>
-<tr><td><span class="btnrep orange">💾 Save</span></td><td>Saves your work in this browser <strong>and</strong> as a JSON file in GitHub. You fill in a <strong>Name, Tag, Status,</strong> and <strong>Notes</strong>, and it appears under Saved Newsletters. Re-saving with the same Name updates that file (no duplicates); GitHub keeps the version history.</td></tr>
-<tr><td><span class="btnrep">🧪 Copy CSS</span></td><td>Copies the finished HTML <strong>plus</strong> the structured section JSON (the same data saved to GitHub), bundled together. Paste it into Import to rebuild a newsletter. Mainly for testing.</td></tr>
-<tr><td><span class="btnrep">📥 Import</span></td><td>Paste a newsletter’s section JSON (or a full Copy CSS bundle) to rebuild it in the editor — every section stays fully editable, never an "Imported" block. Replace the canvas or append.</td></tr>
-<tr><td><span class="btnrep">👁 Preview</span></td><td>Shows the finished email exactly as it will look, with Desktop / Mobile toggles.</td></tr>
-<tr><td><span class="btnrep">📋 Copy HTML</span></td><td>Copies the finished email HTML to your clipboard (paste this into GHL). The exported code is <strong>email-safe</strong> — colors are baked to hex and layouts use tables, so it renders the same in Gmail, Outlook, and Apple Mail as it does in the preview.</td></tr>
-<tr><td><span class="btnrep">↓ Download</span></td><td>Saves the finished email HTML as a file on your computer.</td></tr>
-<tr><td><span class="btnrep">⟨⟩ View HTML</span></td><td>Opens the finished HTML in a window so you can read or copy it.</td></tr>
-<tr><td><span class="btnrep">⚙ GitHub</span></td><td>One-time setup for where newsletters are stored: repo owner, name, folder, and a personal access token (needed to save). Test the connection here.</td></tr>
-<tr><td><span class="btnrep">⭐ Saved Newsletters</span></td><td>Browse newsletters saved to GitHub. Hit <span class="btnrep">↻ Reload</span> to fetch the latest, then <span class="btnrep">📥 Load</span> one back in — every section stays fully editable (no "Imported" blocks).</td></tr>
-<tr><td><span class="btnrep">➕ New Section</span></td><td>Make your own custom block by pasting in HTML.</td></tr>
-<tr><td><span class="btnrep">📖 Docs</span></td><td>Opens this guide. Use the <span class="btnrep">✎ Edit</span> button at the top to change it.</td></tr>
-<tr><td><span class="btnrep red">🗑 Clear</span></td><td>Removes everything from the canvas (it asks you first).</td></tr>
+  <tr><th style="width:24%;">Where</th><th>What it's for</th></tr>
+  <tr>
+    <td><b>Left rail</b></td>
+    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Widgets</b> (next to it) holds drop-in pieces like a linkable orange button. <b>Tags</b> (the pull-tab on the right edge) holds merge fields like the member's first name.</td>
+  </tr>
+  <tr>
+    <td><b>Middle canvas</b></td>
+    <td>The document itself. This is what your members will see. Click any text to edit it.</td>
+  </tr>
+  <tr>
+    <td><b>Top bar</b></td>
+    <td>Save, Preview, Copy HTML, Saved, and <span class="btnrep">&#9881; Settings</span> &mdash; everything else lives inside Settings.</td>
+  </tr>
 </table>
 
-<h2>🧭 The Left Rail (Choosing Blocks)</h2>
-<p><strong>Email / Graphic vs Webpage:</strong> the toggle at the top of the rail sets the <strong>page format</strong>, not which blocks you can use. Left = <strong>Email / Graphic</strong> (narrow, exports as bulletproof email HTML). Right = <strong>Webpage</strong> (full-width, exports as a normal browser page). <strong>All tabs — Webpage, Newsletter, Graphics, Tags — stay available in either format</strong>, so you can mix any blocks and just choose how the final page is sized and exported. Preview and Copy/Download both follow the format you've selected. The Webpage tab adds on-brand blog blocks: nav, EKG hero, drop-cap lead, article text, pull quote, tip grid, takeaway, newsletter embed, CTA, and footer.</p>
-<p>Three tabs at the top: <strong>Graphics</strong>, <strong>Newsletter</strong>, and <strong>Tags</strong> (merge tags). Graphics holds promo/landing blocks; Newsletter holds the weekly-newsletter blocks. Blocks are grouped into collapsible folders — click a folder header to open or close it. The <strong>search box</strong> filters all folders at once.</p>
-<p><strong>Hover to preview:</strong> rest your mouse on any block to see a live mini-preview and description before adding it. The description has an <span class="btnrep">✎ Edit</span> button so you can reword it for your team.</p>
-<p><strong>One shared canvas:</strong> Graphics and Newsletter build into the <em>same</em> email. Switching tabs only changes which list you're browsing — it never erases your work, and you can mix blocks from both. The <strong>Coming Up on 90 Days?</strong> block appears in both lists.</p>
+<div class="note">
+  <b>Faded text is a suggestion, not real text.</b> It's there to show you what belongs in that spot. If you leave it alone it will <b>not</b> appear in the email. Click it and type to make it real.
+</div>
 
-<h2>✍️ Editing Blocks</h2>
-<p>Hover any block on the canvas to reveal its control bar (top-right):</p>
+<h2>2. Build the weekly newsletter</h2>
+
+<div class="bigstep"><div class="num">1</div><div class="stxt">
+  <b>Make sure you're on the Newsletter tab</b>
+  The dropdown at the top-left should say <b>Newsletter</b>. It opens there by default, so usually there's nothing to do.
+</div></div>
+
+<div class="bigstep"><div class="num">2</div><div class="stxt">
+  <b>Click <span class="btnrep orange">&#9889; Start a Newsletter</span></b>
+  It's the orange box at the top of the left rail. First it asks for the <b>newsletter date</b> &mdash; pick any day in the week you're sending. It then drops in the whole standard newsletter, already in the right order:
+  <br><br>
+  Header + Quote &rarr; A Note From Tim &rarr; Weekly Schedule &rarr; Tip Tuesday &rarr; Featured Recipe &rarr; Upcoming Events &rarr; Footer
+  <br><br>
+  Because you gave it the date, it also fills in the header date, all seven schedule day-dates for that week, and next week's <b>Mark Your Calendar</b> dates automatically. Everything else is faded placeholder text you fill in. (Use <b>Skip dates</b> if you'd rather do it by hand.)
+</div></div>
+
+<div class="bigstep"><div class="num">3</div><div class="stxt">
+  <b>Fill in the header</b>
+  The <b>Date</b> is already filled from the week you picked. Click the <b>"Quote"</b> line and type the week's quote. Everything else in the header is already correct.
+</div></div>
+
+<div class="bigstep"><div class="num">4</div><div class="stxt">
+  <b>Write the note from Tim</b>
+  Click the paragraph and type. <b>Press Enter for a new line</b> in the same style; press Enter again on a blank line to start a fresh paragraph &mdash; you don't need to add paragraph blocks by hand. You still can with <span class="btnrep">+ Add Paragraph</span>; remove one by hovering it and clicking the <span class="chip red">&times;</span>.
+</div></div>
+
+<div class="bigstep"><div class="num">5</div><div class="stxt">
+  <b>Fill in the weekly schedule</b>
+  All seven days are laid out with this week's dates already filled. Click the event name and time to edit them. Any day with nothing on it, just delete.
+  <ul>
+    <li><span class="btnrep">+ Add Day</span> &mdash; adds another row.</li>
+    <li><span class="btnrep">&#65291; event</span> &mdash; puts a <b>second event on the same day</b> (no new row needed). Each event has its own <span class="chip red">&times;</span> to remove just that one.</li>
+    <li><span class="chip">&#9650;</span> <span class="chip">&#9660;</span> &mdash; move a day up or down. Hover the row to see them.</li>
+    <li><span class="chip red">&times;</span> &mdash; delete the whole day.</li>
+  </ul>
+</div></div>
+
+<div class="bigstep"><div class="num">6</div><div class="stxt">
+  <b>Tip Tuesday, the recipe, and the events</b>
+  All three work the same way: click text to change it, and use the dashed <span class="btnrep">+ Add</span> buttons to add tips, ingredients, steps, or events. A few extras worth knowing:
+  <ul>
+    <li><b>Recipe photo</b> &mdash; click <span class="btnrep">+ Show Recipe Photo</span>, then pick an image from the library.</li>
+    <li><b>Recipe steps number themselves</b> &mdash; add, remove, or reorder steps and they stay 1, 2, 3&hellip; automatically. No typing numbers.</li>
+    <li><b>Recipe stats</b> &mdash; add stats with <span class="btnrep">+ stat</span>; remove any one with its <span class="chip red">&times;</span>.</li>
+    <li><b>Mark Your Calendar</b> &mdash; starts with next week's seven dates already filled. Type in the events you have and delete the empty days.</li>
+    <li><b>Tags</b> (like <span class="chip pill orange">Members Only</span>) &mdash; click <span class="btnrep">+ tag</span> to add one. Leave a tag blank and it simply won't show up.</li>
+  </ul>
+</div></div>
+
+<div class="bigstep"><div class="num">7</div><div class="stxt">
+  <b>Check it, then save it</b>
+  Click <span class="btnrep">&#128065; Preview</span> to see exactly what lands in the inbox &mdash; there's a mobile toggle too, worth a look. Happy? Click <span class="btnrep orange">&#128190; Save</span>, give it a name, and it's stored.
+</div></div>
+
+<div class="bigstep"><div class="num">8</div><div class="stxt">
+  <b>Send it</b>
+  Click <span class="btnrep">&#128203; Copy HTML</span>. In GoHighLevel, make a new email, choose the <b>Custom HTML / Code</b> block, and paste.
+  <br><br>
+  <b>Always send yourself a test first.</b> The preview here is accurate, but a real inbox is the final word.
+</div></div>
+
+<h2>3. Adding and moving blocks</h2>
+
 <table>
-<tr><th>Control</th><th>Action</th></tr>
-<tr><td><span class="chip">○ White</span></td><td>Cycles that block's color: black → grey → white.</td></tr>
-<tr><td><span class="chip">⠿</span></td><td>Drag handle — hold and drag to move the block.</td></tr>
-<tr><td><span class="chip">▲</span> <span class="chip">▼</span></td><td>Nudge the block up or down one spot.</td></tr>
-<tr><td><span class="chip">⧉</span></td><td>Duplicate the block.</td></tr>
-<tr><td><span class="chip red">×</span></td><td>Delete the block.</td></tr>
+  <tr><th style="width:30%;">To do this</th><th>Do that</th></tr>
+  <tr><td><b>Add a block to the bottom</b></td><td><b>Click</b> it once in the left rail.</td></tr>
+  <tr><td><b>Drop a block in the middle</b></td><td><b>Click and hold</b> it in the rail, drag onto the page. A dashed <b>Drop here</b> line shows where it will land. Let go.</td></tr>
+  <tr><td><b>Move a block already on the page</b></td><td>Hover it and use the <span class="chip">&#8593;</span> <span class="chip">&#8595;</span> buttons in its top-right corner.</td></tr>
+  <tr><td><b>Copy a block</b></td><td>Hover it, click the <span class="chip">&#10697;</span> duplicate button.</td></tr>
+  <tr><td><b>Delete a block</b></td><td>Hover it, click <span class="chip red">&times;</span>.</td></tr>
+  <tr><td><b>Change a block's color</b></td><td>Hover it, click the theme button (<span class="chip">&#9679; Black</span> / <span class="chip">&#9680; Gray</span> / <span class="chip">&#9675; White</span>) to cycle it.</td></tr>
 </table>
-<p><strong>Ghost text:</strong> faded text is a placeholder. Click and type to replace it. Left blank, it won't appear in the final email.</p>
 
-<h2>🔘 Buttons, Links, Lists &amp; Tags</h2>
+<h2>4. Text, links, and merge fields</h2>
+
+<h3>Editing text</h3>
+<p>Click and type. To color a few words, <b>select them</b> and a small bar appears &mdash; pick a color, or click <span class="btnrep">&#128279; Link</span> to turn them into a link.</p>
+
+<h3>Changing where a button goes</h3>
+<p>Hover the button and click the <span class="btnrep">&#128279; link</span> control next to it. Paste your URL. You never need to edit code to change a link.</p>
+
+<div class="note">
+  Facebook, Instagram, and the website link in the footers are <b>already set</b> to the real LNGVTY accounts. You don't need to touch them.
+</div>
+
+<h3>Merge fields (first name, etc.)</h3>
+<p>Click into a text box where you want it, then open <b>Tags</b> (the pull-tab hanging off the right edge of the left rail) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
+
+<h3>Widgets</h3>
+<p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
+
+<h3>Filling from the content library</h3>
+<p>Tip Tuesday, the header quote, and the recipe section each have a small dark bar at the top with <b>&#127922; Generate</b> and <b>&#128260; Next</b>.</p>
 <ul>
-<li><strong>Editable buttons:</strong> hover a button to see <span class="chip pill">🔗 link</span> (top-right, set where it points) and a red <span class="chip red">×</span> (top-left, remove the button). Click the button label to edit its words.</li>
-<li><strong>Linking words inside text:</strong> select any text in a block — the floating bar appears with color swatches and a <span class="chip pill orange">🔗 Link</span> button. Click it, paste a URL, and just that selected text becomes a clickable link. (Clear the box and choose Remove Link to unlink.)</li>
-<li><strong>Lists:</strong> dashed <span class="chip pill orange">+ Add…</span> adds an item; hover an item and click its <span class="chip red">×</span> to remove it.</li>
-<li><strong>Reorder rows:</strong> schedule days and event rows have <span class="chip">▲</span><span class="chip">▼</span> arrows so you can move them without deleting.</li>
-<li><strong>Same-day events:</strong> in the Weekly Schedule, a day's <span class="chip pill orange">＋ event</span> button adds another event under that same day with one connected orange bar.</li>
-<li><strong>Tags:</strong> the orange pill tags (Recipe, Tip Tuesday, Events) have a <span class="chip pill orange">+ tag</span> button to add more, and each tag has a × to remove it. <strong>Empty tags don't show up in the final email.</strong></li>
-<li><strong>Stats:</strong> the recipe macro numbers can be added/removed with <span class="chip pill orange">+ stat</span> and stay centered automatically.</li>
-<li><strong>Event time:</strong> each event has an optional bright-orange time chip to the right of its title. Leave it blank and it won't appear.</li>
+  <li><b>&#127922; Generate</b> drops in an unused item from your library and reserves it for this newsletter.</li>
+  <li><b>&#128260; Next</b> swaps it for a different one. The one you skipped goes back in the pool &mdash; it's only set aside for this session, never lost.</li>
+  <li>On Tip Tuesday, the small <b>reroll one</b> buttons change just the hydration, protein, sleep, or mobility line without touching the rest.</li>
+</ul>
+<p>Items you generate stay <b>reserved</b> until you save the newsletter with status <b>Sent</b> &mdash; then they're marked <b>published</b> so they don't come up again. Manage all of it (and add new content) under <b>Settings &rarr; &#127760; Content Library</b>.</p>
+
+<h2>5. Settings</h2>
+
+<p>Click <span class="btnrep">&#9881; Settings</span> in the top bar. Pick a section on the left; it opens on the right.</p>
+
+<table>
+  <tr><th style="width:26%;">Section</th><th>What's in it</th></tr>
+  <tr><td><b>&#127912; Theme &amp; Type</b></td><td>Colors for the whole document, fonts, text size, and <b>Reset All Text to Brand Styling</b> &mdash; see the tip below.</td></tr>
+  <tr><td><b>&#128247; Images</b></td><td>Every image in the library, as thumbnails. Click one to use it, or upload a new one.</td></tr>
+  <tr><td><b>&#8595; Export</b></td><td>Copy HTML, Copy Bundle, or Download the file.</td></tr>
+  <tr><td><b>&#10216;&#10217; View HTML</b></td><td>The finished code. Click <b>&#9998; Edit</b> to hand-tweak it (rarely needed).</td></tr>
+  <tr><td><b>&#128229; Import</b></td><td>Paste a saved bundle to rebuild a document.</td></tr>
+  <tr><td><b>&#10010; New Section</b></td><td>Build your own reusable block by pasting in HTML.</td></tr>
+  <tr><td><b>&#9881; GitHub</b></td><td>Where documents are stored. Set up once, then forget it.</td></tr>
+  <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
+  <tr><td><b>&#128203; Content Backlog</b></td><td>The rotating bank of tips, smarter swaps, budget proteins, recipes, and quotes. The <b>Dashboard</b> tab shows what's queued next. Mark an item <b>USED</b> after it runs so it isn't repeated.</td></tr>
+  <tr><td><b>&#127760; Content Library</b></td><td>The editable version of that bank, stored as JSON in <code>/backlog</code>. Add, edit, or delete tips, quotes, recipes, swaps, proteins, and myths. Sections pull from here with <b>&#127922; Generate</b>; items go <b>reserved</b> when pulled and <b>published</b> when the newsletter is sent.</td></tr>
+</table>
+
+<div class="note">
+  <b>Pasted text looking wrong?</b> Copying from Word, Google Docs, or a website drags its fonts and colors along with it. Go to <span class="btnrep">&#9881; Settings</span> &rarr; <b>Theme &amp; Type</b> &rarr; <span class="btnrep">&#129529; Reset All Text to Brand Styling</span>. It fixes the formatting and leaves your words alone.
+</div>
+
+<h2>6. Saving, reopening, and images</h2>
+
+<h3>Saving</h3>
+<p><span class="btnrep orange">&#128190; Save</span> asks for a <b>Name</b>, a <b>Tag</b>, a <b>Status</b>, and any <b>Notes</b>. Saving again with the same name updates that same document &mdash; it won't create a duplicate.</p>
+
+<h3>Reopening something</h3>
+<p>Click <span class="btnrep">&#9733; Saved</span>. Every document shows a small picture of itself. Three buttons on each:</p>
+<ul>
+  <li><span class="btnrep">&#128065; Preview</span> &mdash; look at it <b>without</b> opening it, so you don't lose what you're working on.</li>
+  <li><span class="btnrep">&#128229; Load</span> &mdash; open it up and keep editing.</li>
+  <li><span class="btnrep red">&#128465; Delete</span> &mdash; remove it.</li>
 </ul>
 
-<h2>🎨 Colors</h2>
-<p>The right panel sets global colors — Accent, Dark BG, Grey BG, Page BG, Body Text, Heading. Changing these recolors every block at once. Quick Accent Presets give one-click swaps, and <strong>Reset Theme</strong> returns to LNGVTY defaults (orange <code>#e05a1b</code>, dark <code>#1a1a1a</code>).</p>
+<h3>Images</h3>
+<p>Any time you add a photo, the image library opens. Click a picture to use it, or <b>Upload New Image</b> to add one. Uploaded images are saved and available forever after.</p>
 
-<h2>🏷️ Merge Tags</h2>
-<p>Switch the rail to <strong>Tags</strong>, click into a text box on the canvas first, then click a tag to drop it where your cursor is (e.g. <code>{{contact.first_name}}</code>). Add your own with the Label + tag fields.</p>
+<h2>7. If something looks off</h2>
 
-<h2>🖼️ Embeds, Video &amp; Audio</h2>
-<ul>
-<li><strong>Embed / GHL Form</strong> — click <span class="chip pill orange">⚙ Edit Embed</span> and paste a GHL form embed (iframe or script).</li>
-<li><strong>Video (MP4)</strong> / <strong>Audio (MP3)</strong> — click the edit button to set the file URL.</li>
-</ul>
-<div class="note"><strong>Heads up:</strong> many email apps block inline video/audio. They play in web preview and supporting clients; for broad email, link to a hosted page instead.</div>
+<table>
+  <tr><th style="width:38%;">What you're seeing</th><th>What to do</th></tr>
+  <tr><td>The faded example text got sent in a real email</td><td>You typed in that box, so it became real. Clear the box completely and it won't appear.</td></tr>
+  <tr><td>Pasted text is the wrong font or color</td><td>Settings &rarr; Theme &amp; Type &rarr; <b>Reset All Text to Brand Styling</b>.</td></tr>
+  <tr><td>Copy button doesn't seem to do anything</td><td>Click on the page once, then try again. If it still fails, use Settings &rarr; View HTML and copy from there.</td></tr>
+  <tr><td>Saved list is empty</td><td>Settings &rarr; GitHub, and check the connection.</td></tr>
+  <tr><td>Stuck in the Tags or Widgets panel</td><td>Click the dropdown (Newsletter / Graphics / Webpage) to get back to the blocks.</td></tr>
+  <tr><td>Email looks broken in the inbox</td><td>Note which block, and send it over. That's a bug worth fixing, not something you did wrong.</td></tr>
+</table>
 
-<h2>🧩 Creating Your Own Block</h2>
-<p>Click <span class="btnrep">➕ New Section</span>, paste in HTML, name it, pick a folder, and choose a default color. Patterns that wire your HTML into the features: <code>contenteditable="true"</code> with <code>data-ph="suggestion"</code> for editable ghost text, and wrap an <code>&lt;a&gt;</code> in <code>&lt;span class="editable-link" data-href="…"&gt;</code> for an editable button.</p>
+<div class="tocard">
+  <b>The one rule</b><br>
+  Always send yourself a test email before sending to everyone. It takes twenty seconds and catches everything.
+</div>
 
-<h2>💾 Where Your Work Lives</h2>
-<p>Saves, custom blocks, merge tags, edited descriptions, and these docs are stored in <strong>this browser only</strong>. Clearing browser data wipes them, so keep exported HTML (or Push to GHL) for anything you want to keep long-term.</p>
-
-<h2>✎ Editing These Docs</h2>
-<p>Click the <span class="btnrep">✎ Edit</span> button at the top of this window to rewrite any of this. Save stores it in your browser; <strong>Reset to Default</strong> brings back this original guide.</p>
 </div>`;}
 function getDocs(){try{return localStorage.getItem('lngvty_docs')||defaultDocs();}catch(e){return defaultDocs();}}
-let docsEditing=false;
 function openDocs(){
   const view=document.getElementById('docsView');
   const ed=document.getElementById('docsEdit');
@@ -4369,7 +5339,7 @@ function slugify(name){
 function serializeSections(){
   return [...frame.querySelectorAll('.sec')].map(s=>{
     const c=s.cloneNode(true);
-    c.querySelectorAll('.sec-controls,.sec-tag').forEach(e=>e.remove());
+    c.querySelectorAll('.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
     return {key:s.dataset.key,theme:s.dataset.theme||'white',html:c.innerHTML};
   });
 }
@@ -4416,7 +5386,12 @@ function loadSections(sections,append){
   (sections||[]).forEach(s=>{
     const sec=document.createElement('div');sec.className='sec';sec.dataset.key=s.key;
     sec.innerHTML=s.html+controlsHTML();
-    const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=S[s.key]?.name||'';
+    const tag=sec.querySelector('.sec-tag');
+    if(tag){
+      let nm=S[s.key]?.name||'';
+      if(!nm && s.key && s.key.startsWith('widget-')){const wk=s.key.slice(7);nm=(WIDGETS[wk]?.name||'Widget')+' (widget)';}
+      tag.textContent=nm;
+    }
     applySecTheme(sec,s.theme);wireSec(sec);frame.appendChild(sec);
   });
   refreshState();
@@ -4548,6 +5523,385 @@ async function ghDelete(path,sha){
   });
   if(!res.ok){let msg='';try{msg=(await res.json()).message||'';}catch(e){}throw new Error('GitHub delete failed ('+res.status+') '+msg);}
   return await res.json();
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   CONTENT LIBRARY  ·  /backlog/*.json
+   A lightweight CMS on top of the same GitHub Contents API. Each content type
+   is one JSON file whose items share a lifecycle:
+     available → reserved (pulled into a draft) → published (newsletter sent)
+   "Generate" reserves an available item; "Next" skips it for THIS session only
+   (in-memory) and reserves another; sending the newsletter publishes every
+   item reserved by it; deleting/!sent releases them back to available.
+   ════════════════════════════════════════════════════════════════════════ */
+const LIB_TYPES={
+  tips     :{file:'tips.json',     label:'Tip Tuesday',      noun:'tip'},
+  swaps    :{file:'swaps.json',    label:'Smarter Swaps',    noun:'swap'},
+  proteins :{file:'proteins.json', label:'Budget Proteins',  noun:'protein'},
+  recipes  :{file:'recipes.json',  label:'Recipes',          noun:'recipe'},
+  quotes   :{file:'quotes.json',   label:'Quotes',           noun:'quote'},
+  myths    :{file:'myths.json',    label:'Myth Busters',     noun:'myth'}
+};
+const LIB_DIR='backlog';
+/* in-memory cache of each loaded file: {type:{doc, sha}} */
+const LIB_CACHE={};
+/* items skipped via "Next" this session only — released, not persisted-skipped */
+const LIB_SKIPPED={};   // {type: Set(ids)}
+function libSkipSet(type){return (LIB_SKIPPED[type]||(LIB_SKIPPED[type]=new Set()));}
+
+function libPath(type){return LIB_DIR+'/'+LIB_TYPES[type].file;}
+function libEmptyDoc(type){return {schema:'lngvty.content/v1',type,updatedAt:new Date().toISOString(),items:[]};}
+
+/* fetch a content file (cached). Falls back to an empty doc if it doesn't exist. */
+async function libLoad(type,force){
+  if(!force && LIB_CACHE[type])return LIB_CACHE[type];
+  if(!ghReady())throw new Error('Connect GitHub first (⚙ GitHub).');
+  const res=await fetch(ghContentsURL(libPath(type)),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404){LIB_CACHE[type]={doc:libEmptyDoc(type),sha:null};return LIB_CACHE[type];}
+  if(!res.ok)throw new Error('Library load failed ('+res.status+')');
+  const j=await res.json();
+  let doc;try{doc=JSON.parse(b64decode(j.content));}catch(e){doc=libEmptyDoc(type);}
+  if(!doc.items)doc.items=[];
+  LIB_CACHE[type]={doc,sha:j.sha||null};
+  return LIB_CACHE[type];
+}
+/* write a content file back to GitHub (updates cache sha) */
+async function libSave(type,message){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to update the library.');
+  const entry=LIB_CACHE[type];if(!entry)throw new Error('Nothing loaded for '+type);
+  entry.doc.updatedAt=new Date().toISOString();
+  const body={message:message||('library: update '+type),content:b64encode(JSON.stringify(entry.doc,null,2))};
+  if(c.branch)body.branch=c.branch;
+  if(entry.sha)body.sha=entry.sha;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${libPath(type)}`,{
+    method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Library save failed ('+res.status+') '+m);}
+  const j=await res.json();entry.sha=j.content&&j.content.sha||entry.sha;
+  return j;
+}
+function libItems(type){return (LIB_CACHE[type]&&LIB_CACHE[type].doc.items)||[];}
+function libFind(type,id){return libItems(type).find(x=>x.id===id);}
+function libAvailable(type){
+  const skip=libSkipSet(type);
+  return libItems(type).filter(x=>x.status==='available' && !skip.has(x.id));
+}
+function libNextId(type,noun){
+  const items=libItems(type);let n=0;
+  items.forEach(x=>{const m=String(x.id).match(/(\d+)$/);if(m)n=Math.max(n,+m[1]);});
+  return (noun||LIB_TYPES[type].noun)+'-'+String(n+1).padStart(3,'0');
+}
+
+/* Reserve the next available item of a type for the current newsletter.
+   Returns the reserved item, or null if the pool is empty. Persists to GitHub. */
+async function libReserve(type){
+  await libLoad(type);
+  const pool=libAvailable(type);
+  if(!pool.length)return null;
+  const item=pool[Math.floor(Math.random()*pool.length)];
+  item.status='reserved';
+  item.reservedBy=currentNewsletterKey();
+  item.updatedAt=new Date().toISOString();
+  try{await libSave(type,'library: reserve '+item.id);}catch(e){toast('Reserved locally — GitHub sync failed');}
+  return item;
+}
+/* Release a specific reserved item back to available (used by "Next" + unpublish). */
+async function libRelease(type,id,persist){
+  const item=libFind(type,id);if(!item)return;
+  if(item.status==='reserved'){item.status='available';item.reservedBy=null;item.updatedAt=new Date().toISOString();
+    if(persist){try{await libSave(type,'library: release '+id);}catch(e){}}}
+}
+/* identifier for the newsletter currently in the editor (used as reservedBy). */
+function currentNewsletterKey(){
+  const nm=(currentMeta&&currentMeta.name)||'';
+  return nm?slugify(nm):'draft';
+}
+
+/* When a newsletter is SENT: publish every item this newsletter reserved.
+   When it's NOT sent (draft/review): leave reservations intact so they're held.
+   Call from confirmSave with the chosen status + issue label. */
+async function libSyncOnSave(status,issueLabel){
+  const key=currentNewsletterKey();
+  const sent=/sent|publish/i.test(status||'');
+  // items may have been reserved before the newsletter had a name (key "draft"),
+  // so a Sent newsletter claims anything reserved under its own key OR "draft".
+  const claims=id=>id===key||id==='draft';
+  for(const type of Object.keys(LIB_TYPES)){
+    const entry=LIB_CACHE[type];if(!entry)continue;
+    let changed=false;
+    entry.doc.items.forEach(it=>{
+      if(it.status==='reserved' && claims(it.reservedBy) && sent){
+        it.status='published';it.publishedIn=issueLabel||key;it.publishedDate=isoDate(new Date());it.updatedAt=new Date().toISOString();changed=true;
+      } else if(it.status==='reserved' && it.reservedBy==='draft' && key!=='draft'){
+        // newsletter now has a name — claim its draft reservations so a later
+        // send (or a release) can find them by the newsletter's key.
+        it.reservedBy=key;it.updatedAt=new Date().toISOString();changed=true;
+      }
+    });
+    if(changed){try{await libSave(type,'library: sync for '+ (issueLabel||key));}catch(e){}}
+  }
+}
+
+/* ── Rendering a reserved item into the active section on the canvas ── */
+/* Each returns true on success. They locate the matching section by data-key
+   and set field text (real content, not ghost), then mark non-empty. */
+function libSetField(el,val){if(!el)return;el.textContent=val==null?'':String(val);markEmpty(el);}
+function sectionByKey(key){return frame.querySelector('.sec[data-key="'+key+'"]');}
+
+function fillTip(item,only){
+  const sec=sectionByKey('nltip');if(!sec)return false;
+  const c=item.content||{};
+  const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+  // Map by placeholder text so reordering doesn't break it.
+  const byPh=ph=>eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===ph);
+  // main headline + body
+  if(!only||only==='main'){
+    const title=eds.find(e=>/this week's focus|recovery/i.test(e.getAttribute('data-ph')||''))||eds[1];
+    if(c.main)libSetField(title,c.main);
+  }
+  // sub-tips: match the four cards by their accent label
+  const subs=[['hydration',c.hydration],['protein',c.protein],['sleep',c.sleep],['mobility',c.mobility]];
+  subs.forEach(([label,val])=>{
+    if(only && only!==label && only!=='all')return;
+    // find the card whose label cell equals the category, set the detail cell under it
+    const labelCell=eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===label);
+    if(labelCell){
+      const card=labelCell.closest('.li-wrap')||labelCell.parentElement;
+      // detail is the LAST contenteditable in the card (icon, label, detail)
+      const cends=card?[...card.querySelectorAll('[contenteditable]')]:[];
+      const detail=cends[cends.length-1];
+      if(detail&&detail!==labelCell&&val)libSetField(detail,val);
+    }
+  });
+  return true;
+}
+function fillQuote(item){
+  const sec=sectionByKey('nlheader');if(!sec)return false;
+  const c=item.content||{};
+  const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+  const q=eds.find(e=>/quote/i.test(e.getAttribute('data-ph')||''));
+  if(q)libSetField(q,c.credit?('"'+c.quote+'" — '+c.credit):('"'+c.quote+'"'));
+  return true;
+}
+function fillSwap(item){
+  const sec=sectionByKey('nltip');   // swaps often live in a tip/callout; fall back to a toast
+  const c=item.content||{};
+  toast('Swap: '+c.instead+' → '+c.swap);
+  return insertContentBlock('Smarter Swap',
+    `<b>${c.instead}</b> (${c.insteadCals} cal) → <b>${c.swap}</b> (${c.swapCals} cal) · saves ${c.saved} cal`);
+}
+function fillProtein(item){
+  const c=item.content||{};
+  return insertContentBlock('Budget Protein',
+    `<b>${c.name}</b> — ${c.protein}g protein / ${c.serving} · ${c.price} (${c.per10g}/10g)`);
+}
+function fillMyth(item){
+  const c=item.content||{};
+  return insertContentBlock('Myth Buster',
+    `<b>MYTH:</b> ${c.myth}<br><b>TRUTH:</b> ${c.truth}`);
+}
+function fillRecipe(item){
+  const sec=sectionByKey('nlrecipe');const c=item.content||{};
+  if(!sec){toast('Add a Recipe section first');return false;}
+  const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+  const name=eds.find(e=>/sheet pan|recipe name/i.test(e.getAttribute('data-ph')||''));
+  if(name)libSetField(name,c.name);
+  // description
+  const desc=eds.find(e=>/one-pan|simple, high-protein/i.test(e.getAttribute('data-ph')||''));
+  if(desc && c.time)libSetField(desc,`${c.time} · ${c.servings} servings`);
+  // stats: protein / calories / cost
+  const setStat=(labelRe,val)=>{const lab=eds.find(e=>labelRe.test(e.getAttribute('data-ph')||''));if(lab){const cell=lab.closest('.stat-cell');const num=cell?cell.querySelector('[contenteditable]'):null;if(num&&val)libSetField(num,val);}};
+  setStat(/protein/i,c.protein&&c.protein+'g');
+  setStat(/calor/i,c.calories);
+  setStat(/per serving|cost/i,c.cost);
+  // ingredients + steps into their lists
+  fillListInto(sec,'grocery|ingredient',c.ingredients);
+  fillListInto(sec,'instruction|step',c.steps);
+  return true;
+}
+/* fill a li-list (matched by a nearby label) with array values */
+function fillListInto(sec,labelRe,arr){
+  if(!arr||!arr.length)return;
+  const lists=[...sec.querySelectorAll('.li-list')];
+  const re=new RegExp(labelRe,'i');
+  // choose the list whose preceding label matches
+  let target=null;
+  lists.forEach(l=>{
+    const prevLabel=l.previousElementSibling&&l.previousElementSibling.textContent||'';
+    const near=l.closest('div')&&l.closest('div').textContent||'';
+    if(re.test(prevLabel)||re.test(near))target=target||l;
+  });
+  target=target||lists[0];if(!target)return;
+  const wraps=[...target.querySelectorAll(':scope > .li-wrap')];
+  const addBtn=target.nextElementSibling;
+  arr.forEach((val,i)=>{
+    let wrap=wraps[i];
+    if(!wrap&&addBtn&&addBtn.classList.contains('li-add')){addLi(addBtn);wrap=target.querySelectorAll(':scope > .li-wrap')[i];}
+    if(wrap){const ed=wrap.querySelector('[contenteditable]:not(.step-num)');if(ed)libSetField(ed,val);}
+  });
+}
+/* generic: append a simple content block section to the canvas */
+function insertContentBlock(label,html){
+  const sec=document.createElement('div');sec.className='sec';sec.dataset.key='content-block';
+  sec.innerHTML=`<div style="background:var(--secbg);padding:24px 48px;border-bottom:1px solid #eee;">
+    <div style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:8px;">${label}</div>
+    <div contenteditable="true" style="font-size:14px;color:var(--sectext);line-height:1.7;">${html}</div>
+  </div>`+controlsHTML();
+  const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent=label;
+  frame.appendChild(sec);applySecTheme(sec,'white');wireSec(sec);refreshState();saveStateLocal();
+  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  return true;
+}
+
+const LIB_FILLERS={tips:fillTip,quotes:fillQuote,swaps:fillSwap,proteins:fillProtein,myths:fillMyth,recipes:fillRecipe};
+
+/* PUBLIC: Generate — reserve an available item and drop it into the section.
+   Tracks which item is currently placed per type so "Next" can release it. */
+const LIB_PLACED={};   // {type:id}
+async function libGenerate(type,only){
+  try{
+    const item=await libReserve(type);
+    if(!item){toast('No available '+LIB_TYPES[type].label+' left — add more in the Content Library');return;}
+    LIB_PLACED[type]=item.id;
+    (LIB_FILLERS[type]||(()=>{}))(item,only);
+    refreshState();saveStateLocal();
+    toast('\u2713 '+LIB_TYPES[type].label+' filled');
+  }catch(e){toast(e.message||'Could not generate');}
+}
+/* PUBLIC: Next — skip the current item this session, reserve+place another. */
+async function libNext(type,only){
+  const cur=LIB_PLACED[type];
+  if(cur){libSkipSet(type).add(cur);await libRelease(type,cur,true);}
+  await libGenerate(type,only);
+}
+/* PUBLIC: cycle just one Tip sub-field from the per-field pool (hydration…). */
+async function libNextTipField(field){
+  try{
+    await libLoad('tips');
+    const pool=libItems('tips').map(x=>x.content&&x.content[field]).filter(Boolean);
+    if(!pool.length){toast('No '+field+' tips available');return;}
+    const val=pool[Math.floor(Math.random()*pool.length)];
+    const sec=sectionByKey('nltip');if(!sec)return;
+    const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
+    const labelCell=eds.find(e=>(e.getAttribute('data-ph')||'').toLowerCase()===field);
+    if(labelCell){const card=labelCell.closest('.li-wrap')||labelCell.parentElement;const cends=card?[...card.querySelectorAll('[contenteditable]')]:[];const detail=cends[cends.length-1];if(detail&&detail!==labelCell)libSetField(detail,val);}
+    saveStateLocal();toast('\u2713 New '+field+' tip');
+  }catch(e){toast(e.message||'Could not cycle');}
+}
+
+/* ── CONTENT LIBRARY settings page (CRUD) ── */
+/* Field schema per type: [key,label,type] where type = text|textarea|list */
+const LIB_FIELDS={
+  tips:[['main','Main Tip (headline)','textarea'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
+  swaps:[['instead','Instead of…','text'],['insteadCals','Cals (A)','text'],['swap','Try this…','text'],['swapCals','Cals (B)','text'],['saved','Cals saved','text']],
+  proteins:[['name','Protein source','text'],['serving','Serving','text'],['protein','Protein (g)','text'],['price','Price / serving','text'],['per10g','$ per 10g','text'],['notes','Notes','textarea']],
+  recipes:[['name','Recipe name','text'],['image','Image URL','text'],['protein','Protein (g)','text'],['calories','Calories','text'],['cost','Cost / serving','text'],['servings','Servings','text'],['time','Prep + cook','text'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
+  quotes:[['quote','Quote','textarea'],['credit','Credit','text']],
+  myths:[['myth','The myth','textarea'],['truth','The truth','textarea'],['source','Source / note','text']]
+};
+const LIB_TITLE={tips:'main',swaps:'instead',proteins:'name',recipes:'name',quotes:'quote',myths:'myth'};
+let libCurrentType='tips';
+let libEditingId=null;
+
+function libInitPane(){
+  // build type tabs once
+  const tabs=document.getElementById('libTabs');
+  if(tabs && !tabs.children.length){
+    Object.entries(LIB_TYPES).forEach(([type,cfg])=>{
+      const b=document.createElement('button');
+      b.className='lib-tab'+(type===libCurrentType?' active':'');
+      b.textContent=cfg.label;b.dataset.type=type;
+      b.onclick=()=>{libCurrentType=type;document.querySelectorAll('#libTabs .lib-tab').forEach(x=>x.classList.toggle('active',x.dataset.type===type));libReloadCurrent();};
+      tabs.appendChild(b);
+    });
+  }
+  const st=document.getElementById('libGhState');
+  if(st)st.textContent=ghReady()?('Connected to '+ghConfig().owner+'/'+ghConfig().repo+' · /'+LIB_DIR):'Connect a repo in ⚙ GitHub to load.';
+  libReloadCurrent();
+}
+async function libReloadCurrent(){
+  const list=document.getElementById('libList');
+  if(!ghReady()){list.innerHTML='<div class="lib-empty">Connect GitHub to load your library.</div>';return;}
+  list.innerHTML='<div class="lib-empty">Loading…</div>';
+  try{await libLoad(libCurrentType,true);libRenderList();}
+  catch(e){list.innerHTML='<div class="lib-empty">Could not load: '+(e.message||e)+'</div>';}
+}
+function libRenderList(){
+  const list=document.getElementById('libList');if(!list)return;
+  const q=(document.getElementById('libSearch').value||'').toLowerCase();
+  const filt=document.getElementById('libFilter').value;
+  const titleKey=LIB_TITLE[libCurrentType];
+  let items=libItems(libCurrentType);
+  if(filt)items=items.filter(x=>x.status===filt);
+  if(q)items=items.filter(x=>JSON.stringify(x.content).toLowerCase().includes(q));
+  if(!items.length){list.innerHTML='<div class="lib-empty">No items. Click <b>+ Add</b> to create one.</div>';return;}
+  const dot={available:'gray',reserved:'yellow',published:'green'};
+  list.innerHTML=items.map(it=>{
+    const title=(it.content&&it.content[titleKey])||'(untitled)';
+    const sub=it.status==='published'?('Published · '+(it.publishedIn||'')):(it.status==='reserved'?('Reserved · '+(it.reservedBy||'')):'Available');
+    return `<div class="lib-row">
+      <span class="lib-dot ${dot[it.status]||'gray'}" title="${it.status}"></span>
+      <span class="lib-row-main"><span class="lib-row-title">${escapeHtml(String(title).slice(0,90))}</span><span class="lib-row-sub">${it.id} · ${sub}</span></span>
+      <button class="lib-mini" onclick="libOpenEditor('${it.id}')">Edit</button>
+      <button class="lib-mini danger" onclick="libDeleteItem('${it.id}')">Del</button>
+    </div>`;
+  }).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function libOpenEditor(id){
+  libEditingId=id||null;
+  const fields=LIB_FIELDS[libCurrentType];
+  const item=id?libFind(libCurrentType,id):null;
+  document.getElementById('libEditTitle').textContent=(id?'Edit ':'Add ')+LIB_TYPES[libCurrentType].label;
+  const host=document.getElementById('libEditFields');
+  host.innerHTML=fields.map(([key,label,type])=>{
+    let val=item&&item.content?item.content[key]:'';
+    if(type==='list'&&Array.isArray(val))val=val.join('\n');
+    if(type==='textarea'||type==='list')
+      return `<div class="field-row"><label>${label}</label><textarea id="lf_${key}" style="width:100%;min-height:${type==='list'?90:60}px;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;">${escapeHtml(val||'')}</textarea></div>`;
+    return `<div class="field-row"><label>${label}</label><input id="lf_${key}" type="text" value="${escapeHtml(val||'')}" style="width:100%;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-size:13px;box-sizing:border-box;"/></div>`;
+  }).join('');
+  document.getElementById('libEditStatus').textContent='';
+  document.getElementById('libEditBg').classList.add('show');
+}
+function closeLibEditor(){document.getElementById('libEditBg').classList.remove('show');}
+async function libSaveEditor(){
+  const fields=LIB_FIELDS[libCurrentType];
+  const content={};
+  fields.forEach(([key,label,type])=>{
+    const el=document.getElementById('lf_'+key);let v=el?el.value:'';
+    if(type==='list')content[key]=v.split('\n').map(s=>s.trim()).filter(Boolean);
+    else content[key]=v.trim();
+  });
+  const btn=document.getElementById('libEditSave');const st=document.getElementById('libEditStatus');
+  btn.disabled=true;st.textContent='Saving…';
+  try{
+    await libLoad(libCurrentType);
+    if(libEditingId){
+      const it=libFind(libCurrentType,libEditingId);
+      if(it){it.content=content;it.updatedAt=new Date().toISOString();}
+    }else{
+      LIB_CACHE[libCurrentType].doc.items.push({
+        id:libNextId(libCurrentType),status:'available',reservedBy:null,publishedIn:null,publishedDate:null,
+        createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),content
+      });
+    }
+    await libSave(libCurrentType,'library: '+(libEditingId?'edit ':'add ')+libCurrentType);
+    closeLibEditor();libRenderList();toast('\u2713 Saved to library');
+  }catch(e){st.textContent=e.message||'Save failed';}
+  btn.disabled=false;
+}
+async function libDeleteItem(id){
+  if(!confirm('Delete '+id+' from the library? This cannot be undone.'))return;
+  try{
+    await libLoad(libCurrentType);
+    const doc=LIB_CACHE[libCurrentType].doc;
+    doc.items=doc.items.filter(x=>x.id!==id);
+    await libSave(libCurrentType,'library: delete '+id);
+    libRenderList();toast('Deleted '+id);
+  }catch(e){toast(e.message||'Delete failed');}
 }
 
 /* ── GitHub settings modal ── */
@@ -4689,9 +6043,12 @@ async function confirmSave(){
   let ok=false,errMsg='';
   try{await ghPut(nl);ok=true;}
   catch(e){ok=false;errMsg=e.message||String(e);}
+  // sync content-library lifecycle: publish reserved items if this issue is Sent
+  try{await libSyncOnSave(status,name);}catch(e){}
   btn.disabled=false;btn.innerHTML='&#128190; Save';
   if(ok){
     closeSaveModal();
+    markClean();
     toast('\u2713 Saved to GitHub');
   }else{
     statusEl.textContent=errMsg;
@@ -4717,6 +6074,22 @@ document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();saveState();}
   if(e.key==='Escape'){closeModal();closeLinkModal();closeAddSection();closePreview();closeImport();closeDocs();closeSaved();closeSaveModal();closeGithubSettings();closeCustomize();closeImageLib();closeTextLink();closeEmbedModal&&closeEmbedModal();closeMediaModal&&closeMediaModal();}
 });
+
+/* ═══════════ UNSAVED-CHANGES GUARD ═══════════
+   The canvas autosaves locally, but "saved" here means saved to GitHub. Track
+   whether the document has drifted since the last real save and warn on the way out. */
+let dirty=false;
+function markDirty(){dirty=true;}
+function markClean(){dirty=false;}
+window.addEventListener('beforeunload',e=>{
+  if(!dirty)return;
+  if(!frame || !frame.querySelector('.sec'))return;   // nothing to lose
+  e.preventDefault();
+  e.returnValue='';        // browsers show their own wording; this opts in
+  return '';
+});
+/* any edit to the canvas marks it dirty */
+document.addEventListener('input',e=>{if(frame&&frame.contains(e.target))markDirty();});
 
 /* INIT */
 loadCustom();
