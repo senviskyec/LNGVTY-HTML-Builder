@@ -2113,8 +2113,8 @@ const SECTIONS = {
       return `<div style="background:#ffffff;padding:28px 7% 0;">
       ${ph('What we promise',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit one','What the participant actually gets.')}${cell('Benefit two','Keep each of these concrete.')}${cell('Benefit three','Avoid vague outcome language.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit','Description.')}${cell('Benefit','Description.')}${cell('Benefit','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit one','What the participant actually gets.')}${cell('Benefit two','Keep each of these concrete.')}${cell('Benefit three','Avoid vague outcome language.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit','Description.')}${cell('Benefit','Description.')}${cell('Benefit','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
         'Add row of 3')}
     </div>`;}},
 
@@ -2130,8 +2130,8 @@ const SECTIONS = {
       return `<div style="background:#ffffff;padding:22px 7% 0;">
       ${ph('The four-week arc',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 01','Phase name',['First point','Second point','Third point'])}${col('Week 02','Phase name',['First point','Second point','Third point'])}${col('Week 03','Phase name',['First point','Second point','Third point'])}${col('Week 04','Phase name',['First point','Second point','Third point'])}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 05','Phase name',['Point'])}${col('Week 06','Phase name',['Point'])}${col('Week 07','Phase name',['Point'])}${col('Week 08','Phase name',['Point'])}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 01','Phase name',['First point','Second point','Third point'])}${col('Week 02','Phase name',['First point','Second point','Third point'])}${col('Week 03','Phase name',['First point','Second point','Third point'])}${col('Week 04','Phase name',['First point','Second point','Third point'])}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 05','Phase name',['Point'])}${col('Week 06','Phase name',['Point'])}${col('Week 07','Phase name',['Point'])}${col('Week 08','Phase name',['Point'])}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
         'Add row of 4')}
       ${ph('An optional note under the columns \u2014 use it to flag the phase that matters most.',"font-size:13.6px;color:#8a8781;margin-top:10px;")}
     </div>`;}},
@@ -2148,8 +2148,8 @@ const SECTIONS = {
       return `<div style="background:#ffffff;padding:22px 7% 0;">
       ${ph('Engagement mechanics',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:20px 0 14px;padding-top:22px;border-top:1px solid #e2ded6;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','What it is and why it works, in one or two sentences.')}${card('Mechanic name','What it is and why it works, in one or two sentences.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','Description.')}${card('Mechanic name','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','What it is and why it works, in one or two sentences.')}${card('Mechanic name','What it is and why it works, in one or two sentences.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','Description.')}${card('Mechanic name','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
         'Add pair')}
     </div>`;}},
 
@@ -2174,7 +2174,7 @@ const SECTIONS = {
           ${ph(title,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:#fff;margin-bottom:4px;letter-spacing:-.2px;")}
           ${ph(body,"font-size:14.4px;line-height:1.65;color:#a7a39c;max-width:62ch;")}
         </td>
-      </tr></tbody><button class="li-del" onclick="delLi(this)">×</button>${liMoves()}</table>`;
+      <td valign="top" style="width:0;padding:0;position:relative;white-space:nowrap;"><button class="li-del" onclick="delLi(this)">×</button>${liMoves()}</td></tr></tbody></table>`;
       return `<div style="background:var(--dark);padding:70px 7% 76px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         ${ph('The spine of the plan',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
@@ -2205,8 +2205,8 @@ const SECTIONS = {
       ${ph('The shared layer',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:12px;")}
       ${ph('What these have in common and why they are grouped together.',"font-size:17px;line-height:1.7;color:var(--body-text);max-width:66ch;margin-bottom:30px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('01','Pillar name','What it is, in plain terms.')}${cell('02','Pillar name','What it is, in plain terms.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('03','Pillar name','Description.')}${cell('04','Pillar name','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('01','Pillar name','What it is, in plain terms.')}${cell('02','Pillar name','What it is, in plain terms.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('03','Pillar name','Description.')}${cell('04','Pillar name','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
         'Add pair')}
     </div>`;}},
 
@@ -2301,8 +2301,8 @@ const SECTIONS = {
       ${ph('Lead with the recommendation.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:#fff;margin-bottom:12px;max-width:20ch;")}
       ${ph('Two or three sentences justifying it \u2014 why this one, why now, and what it de-risks.',"font-size:16px;line-height:1.7;color:#fff;max-width:62ch;margin-bottom:26px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','What happens first.')}${card('Next step','What happens second.')}${card('Next step','Then this.')}${card('Next step','And this.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','What happens first.')}${card('Next step','What happens second.')}${card('Next step','Then this.')}${card('Next step','And this.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
         'Add row of 4')}
     </div>`;}},
 
@@ -3500,10 +3500,24 @@ function delLi(btn){
 function addLi(btn){
   const list=btn.previousElementSibling;
   const proto=list.getAttribute('data-proto');if(!proto)return;
-  const tmp=document.createElement('div');tmp.innerHTML=proto;
-  const node=tmp.firstElementChild;list.appendChild(node);
+  const node=protoToNode(proto);
+  if(!node){toast('Could not add that item');return;}
+  list.appendChild(node);
   renumberSteps(list);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
+}
+/* Turn a prototype HTML string into a single element.
+   A plain <div> wrapper can't host table fragments: the parser hoists stray
+   elements out of <table> and drops bare <tr>/<td>, which silently produced an
+   empty add. Parsing inside a <template> preserves table context exactly, and we
+   pick the .li-wrap explicitly rather than trusting firstElementChild. */
+function protoToNode(proto){
+  const t=document.createElement('template');
+  t.innerHTML=String(proto).trim();
+  const frag=t.content;
+  return frag.querySelector('.li-wrap')
+      || frag.querySelector('.tag-pill,.stat-cell')
+      || frag.firstElementChild;
 }
 /* reorder a list item within its list */
 function moveLi(btn,dir){
@@ -3547,8 +3561,8 @@ function cycleDocHue(btn){
 /* add an inline tag pill into a .tag-wrap (uses its data-proto) */
 function addTag(btn){
   const wrap=btn.parentElement;const proto=wrap.getAttribute('data-proto');if(!proto)return;
-  const tmp=document.createElement('div');tmp.innerHTML=proto;
-  const node=tmp.firstElementChild;wrap.insertBefore(node,btn);
+  const node=protoToNode(proto);if(!node)return;
+  wrap.insertBefore(node,btn);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
 }
 /* remove an inline tag pill */
@@ -3556,8 +3570,8 @@ function delTag(btn){const pill=btn.closest('.tag-pill');if(pill)pill.remove();}
 /* add a stat cell into a .stat-row (uses its data-proto) */
 function addStat(btn){
   const row=btn.parentElement;const proto=row.getAttribute('data-proto');if(!proto)return;
-  const tmp=document.createElement('div');tmp.innerHTML=proto;
-  const node=tmp.firstElementChild;row.insertBefore(node,btn);
+  const node=protoToNode(proto);if(!node)return;
+  row.insertBefore(node,btn);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
 }
 /* remove a stat cell */
@@ -3894,7 +3908,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v20.0',
+  version : 'v20.1',
   name    : 'Documentation Mode',
   date    : '23 July 2026',
 };
@@ -5194,7 +5208,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v20.0 "Documentation Mode" · 23 July 2026
+**Current build:** v20.1 "Documentation Mode" · 23 July 2026
 
 ---
 
@@ -5215,6 +5229,19 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v20.1 — Wide-table Add fix · 23 July 2026
+
+- **Fixed the dead "+ Add" buttons** on the wide documentation blocks (Promise Grid,
+  Phase Columns, Mechanics Cards, Numbered Pillars, Route/Timeline, Recommendation).
+  Their row template had the delete button sitting directly inside the <code>&lt;table&gt;</code>
+  rather than in a cell — browsers hoist stray elements out of a table, so the builder
+  ended up cloning the button instead of the row and nothing appeared. The buttons now
+  live in a proper cell.
+- **Hardened the underlying add logic** so this class of bug can't come back silently:
+  row templates are parsed in a real table context and the new row is located explicitly,
+  and if a template is ever malformed the builder now says so instead of doing nothing.
+  The same protection covers the tag and stat rows.
 
 ## v20.0 — Documentation Mode · 23 July 2026
 
