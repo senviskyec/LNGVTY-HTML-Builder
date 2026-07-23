@@ -332,6 +332,36 @@
   .sc-btn.drag{cursor:grab;}
   .sec-tag{position:absolute;top:6px;left:6px;background:rgba(26,26,26,.85);color:#fff;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:40;display:none;}
   .sec:hover .sec-tag{display:block;}
+  /* documentation: per-track colour chip (builder-only, stripped on export) */
+  .doc-hue{position:absolute;top:10px;right:10px;z-index:30;display:none;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.4px;color:#fff;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.45);border-radius:5px;padding:4px 9px;cursor:pointer;}
+  .doc-track:hover .doc-hue{display:block;}
+  .doc-hue:hover{background:rgba(0,0,0,.65);}
+  /* page-format button in the rail */
+  .pf-btn{width:100%;display:flex;align-items:center;gap:11px;background:#202126;border:1px solid #34353a;border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;transition:.14s;}
+  .pf-btn:hover{border-color:var(--accent);background:#26272c;}
+  .pf-btn .pf-ic{width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;border-radius:5px;font-size:12px;}
+  .pf-btn .pf-tx{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .pf-btn .pf-name{font-family:'Montserrat';font-size:12px;font-weight:700;color:#eee;letter-spacing:.2px;}
+  .pf-btn .pf-dim{font-size:10.5px;color:#8a8781;margin-top:1px;}
+  .pf-btn .pf-ch{color:#6f6d69;font-size:15px;}
+  /* page-format settings pane */
+  .pf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:22px;}
+  .pf-card{position:relative;border:1px solid #e0e0e0;border-radius:8px;padding:14px 15px;cursor:pointer;background:#fff;transition:.14s;}
+  .pf-card:hover{border-color:var(--accent);}
+  .pf-card.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:#fff8f4;}
+  .pf-card-name{font-family:'Montserrat';font-weight:800;font-size:14px;color:#2a2a2a;}
+  .pf-card-dim{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin:2px 0 6px;}
+  .pf-card-desc{font-size:12.5px;line-height:1.5;color:#777;}
+  .pf-card-kind{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:#aaa;margin-top:8px;font-family:'Montserrat';font-weight:700;}
+  .pf-del{position:absolute;top:8px;right:8px;background:transparent;border:0;color:#bbb;font-size:15px;cursor:pointer;line-height:1;}
+  .pf-del:hover{color:#c0392b;}
+  .pf-custom{border-top:1px solid #eee;padding-top:18px;}
+  .pf-custom-head{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:12px;}
+  .pf-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px;}
+  .pf-row label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#666;font-family:'Montserrat';font-weight:700;letter-spacing:.3px;}
+  .pf-row input,.pf-row select{padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;font-family:inherit;}
+  .pf-row input[type=number]{width:100px;}
+  .pf-row span{font-size:11px;color:#999;}
   /* content-library fill bar (builder-only, stripped on export) */
   .fill-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;background:#1f2024;border:1px solid #34353a;border-radius:8px;padding:7px 10px;margin:0 0 10px;position:relative;z-index:20;padding-right:180px;padding-left:96px;}
   /* the section controls (theme/drag/move/dup/delete) slide in over the top-right
@@ -515,17 +545,19 @@
     <p>Add blocks, replace ghost text, restyle.</p>
   </div>
   <div class="builder-toggle">
-    <span class="bt-label" id="btEmailLbl">Email / Graphic</span>
-    <label class="bt-switch"><input type="checkbox" id="builderModeSwitch" onchange="setBuilderMode(this.checked?'webpage':'email')"><span class="bt-slider"></span></label>
-    <span class="bt-label" id="btWebLbl">Webpage</span>
+    <button class="pf-btn" id="pfBtn" onclick="openPageFormat()" title="Choose the page format">
+      <span class="pf-ic">▭</span>
+      <span class="pf-tx"><span class="pf-name" id="pfName">Email / Graphic</span><span class="pf-dim" id="pfDim">620px wide</span></span>
+      <span class="pf-ch">›</span>
+    </button>
   </div>
-  <div class="bt-hint" id="btHint">Page format: narrow email/graphic</div>
   <div class="rail-modes" id="railModes">
     <div class="rail-modes-select-wrap">
       <select id="railModeSelect" class="rail-mode-select" onchange="setRailMode(this.value)" onmousedown="exitTagsPane()" onfocus="exitTagsPane()">
         <option value="graphics">Graphics</option>
         <option value="newsletter" selected>Newsletter</option>
         <option value="blog">Webpage</option>
+        <option value="docs">Documentation</option>
       </select>
     </div>
     <div class="rail-mode rail-mode-pinned" id="mode-widgets" onclick="setRailMode('widgets')">Widgets</div>
@@ -609,6 +641,7 @@
         <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Feedback</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="pageformat"><span class="ic">&#128207;</span><span class="tx">Page Format</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
       </nav>
@@ -678,6 +711,31 @@
           </div>
           <div class="fb-wrap">
             <iframe id="fbFrame" src="about:blank" data-src="https://docs.google.com/forms/d/e/1FAIpQLSd4qi6hkOEoONQGQGkSvU0qYcgWQQEpPp23wkjQ-KEk3pnQOQ/viewform?embedded=true" width="640" height="1338" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
+          </div>
+        </div>
+
+        <div class="set-pane" data-pane="pageformat" id="pane-pageformat">
+          <p class="set-lede">How wide the canvas is and how it exports. <b>Email / Graphic</b> builds a narrow, table-based layout that survives Outlook. <b>Webpage</b> and <b>Document</b> build full-width HTML for the browser.</p>
+          <div class="pf-grid" id="pfPresets"></div>
+
+          <div class="pf-custom">
+            <div class="pf-custom-head">Custom size</div>
+            <div class="pf-row">
+              <label>Width <input type="number" id="pfW" min="320" max="2000" step="10" value="620"><span>px</span></label>
+              <label>Side padding <input type="number" id="pfPad" min="0" max="20" step="1" value="7"><span>%</span></label>
+              <label>Export as
+                <select id="pfExport">
+                  <option value="email">Email-safe tables</option>
+                  <option value="web">Modern web HTML</option>
+                </select>
+              </label>
+            </div>
+            <div class="pf-row">
+              <label style="flex:1;">Name <input type="text" id="pfNewName" placeholder="e.g. Pitch deck (wide)"></label>
+              <button class="lib-btn primary" onclick="savePagePreset()">Save as preset</button>
+              <button class="lib-btn" onclick="applyCustomFormat()">Apply without saving</button>
+            </div>
+            <div class="note" style="margin-top:12px;">Presets are stored in this browser. Delete a custom preset with the &times; on its card.</div>
           </div>
         </div>
 
@@ -1978,6 +2036,281 @@ const SECTIONS = {
       <div style="margin-top:22px;">${ph('© 2026 LNGVTY Hub. All rights reserved.',"font-size:11px;color:#666;",'span')}</div>
     </div>`},
 
+  /* ═══════════ DOCUMENTATION SECTIONS (mode:'docs') ═══════════
+     Building blocks for plan / proposal / strategy documents. Designed for the
+     Webpage page-format (wide canvas). Every list, table row and timeline stop is
+     add/removable, and the accent-bar sections carry an editable color chip so a
+     document can run two or more colour-coded tracks (e.g. two challenges). */
+
+  docMast:{group:'Doc Structure',norder:0,icon:'▤',name:'Document Masthead',theme:'dark',mode:'docs',
+    html:()=>`<div style="background:var(--dark);border-bottom:5px solid var(--accent);">
+      <div style="background:var(--accent);padding:9px 7%;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        ${ph('LNGVTY Hub · Carrboro',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:#fff;",'span')}
+        ${ph('Program Plan · Q3 2026',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:#fff;",'span')}
+      </div>
+      <div style="padding:46px 7% 54px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;">
+          <div>
+            ${ph('LNGVTY',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:2px;color:#fff;line-height:1;")}
+            ${ph('LONGEVITY HUB',"font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:5px;font-weight:700;color:var(--accent);margin-top:5px;")}
+          </div>
+          <div style="text-align:right;">
+            ${ph('Prepared for Tim Pedersen',"font-size:11px;color:#8d8b86;line-height:1.9;")}
+            ${ph('Two challenges · 30 days each',"font-size:11px;color:#8d8b86;line-height:1.9;")}
+            ${ph('Status: Draft for review',"font-size:11px;color:#8d8b86;line-height:1.9;")}
+          </div>
+        </div>
+        ${ph('Two challenges that shouldn\u2019t feel like the same challenge.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:48px;line-height:.97;letter-spacing:-1.4px;color:#fff;margin:38px 0 0;max-width:15ch;")}
+        ${ph('One-paragraph standfirst. Set up the problem, name the two things being compared, and say what the reader will get out of this document.',"font-size:17px;line-height:1.7;color:#c9c5bd;font-weight:300;margin:22px 0 0;max-width:60ch;")}
+      </div>
+    </div>`},
+
+  docThesis:{group:'Doc Structure',norder:1,icon:'❖',name:'The Bet / Thesis',theme:'white',mode:'docs',
+    html:()=>`<div style="background:#ffffff;border-bottom:1px solid #e2ded6;padding:44px 7%;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;">
+        <tbody><tr>
+          <td valign="top" style="width:150px;padding-right:28px;">
+            ${ph('The bet',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);padding-top:6px;")}
+          </td>
+          <td valign="top">
+            ${listBlock(
+              [`<div class="li-wrap" style="position:relative;margin-bottom:14px;">${ph('State the single big idea in one sentence. Make it a claim someone could disagree with.',"font-size:19px;line-height:1.65;color:var(--heading);")}<button class="li-del" onclick="delLi(this)">×</button></div>`,
+               `<div class="li-wrap" style="position:relative;margin-bottom:14px;">${ph('Then one supporting paragraph explaining what follows from it.',"font-size:16px;line-height:1.7;color:var(--body-text);")}<button class="li-del" onclick="delLi(this)">×</button></div>`],
+              `<div class="li-wrap" style="position:relative;margin-bottom:14px;">${ph('New paragraph',"font-size:16px;line-height:1.7;color:var(--body-text);")}<button class="li-del" onclick="delLi(this)">×</button></div>`,
+              'Add paragraph')}
+          </td>
+        </tr></tbody>
+      </table>
+    </div>`},
+
+  docSectionHead:{group:'Doc Structure',norder:2,icon:'—',name:'Section Header (rule)',theme:'white',mode:'docs',
+    html:()=>`<div style="background:#ffffff;padding:56px 7% 0;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        ${ph('Challenge One',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
+      </div>
+      ${ph('Section title',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:12px;")}
+      ${ph('A one- or two-sentence lede that frames what this section covers.',"font-size:17px;line-height:1.7;color:var(--body-text);max-width:66ch;")}
+    </div>`},
+
+  docTrackHead:{group:'Doc Content',norder:0,icon:'▰',name:'Colour Track Header',theme:'white',mode:'docs',
+    html:()=>`<div style="background:#ffffff;padding:28px 7% 0;">
+      <div class="doc-track" data-accent="#3f7d4f" style="background:#2b5837;padding:40px 44px;position:relative;overflow:hidden;">
+        <button class="doc-hue" onclick="cycleDocHue(this)" title="Change track colour">◐ colour</button>
+        ${ph('Positioning',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:rgba(255,255,255,.72);")}
+        ${ph('Reset Your Body',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:46px;line-height:1;letter-spacing:-1px;color:#fff;margin:8px 0 6px;")}
+        ${ph('The one-line promise for this track.',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;letter-spacing:.4px;color:rgba(255,255,255,.75);")}
+        ${ph('A short paragraph explaining the angle \u2014 why this is positioned the way it is, and what makes it different from the other track.',"font-size:15px;line-height:1.7;color:rgba(255,255,255,.82);font-weight:300;margin:16px 0 0;max-width:56ch;")}
+      </div>
+    </div>`},
+
+  docPromise:{group:'Doc Content',norder:1,icon:'▥',name:'Promise Grid',theme:'white',mode:'docs',
+    html:()=>{
+      const cell=(t,d)=>`<td valign="top" width="33%" style="width:33.33%;background:#fff;border:1px solid #e2ded6;padding:15px 17px;position:relative;">
+        ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:12.5px;color:var(--heading);margin-bottom:2px;")}
+        ${ph(d,"font-size:14px;line-height:1.5;color:var(--body-text);")}
+      </td>`;
+      return `<div style="background:#ffffff;padding:28px 7% 0;">
+      ${ph('What we promise',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px;")}
+      ${listBlock(
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit one','What the participant actually gets.')}${cell('Benefit two','Keep each of these concrete.')}${cell('Benefit three','Avoid vague outcome language.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit','Description.')}${cell('Benefit','Description.')}${cell('Benefit','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        'Add row of 3')}
+    </div>`;}},
+
+  docPhases:{group:'Doc Content',norder:2,icon:'☷',name:'Phase / Week Columns',theme:'white',mode:'docs',
+    html:()=>{
+      const bullets=(arr)=>arr.map(t=>`<div style="font-size:13.2px;line-height:1.5;padding:3.5px 0 3.5px 13px;position:relative;color:var(--body-text);"><span style="position:absolute;left:0;top:10px;width:5px;height:2px;background:var(--accent);"></span>${ph(t,"display:inline;",'span')}</div>`).join('');
+      const col=(n,title,items)=>`<td valign="top" width="25%" style="width:25%;background:#fff;border:1px solid #e2ded6;padding:20px 18px 22px;position:relative;">
+        <div style="height:3px;background:var(--accent);position:absolute;top:0;left:0;right:0;"></div>
+        ${ph(n,"font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);margin-bottom:9px;")}
+        ${ph(title,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:15.5px;line-height:1.15;color:var(--heading);margin-bottom:10px;")}
+        ${bullets(items)}
+      </td>`;
+      return `<div style="background:#ffffff;padding:22px 7% 0;">
+      ${ph('The four-week arc',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px;")}
+      ${listBlock(
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 01','Phase name',['First point','Second point','Third point'])}${col('Week 02','Phase name',['First point','Second point','Third point'])}${col('Week 03','Phase name',['First point','Second point','Third point'])}${col('Week 04','Phase name',['First point','Second point','Third point'])}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 05','Phase name',['Point'])}${col('Week 06','Phase name',['Point'])}${col('Week 07','Phase name',['Point'])}${col('Week 08','Phase name',['Point'])}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        'Add row of 4')}
+      ${ph('An optional note under the columns \u2014 use it to flag the phase that matters most.',"font-size:13.6px;color:#8a8781;margin-top:10px;")}
+    </div>`;}},
+
+  docMechanics:{group:'Doc Content',norder:3,icon:'⚙',name:'Mechanics Cards',theme:'white',mode:'docs',
+    html:()=>{
+      const card=(t,d)=>`<td valign="top" width="50%" style="width:50%;padding:0 9px 18px 0;position:relative;">
+        <div style="border-left:3px solid var(--accent);padding:2px 0 2px 15px;">
+          ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:var(--heading);margin-bottom:5px;")}
+          ${ph(d,"font-size:13.6px;line-height:1.6;color:var(--body-text);")}
+          ${ph('Runs on: where this actually happens.',"font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.55;color:#8a8781;margin-top:7px;")}
+        </div>
+      </td>`;
+      return `<div style="background:#ffffff;padding:22px 7% 0;">
+      ${ph('Engagement mechanics',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:20px 0 14px;padding-top:22px;border-top:1px solid #e2ded6;")}
+      ${listBlock(
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','What it is and why it works, in one or two sentences.')}${card('Mechanic name','What it is and why it works, in one or two sentences.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','Description.')}${card('Mechanic name','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        'Add pair')}
+    </div>`;}},
+
+  docExample:{group:'Doc Content',norder:4,icon:'❝',name:'Example / Sample Box',theme:'white',mode:'docs',
+    html:()=>`<div style="background:#ffffff;padding:14px 7% 0;">
+      <div style="padding:13px 15px;border:1px dashed #e2ded6;background:var(--bg);">
+        ${ph('Sample copy',"font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:#96938c;margin-bottom:6px;")}
+        ${ph('Drop the actual wording here so the reader can hear the voice, not just read about it.',"font-size:13.4px;line-height:1.62;color:var(--body-text);")}
+      </div>
+    </div>`},
+
+  docTimeline:{group:'Doc Planning',norder:0,icon:'⇅',name:'Route / Timeline (dark)',theme:'dark',mode:'docs',
+    html:()=>{
+      const stop=(pin,day,title,body)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:26px;"><tbody><tr>
+        <td valign="top" width="70" style="width:70px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:var(--accent);text-align:center;line-height:48px;">
+            ${ph(pin,"font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#fff;display:inline;",'span')}
+          </div>
+        </td>
+        <td valign="top" style="padding-top:6px;">
+          ${ph(day,"font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--accent);margin-bottom:5px;")}
+          ${ph(title,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:#fff;margin-bottom:4px;letter-spacing:-.2px;")}
+          ${ph(body,"font-size:14.4px;line-height:1.65;color:#a7a39c;max-width:62ch;")}
+        </td>
+      </tr></tbody><button class="li-del" onclick="delLi(this)">×</button>${liMoves()}</table>`;
+      return `<div style="background:var(--dark);padding:70px 7% 76px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        ${ph('The spine of the plan',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
+      </div>
+      ${ph('Stop counting days. Give them a route.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:#fff;margin-bottom:12px;")}
+      ${ph('Explain what the timeline represents and how to read it.',"font-size:17px;line-height:1.7;color:#b3afa7;max-width:66ch;margin-bottom:40px;")}
+      ${listBlock(
+        [stop('D1','Day 1','Start','What happens at this stage, and why it matters.'),
+         stop('D15','Day 15','Halfway','Momentum peak \u2014 the best moment for a check-in.'),
+         stop('D30','Day 30','Finish','The payoff, and the hand-off into whatever comes next.')],
+        stop('D0','Day 0','Stop name','What happens at this stage.'),
+        'Add stop')}
+    </div>`;}},
+
+  docPillars:{group:'Doc Planning',norder:1,icon:'▦',name:'Numbered Pillars',theme:'white',mode:'docs',
+    html:()=>{
+      const cell=(n,t,d)=>`<td valign="top" width="50%" style="width:50%;background:#fff;border:1px solid #e2ded6;padding:26px 24px 28px;position:relative;">
+        ${ph(n,"font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:1.6px;color:var(--accent);margin-bottom:9px;")}
+        ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:17px;color:var(--heading);margin-bottom:7px;")}
+        ${ph(d,"font-size:14px;line-height:1.65;color:var(--body-text);")}
+      </td>`;
+      return `<div style="background:#ffffff;padding:56px 7%;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        ${ph('Applies to everything',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
+      </div>
+      ${ph('The shared layer',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:12px;")}
+      ${ph('What these have in common and why they are grouped together.',"font-size:17px;line-height:1.7;color:var(--body-text);max-width:66ch;margin-bottom:30px;")}
+      ${listBlock(
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('01','Pillar name','What it is, in plain terms.')}${cell('02','Pillar name','What it is, in plain terms.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('03','Pillar name','Description.')}${cell('04','Pillar name','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        'Add pair')}
+    </div>`;}},
+
+  docTable:{group:'Doc Data',norder:0,icon:'▤',name:'Production Table',theme:'white',mode:'docs',
+    html:()=>{
+      const row=(a,b,c)=>`<tr class="li-wrap" style="position:relative;">
+        <td valign="top" style="border-bottom:1px solid #e2ded6;padding:13px 15px;width:22%;">${ph(a,"font-family:'Montserrat',sans-serif;font-weight:700;color:var(--heading);font-size:14px;")}</td>
+        <td valign="top" style="border-bottom:1px solid #e2ded6;padding:13px 15px;width:48%;">${ph(b,"font-size:14px;line-height:1.6;color:var(--body-text);")}</td>
+        <td valign="top" style="border-bottom:1px solid #e2ded6;padding:13px 15px;width:30%;">${ph(c,"font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);")}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr>`;
+      return `<div style="background:var(--bg);padding:56px 7%;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        ${ph('Production',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
+      </div>
+      ${ph('What we would actually build',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:12px;")}
+      ${ph('A line about what already exists versus what is new work.',"font-size:17px;line-height:1.7;color:var(--body-text);max-width:66ch;margin-bottom:26px;")}
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;background:#fff;border:1px solid #e2ded6;">
+        <tbody>
+          <tr>
+            <th style="background:var(--dark);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;text-align:left;padding:12px 15px;">${ph('Asset',"color:#fff;display:inline;",'span')}</th>
+            <th style="background:var(--dark);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;text-align:left;padding:12px 15px;">${ph('What it is',"color:#fff;display:inline;",'span')}</th>
+            <th style="background:var(--dark);color:#fff;font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;text-align:left;padding:12px 15px;">${ph('Status',"color:#fff;display:inline;",'span')}</th>
+          </tr>
+          <tr><td colspan="3" style="padding:0;">${listBlock(
+            [`<table class="li-list-inner" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tbody>${row('Asset name','What this deliverable is.','Already exists')}</tbody></table>`],
+            `<table class="li-list-inner" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tbody>${row('Asset name','Description.','New work')}</tbody></table>`,
+            'Add row')}</td></tr>
+        </tbody>
+      </table>
+    </div>`;}},
+
+  docMetrics:{group:'Doc Data',norder:1,icon:'◉',name:'Metric Strip',theme:'dark',mode:'docs',
+    html:()=>`<div style="background:var(--gray);padding:30px 7%;">
+      ${statRow([['30','Days'],['4','Weeks'],['2','Tracks'],['6','Milestones']])}
+    </div>`},
+
+  docRisk:{group:'Doc Planning',norder:2,icon:'⚠',name:'Risks & Mitigations',theme:'white',mode:'docs',
+    html:()=>{
+      const row=(r,m)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>
+        <td valign="top" width="6" style="width:6px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
+        <td valign="top" width="42%" style="width:42%;background:#fff;border:1px solid #e2ded6;border-left:0;padding:14px 16px;">
+          ${ph(r,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:var(--heading);")}
+        </td>
+        <td valign="top" style="background:#fff;border:1px solid #e2ded6;border-left:0;padding:14px 16px;">
+          ${ph(m,"font-size:13.8px;line-height:1.6;color:var(--body-text);")}
+          <button class="li-del" onclick="delLi(this)">×</button>
+        </td>
+      </tr></tbody></table>`;
+      return `<div style="background:#ffffff;padding:56px 7%;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        ${ph('Known risks',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
+      </div>
+      ${ph('What could go wrong',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:24px;")}
+      ${listBlock([row('The risk, stated plainly.','How we plan to handle it.')],row('Risk','Mitigation.'),'Add risk')}
+    </div>`;}},
+
+  docOwners:{group:'Doc Planning',norder:3,icon:'☑',name:'Owners & Dates',theme:'white',mode:'docs',
+    html:()=>{
+      const row=(task,who,when)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>
+        <td valign="top" style="background:#fff;border:1px solid #e2ded6;padding:13px 16px;">${ph(task,"font-size:14px;color:var(--heading);font-weight:600;")}</td>
+        <td valign="top" width="22%" style="width:22%;background:#fff;border:1px solid #e2ded6;border-left:0;padding:13px 16px;">${ph(who,"font-family:'Montserrat',sans-serif;font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.4px;")}</td>
+        <td valign="top" width="22%" style="width:22%;background:#fff;border:1px solid #e2ded6;border-left:0;padding:13px 16px;">${ph(when,"font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--body-text);")}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></tbody></table>`;
+      return `<div style="background:var(--bg);padding:56px 7%;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        ${ph('Who does what',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
+      </div>
+      ${ph('Owners and dates',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:24px;")}
+      ${listBlock([row('The task or deliverable.','Owner','Target date')],row('Task','Owner','Date'),'Add line')}
+    </div>`;}},
+
+  docQuote:{group:'Doc Content',norder:5,icon:'❞',name:'Pull Quote',theme:'white',mode:'docs',
+    html:()=>`<div style="background:#ffffff;padding:44px 7%;">
+      <div style="border-left:4px solid var(--accent);padding-left:26px;max-width:70ch;">
+        ${ph('A line worth setting apart \u2014 a customer quote, a stat, or the sentence you want them to remember.',"font-family:'Montserrat',sans-serif;font-weight:300;font-size:24px;line-height:1.5;color:var(--heading);font-style:italic;")}
+        ${ph('Attribution',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-top:14px;")}
+      </div>
+    </div>`},
+
+  docRecommend:{group:'Doc Close',norder:0,icon:'▶',name:'Recommendation (orange)',theme:'orange',mode:'docs',
+    html:()=>{
+      const card=(t,d)=>`<td valign="top" width="25%" style="width:25%;background:#c44d13;border:1px solid rgba(255,255,255,.3);padding:16px 18px;position:relative;">
+        ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;letter-spacing:.4px;color:#fff;margin-bottom:3px;")}
+        ${ph(d,"font-size:13.4px;line-height:1.55;color:#fff;")}
+        <button class="li-del" onclick="delLi(this)">×</button>
+      </td>`;
+      return `<div style="background:#c44d13;padding:56px 7% 60px;">
+      ${ph('Recommendation',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:10px;")}
+      ${ph('Lead with the recommendation.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:#fff;margin-bottom:12px;max-width:20ch;")}
+      ${ph('Two or three sentences justifying it \u2014 why this one, why now, and what it de-risks.',"font-size:16px;line-height:1.7;color:#fff;max-width:62ch;margin-bottom:26px;")}
+      ${listBlock(
+        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','What happens first.')}${card('Next step','What happens second.')}${card('Next step','Then this.')}${card('Next step','And this.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`],
+        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}</tr></tbody><button class="li-del" onclick="delLi(this)">×</button></table>`,
+        'Add row of 4')}
+    </div>`;}},
+
+  docFooterBar:{group:'Doc Close',norder:1,icon:'▬',name:'Document Footer Bar',theme:'dark',mode:'docs',
+    html:()=>`<div style="background:var(--dark);padding:22px 7%;text-align:center;">
+      ${ph('LNGVTY Hub · Challenge program plan · Draft for review',"font-family:'JetBrains Mono',monospace;font-size:12px;color:#7d7a74;")}
+    </div>`},
+
   /* ══════════════ KETO CHALLENGE SECTIONS (from the Day 7/14/21/30 emails) ══════════════ */
 
   chHeader:{group:'Challenge',icon:'▰',name:'Challenge Header (black)',theme:'dark',mode:'graphics',
@@ -2332,18 +2665,21 @@ function secGroup(s){
 }
 function inCurrentMode(s){
   const m=secMode(s);
+  if(railMode==='docs')return m==='docs';            // docs tab: only documentation sections
+  if(m==='docs')return false;                        // docs sections never show elsewhere
   if(railMode==='blog')return m==='blog';            // blog tab: only blog sections
   if(m==='blog')return false;                        // blog sections never show in email tabs
   return m==='both'||m===railMode;                   // 'both' = graphics + newsletter
 }
 const NEWSLETTER_GROUP_ORDER=['Newsletter','Members','Recipe','Tips','Nutrition','Events','CTA'];
 const BLOG_GROUP_ORDER=['Header','Content','Embed','CTA'];
+const DOCS_GROUP_ORDER=['Doc Structure','Doc Content','Doc Data','Doc Planning','Doc Close'];
 function computeTabs(){
   const groups=new Set();
   Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(secGroup(s));});
   // start from default order, then any custom-created tabs in creation order
   const ordered=[];
-  const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:DEFAULT_GROUP_ORDER;
+  const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:(railMode==='docs')?DOCS_GROUP_ORDER:DEFAULT_GROUP_ORDER;
   orderList.forEach(g=>{if(groups.has(g)){ordered.push(g);groups.delete(g);}});
   // preserve any previously-known custom tab order
   TABS.forEach(g=>{if(groups.has(g)){ordered.push(g);groups.delete(g);}});
@@ -2357,23 +2693,92 @@ let railMode='newsletter';                // default tab | 'graphics' | 'newslet
 let builderMode='email';                  // 'email' | 'webpage'
 let openGroups=null;                      // Set of expanded group names (null = init to all)
 
+/* ═══════════ PAGE FORMAT ═══════════
+   The canvas width + export style. Built-in presets cover the common cases; users
+   can add their own (width, side padding, export mode) and they persist locally.
+   `kind` drives the export pipeline: 'email' → table-based email-safe HTML,
+   'web' → modern full-width HTML. */
+const PF_BUILTIN=[
+  {id:'email',   name:'Email / Graphic', dim:620,  pad:null, kind:'email', desc:'Narrow, table-based. Survives Outlook and Gmail.'},
+  {id:'webpage', name:'Webpage',         dim:1100, pad:7,    kind:'web',   desc:'Full-width browser layout for blog and landing pages.'},
+  {id:'document',name:'Document',        dim:1080, pad:7,    kind:'web',   desc:'Wide reading measure for plans, proposals and reports.'}
+];
+let pageFormat=PF_BUILTIN[0];
+function pfCustomList(){try{return JSON.parse(localStorage.getItem('lngvty_pf_presets')||'[]');}catch(e){return [];}}
+function pfSaveList(l){try{localStorage.setItem('lngvty_pf_presets',JSON.stringify(l));}catch(e){}}
+function pfAll(){return PF_BUILTIN.concat(pfCustomList());}
+function pfFind(id){return pfAll().find(p=>p.id===id)||PF_BUILTIN[0];}
+
+/* Apply a format to the canvas. Kept backwards-compatible: setBuilderMode('email'
+   |'webpage') still works, so older saved docs and any existing calls behave. */
 function setBuilderMode(mode){
-  builderMode=mode;
-  const isWeb=(mode==='webpage');
-  document.getElementById('builderModeSwitch').checked=isWeb;
-  document.getElementById('btEmailLbl').classList.toggle('on',!isWeb);
-  document.getElementById('btWebLbl').classList.toggle('on',isWeb);
-  document.getElementById('btHint').textContent=isWeb?'Page format: full-width webpage':'Page format: narrow email/graphic';
-  // the toggle only changes how the page is FORMATTED (width + export),
-  // not which sections are available — every tab stays usable in both formats.
-  document.getElementById('frame').classList.toggle('webpage-mode',isWeb);
-  document.body.classList.toggle('webpage-builder',isWeb);
+  const pf = (typeof mode==='object' && mode) ? mode : pfFind(mode==='webpage'?'webpage':(mode==='email'?'email':mode));
+  pageFormat=pf;
+  builderMode=(pf.kind==='email')?'email':'webpage';
+  const frameEl=document.getElementById('frame');
+  const isWide=(pf.kind!=='email');
+  frameEl.classList.toggle('webpage-mode',isWide);
+  document.body.classList.toggle('webpage-builder',isWide);
+  // width is driven by the preset so custom sizes work
+  frameEl.style.maxWidth = isWide ? (pf.dim+'px') : '';
+  frameEl.style.width    = isWide ? '100%' : '';
+  document.documentElement.style.setProperty('--doc-pad', (pf.pad!=null?pf.pad:7)+'%');
+  const n=document.getElementById('pfName'), dm=document.getElementById('pfDim');
+  if(n)n.textContent=pf.name;
+  if(dm)dm.textContent=pf.dim+'px wide'+(pf.kind==='email'?' · email-safe':'');
+  renderPagePresets();
   refreshState&&refreshState();
+  try{localStorage.setItem('lngvty_pf_active',pf.id);}catch(e){}
+}
+function openPageFormat(){openSettings('pageformat');}
+function renderPagePresets(){
+  const host=document.getElementById('pfPresets');if(!host)return;
+  const custom=pfCustomList();
+  host.innerHTML=pfAll().map(p=>{
+    const on=(p.id===pageFormat.id);
+    const isCustom=custom.some(c=>c.id===p.id);
+    return `<div class="pf-card${on?' on':''}" onclick="setBuilderMode(pfFind('${p.id}'))">
+      ${isCustom?`<button class="pf-del" onclick="event.stopPropagation();deletePagePreset('${p.id}')" title="Delete preset">×</button>`:''}
+      <div class="pf-card-name">${escapeHtml(p.name)}</div>
+      <div class="pf-card-dim">${p.dim}px${p.pad!=null?' · '+p.pad+'% pad':''}</div>
+      <div class="pf-card-desc">${escapeHtml(p.desc||(p.kind==='email'?'Email-safe export.':'Web export.'))}</div>
+      <div class="pf-card-kind">${p.kind==='email'?'Email-safe tables':'Modern web HTML'}</div>
+    </div>`;
+  }).join('');
+}
+function readCustomForm(){
+  const w=Math.max(320,Math.min(2000,parseInt(document.getElementById('pfW').value,10)||620));
+  const pad=Math.max(0,Math.min(20,parseInt(document.getElementById('pfPad').value,10)||0));
+  const kind=document.getElementById('pfExport').value==='email'?'email':'web';
+  return {dim:w,pad:pad,kind:kind};
+}
+function applyCustomFormat(){
+  const c=readCustomForm();
+  setBuilderMode({id:'__custom',name:'Custom',dim:c.dim,pad:c.pad,kind:c.kind,desc:'Unsaved custom size.'});
+  toast('Custom format applied');
+}
+function savePagePreset(){
+  const c=readCustomForm();
+  const name=(document.getElementById('pfNewName').value||'').trim();
+  if(!name){toast('Give the preset a name first');return;}
+  const list=pfCustomList();
+  const id='pf-'+Date.now().toString(36);
+  list.push({id,name,dim:c.dim,pad:c.pad,kind:c.kind,desc:'Custom preset.'});
+  pfSaveList(list);
+  document.getElementById('pfNewName').value='';
+  setBuilderMode(pfFind(id));
+  toast('Preset saved');
+}
+function deletePagePreset(id){
+  if(!confirm('Delete this preset?'))return;
+  pfSaveList(pfCustomList().filter(p=>p.id!==id));
+  if(pageFormat.id===id)setBuilderMode(pfFind('email'));else renderPagePresets();
+  toast('Preset deleted');
 }
 
 function setRailMode(m){
   railMode=m;
-  const isSections=(m==='graphics'||m==='newsletter'||m==='blog');
+  const isSections=(m==='graphics'||m==='newsletter'||m==='blog'||m==='docs');
   // keep the dropdown showing the active content mode (Tags/Widgets are separate pins)
   const sel=document.getElementById('railModeSelect');
   if(sel&&isSections)sel.value=m;
@@ -2387,7 +2792,7 @@ function setRailMode(m){
   if(m==='widgets')renderWidgets();
   const sl=document.getElementById('railSubLabel');
   if(sl&&isSections){
-    sl.textContent=(m==='newsletter')?'Newsletter Sections':(m==='blog')?'Webpage / Blog Sections':'Graphics Sections';
+    sl.textContent=(m==='newsletter')?'Newsletter Sections':(m==='blog')?'Webpage / Blog Sections':(m==='docs')?'Documentation Sections':'Graphics Sections';
   }
   const st=document.getElementById('railStarter');
   if(st)st.style.display=(m==='newsletter')?'flex':'none';
@@ -2485,7 +2890,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -3116,6 +3521,29 @@ function renumberSteps(list){
   if(!nums.length)return;
   nums.forEach((n,i)=>{n.textContent=String(i+1);});
 }
+
+/* ═══════════ DOC TRACK COLOUR ═══════════
+   Documentation "track" headers carry their own accent so a single document can
+   run two or more colour-coded threads (e.g. one colour per challenge). Cycling
+   recolours the header background and every accent element inside that track. */
+const DOC_HUES=[
+  {bg:'#2b5837',accent:'#3f7d4f',name:'Green'},
+  {bg:'#4a1d40',accent:'#6b2d5c',name:'Plum'},
+  {bg:'#1c3f5c',accent:'#2f6b96',name:'Blue'},
+  {bg:'#5c3310',accent:'#a8622a',name:'Amber'},
+  {bg:'#4a1f1f',accent:'#9c3a3a',name:'Rust'},
+  {bg:'#1a1a1a',accent:'#e05a1b',name:'Brand'}
+];
+function cycleDocHue(btn){
+  const track=btn.closest('.doc-track');if(!track)return;
+  const cur=track.getAttribute('data-accent')||DOC_HUES[0].accent;
+  let i=DOC_HUES.findIndex(h=>h.accent.toLowerCase()===cur.toLowerCase());
+  const next=DOC_HUES[(i+1)%DOC_HUES.length];
+  track.setAttribute('data-accent',next.accent);
+  track.style.background=next.bg;
+  toast(next.name);
+  markDirty&&markDirty();
+}
 /* add an inline tag pill into a .tag-wrap (uses its data-proto) */
 function addTag(btn){
   const wrap=btn.parentElement;const proto=wrap.getAttribute('data-proto');if(!proto)return;
@@ -3466,9 +3894,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v19.9',
-  name    : 'Content Library',
-  date    : '22 July 2026',
+  version : 'v20.0',
+  name    : 'Documentation Mode',
+  date    : '23 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -3618,6 +4046,7 @@ const SET_PANES={
   docs   : {title:'Docs',         src:'docsBg'},
   about  : {title:'Version & Notes', src:null},   // authored inline
   feedback:{title:'Feedback',     src:null},      // authored inline
+  pageformat:{title:'Page Format', src:null},   // authored inline
   backlog :{title:'Content Backlog', src:null},   // authored inline
   library :{title:'Content Library',  src:null},   // authored inline
 };
@@ -3703,6 +4132,7 @@ function setPane(key){
     if(b && b.getAttribute('src')==='about:blank')b.setAttribute('src',b.dataset.src);
   }
   if(key==='library'){libInitPane();}
+  if(key==='pageformat'){renderPagePresets();}
   if(key==='html'){const t=document.getElementById('modalText');if(t){t.value=buildExport();t.readOnly=true;}
     const b=document.getElementById('modalEditBtn');if(b)b.innerHTML='&#9998; Edit';}
   if(key==='github'){const c=ghConfig();
@@ -3953,7 +4383,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar,.doc-hue').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -4764,7 +5194,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v19.9 "Content Library" · 22 July 2026
+**Current build:** v20.0 "Documentation Mode" · 23 July 2026
 
 ---
 
@@ -4785,6 +5215,30 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v20.0 — Documentation Mode · 23 July 2026
+
+- **New "Documentation" tab** in the sections dropdown, alongside Newsletter, Graphics
+  and Webpage. Seventeen new blocks for building plan, proposal and strategy documents
+  without writing any code \u2014 the same drag-to-place, ghost-text, add-and-remove
+  behaviour as every other section.
+- **What's in it:** Document Masthead, The Bet / Thesis, Section Header (rule),
+  Colour Track Header, Promise Grid, Phase / Week Columns, Mechanics Cards, Example Box,
+  Route / Timeline, Numbered Pillars, Production Table, Metric Strip, Pull Quote,
+  Recommendation (orange), and the Document Footer Bar.
+- **Colour-coded tracks.** The Track Header carries a colour chip (hover it) that cycles
+  through six palettes \u2014 green, plum, blue, amber, rust, brand orange \u2014 so one
+  document can run two or more visually distinct threads, like one colour per challenge.
+- **Everything grows.** Every table, column set, card pair, timeline stop and next-step
+  row has its own <b>+ Add</b>, so a document expands to whatever length it needs.
+- **Three new planning blocks** beyond the original layout: <b>Risks &amp; Mitigations</b>,
+  <b>Owners &amp; Dates</b>, and the <b>Metric Strip</b> \u2014 the parts a plan needs before
+  anyone will actually approve it.
+- **Page Format is now a menu, not a toggle.** The old Email/Webpage switch became a
+  button that opens <b>Settings \u2192 \U0001F4CF Page Format</b>: pick <b>Email / Graphic</b>
+  (620px, email-safe tables), <b>Webpage</b> (1100px), or <b>Document</b> (1080px), set a
+  custom width, side padding and export style, and <b>save your own presets</b>. Your
+  choice is remembered between sessions.
 
 ## v19.9 — The actual fix: Save / Preview / Saved · 22 July 2026
 
@@ -5137,7 +5591,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><th style="width:24%;">Where</th><th>What it's for</th></tr>
   <tr>
     <td><b>Left rail</b></td>
-    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, or <b>Webpage</b> from the dropdown at the top. <b>Widgets</b> (next to it) holds drop-in pieces like a linkable orange button. <b>Tags</b> (the tab beside them) holds merge fields like the member's first name.</td>
+    <td>Your library of blocks. Pick <b>Newsletter</b>, <b>Graphics</b>, <b>Webpage</b>, or <b>Documentation</b> from the dropdown at the top. <b>Widgets</b> (next to it) holds drop-in pieces like a linkable orange button. <b>Tags</b> (the tab beside them) holds merge fields like the member's first name.</td>
   </tr>
   <tr>
     <td><b>Middle canvas</b></td>
@@ -5241,6 +5695,22 @@ function defaultDocs(){return `<div class="docs-body">
 <h3>Merge fields (first name, etc.)</h3>
 <p>Click into a text box where you want it, then open the <b>Tags</b> tab (top-left of the rail, next to Widgets) and click a field. It drops in at your cursor. <code>{{contact.first_name}}</code> becomes the member's actual first name when GHL sends it.</p>
 
+<h3>Building a plan document</h3>
+<p>Pick <b>Documentation</b> from the sections dropdown to get a set of blocks made for plans, proposals and strategy docs. Before you start, open <b>Settings &rarr; &#128207; Page Format</b> and choose <b>Document</b> &mdash; documents are much wider than an email, and this sets the canvas to match.</p>
+<p>A typical plan reads in this order:</p>
+<ul>
+  <li><b>Document Masthead</b> &mdash; who it's for, what it is, and the headline claim.</li>
+  <li><b>The Bet / Thesis</b> &mdash; the single big idea, stated so someone could disagree with it.</li>
+  <li><b>Section Header</b> &mdash; an eyebrow, a title, and a rule. Use one before each major part.</li>
+  <li><b>Colour Track Header</b> &mdash; the coloured banner for one thread of the plan. Hover it and click <span class="btnrep">&#9680; colour</span> to cycle through green, plum, blue, amber, rust, and brand orange. Give each track its own colour and the document explains itself at a glance.</li>
+  <li><b>Promise Grid</b>, <b>Phase Columns</b>, <b>Mechanics Cards</b> &mdash; the substance of each track.</li>
+  <li><b>Route / Timeline</b> &mdash; the dark schedule block. Each stop is add/removable and reorderable.</li>
+  <li><b>Production Table</b>, <b>Risks &amp; Mitigations</b>, <b>Owners &amp; Dates</b> &mdash; the operational half.</li>
+  <li><b>Recommendation</b> &mdash; the orange close. Lead with what you want them to do.</li>
+  <li><b>Document Footer Bar</b> &mdash; the thin dark strip at the very bottom.</li>
+</ul>
+<p>Every table, column set, card pair and timeline stop has its own <span class="btnrep">+ Add</span> button, so nothing is locked to the length it starts at. When you're done, <b>Copy HTML</b> gives you the finished page &mdash; or use your browser's Print &rarr; Save as PDF to hand someone a document.</p>
+
 <h3>Widgets</h3>
 <p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
 
@@ -5279,6 +5749,7 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><td><b>&#9881; GitHub</b></td><td>Where documents are stored. Set up once, then forget it.</td></tr>
   <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
   <tr><td><b>&#128203; Content Backlog</b></td><td>The rotating bank of tips, smarter swaps, budget proteins, recipes, and quotes. The <b>Dashboard</b> tab shows what's queued next. Mark an item <b>USED</b> after it runs so it isn't repeated.</td></tr>
+  <tr><td><b>&#128207; Page Format</b></td><td>How wide the canvas is and how it exports. Choose <b>Email / Graphic</b>, <b>Webpage</b>, or <b>Document</b>, set a custom width and padding, and save your own presets.</td></tr>
   <tr><td><b>&#127760; Content Library</b></td><td>The editable version of that bank, stored as JSON in <code>/backlog</code>. Add, edit, or delete tips, quotes, recipes, swaps, proteins, and myths. Sections pull from here with <b>&#127922; Generate</b>; items go <b>reserved</b> when pulled and <b>published</b> when the newsletter is sent.</td></tr>
   <tr><td><b>&#128172; Feedback</b></td><td>A quick form to send notes or bug reports.</td></tr>
   <tr><td><b>&#8505; Version &amp; Notes</b></td><td>The current build number and the full release history. <b>&#9998; Edit</b> to annotate; <b>&#8634; Reset to Default</b> restores the built-in notes.</td></tr>
@@ -6369,6 +6840,7 @@ window.addEventListener('error',function(ev){
 (function runInit(){
   const step=(name,fn)=>{try{fn();}catch(e){console.error('INIT '+name,e);showFatalBanner('Init/'+name,e);}};
   step('loadCustom',loadCustom);
+  step('pageFormat',()=>{let id='email';try{id=localStorage.getItem('lngvty_pf_active')||'email';}catch(e){}setBuilderMode(pfFind(id));});
   step('setRailMode',()=>setRailMode('newsletter'));
   step('hotkeys',()=>{loadHotkeys();renderHotkeys();});
   step('loadState',loadState);
