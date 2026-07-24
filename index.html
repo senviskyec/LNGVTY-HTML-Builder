@@ -356,6 +356,12 @@
   .cb-pop.show{display:block;}
   .cb-pop .cb-pop-head{font-family:'Montserrat';font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#999;margin-bottom:7px;}
   .cb-pop .sw{width:30px;height:30px;border-radius:6px;}
+  /* investigation: suspect cards */
+  .sus-card{transition:transform .12s ease;}
+  .sus-card:hover{transform:translateY(-3px);}
+  .sus-card .sus-front,.sus-card .sus-back{transition:none;}
+  .sus-verdict{transition:.12s;}
+  .sus-verdict:hover{filter:brightness(1.25);}
   /* feedback nav item — set apart from the utility panes */
   .set-item-feedback{border:1px dashed #4a4b50;border-radius:7px;margin-top:2px;}
   .set-item-feedback .tx{color:var(--accent);font-weight:700;}
@@ -2093,6 +2099,263 @@ const SECTIONS = {
       <div style="margin-top:22px;">${ph('© 2026 LNGVTY Hub. All rights reserved.',"font-size:11px;color:#666;",'span')}</div>
     </div>`},
 
+
+  /* ═══════════ WHOLE30: THE INVESTIGATION ═══════════
+     A full case-file kit for the Whole30 challenge. The conceit: the participant
+     is the investigator, the suspects are food groups, and the evidence is how
+     they feel. Everything lives in the Graphics tab under its own sub-tab so a
+     graphic can be built for every day of the 30, not just week boundaries.
+     Shared visual language: manila/case-file cream, redacted bars, stencil
+     stamps, evidence tape, monospace "typewriter" case data. */
+
+  invCaseFile:{group:'Investigation',norder:0,icon:'🗂',name:'Case File Cover',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);position:relative;">
+      <div style="height:6px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+      <div style="padding:38px 48px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;">
+        ${ph('LNGVTY HUB','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;color:var(--sectext);line-height:1;')}
+        ${ph('EVIDENCE LAB','font-family:\'JetBrains Mono\',monospace;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--accent);text-align:right;')}
+      </div>
+      <div style="padding:10px 48px 6px;">
+        <div style="display:inline-block;border:2px solid var(--accent);padding:5px 14px;transform:rotate(-2deg);">
+          ${ph('CONFIDENTIAL','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:13px;letter-spacing:5px;color:var(--accent);')}
+        </div>
+      </div>
+      <div style="padding:22px 48px 12px;">
+        ${ph('CASE #W30-001','font-family:\'JetBrains Mono\',monospace;font-size:12px;letter-spacing:2px;color:var(--secmuted);margin-bottom:14px;')}
+        ${ph('THE CASE OF THE MISSING HEALTH','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:44px;line-height:.98;letter-spacing:-.5px;color:var(--sectext);text-transform:uppercase;')}
+      </div>
+      <div style="padding:14px 48px 40px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+          <tbody><tr>
+            <td valign="top" style="padding-right:28px;">
+              ${ph('SUBJECT','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:2px;color:var(--secmuted);margin-bottom:4px;')}
+              ${ph('You','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:22px;color:var(--accent);')}
+            </td>
+            <td valign="top" style="padding-right:28px;">
+              ${ph('DURATION','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:2px;color:var(--secmuted);margin-bottom:4px;')}
+              ${ph('30 Days','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:22px;color:var(--sectext);')}
+            </td>
+            <td valign="top">
+              ${ph('STATUS','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:2px;color:var(--secmuted);margin-bottom:4px;')}
+              ${ph('OPEN','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:22px;color:var(--sectext);')}
+            </td>
+          </tr></tbody>
+        </table>
+      </div>
+      <div style="height:6px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+    </div>`},
+
+  invBriefing:{group:'Investigation',norder:1,icon:'📋',name:'Investigator Briefing',theme:'cream',mode:'graphics',
+    html:()=>{
+      const sym=(t)=>`<div class="li-wrap" style="position:relative;padding:6px 0 6px 26px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--sectext);"><span style="position:absolute;left:0;top:6px;width:13px;height:13px;border:2px solid var(--accent);"></span>${ph(t,'display:block;min-height:17px;')}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      return `<div style="background:var(--secbg);padding:40px 48px 44px;border:1px solid rgba(0,0,0,.10);">
+      ${ph('INVESTIGATOR BRIEFING','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('The subject has reported the following:','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:24px;line-height:1.15;color:var(--sectext);text-transform:uppercase;margin-bottom:6px;')}
+      ${ph('Over the past several years, one or more of these has gone unexplained. The culprit remains unknown.','font-size:14px;line-height:1.65;color:var(--secmuted);max-width:52ch;margin-bottom:20px;')}
+      ${listBlock([sym('Afternoon crashes'),sym('Poor sleep'),sym('Digestive issues'),sym('Low energy'),sym('Brain fog'),sym('Joint pain'),sym('Cravings'),sym('Mood swings')],sym('New symptom'),'symptom','display:flex;flex-wrap:wrap;gap:0 34px;')}
+      <div style="margin-top:24px;padding-top:18px;border-top:1px dashed rgba(0,0,0,.18);">
+        ${ph('YOUR ASSIGNMENT','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:6px;')}
+        ${ph('Gather enough evidence over the next 30 days to identify the offenders.','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:16px;line-height:1.5;color:var(--sectext);max-width:48ch;')}
+      </div>
+    </div>`;}},
+
+  invSuspects:{group:'Investigation',norder:2,icon:'🔍',name:'Suspect Board (click to flip)',theme:'dark',mode:'graphics',
+    html:()=>{
+      const card=(name,aliases,motives)=>`<div class="li-wrap sus-card" data-flipped="0" style="flex:0 1 210px;min-width:180px;position:relative;cursor:pointer;" onclick="flipSuspect(this)">
+        <button class="li-del" onclick="event.stopPropagation();delLi(this)">×</button>
+        <div class="sus-front" style="display:block;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-top:3px solid var(--accent);padding:20px 18px 18px;text-align:center;min-height:150px;">
+          ${ph('SUSPECT','font-family:\'JetBrains Mono\',monospace;font-size:8.5px;letter-spacing:3px;color:var(--secmuted);margin-bottom:12px;')}
+          <div style="width:52px;height:52px;margin:0 auto 12px;border:2px dashed rgba(255,255,255,.3);border-radius:50%;line-height:48px;font-size:22px;">${ph('?','display:inline;font-size:22px;color:var(--accent);','span')}</div>
+          ${ph(name,'font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:19px;letter-spacing:1px;text-transform:uppercase;color:#fff;')}
+          ${ph('Tap to open file','font-family:\'JetBrains Mono\',monospace;font-size:8.5px;letter-spacing:1.5px;color:var(--secmuted);margin-top:10px;')}
+        </div>
+        <div class="sus-back" style="display:none;background:rgba(224,90,27,.10);border:1px solid var(--accent);border-top:3px solid var(--accent);padding:16px 16px 18px;min-height:150px;">
+          ${ph('KNOWN ALIASES','font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:2px;color:var(--accent);margin-bottom:4px;')}
+          ${ph(aliases,'font-size:11.5px;line-height:1.5;color:#e8e5e0;margin-bottom:10px;')}
+          ${ph('POTENTIAL MOTIVES','font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:2px;color:var(--accent);margin-bottom:4px;')}
+          ${ph(motives,'font-size:11.5px;line-height:1.5;color:#e8e5e0;margin-bottom:12px;')}
+          <button class="sus-verdict" data-v="0" onclick="event.stopPropagation();cycleVerdict(this)" style="width:100%;background:transparent;border:1.5px dashed #8a8781;color:#8a8781;font-family:'Montserrat',sans-serif;font-weight:900;font-size:9px;letter-spacing:2px;padding:6px 4px;cursor:pointer;">UNDER INVESTIGATION</button>
+        </div>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:40px 48px 44px;">
+      ${ph('THE SUSPECT BOARD','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('Five persons of interest.','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:28px;color:var(--sectext);text-transform:uppercase;margin-bottom:6px;')}
+      ${ph('Click any suspect to open their file. Set a verdict as the evidence comes in.','font-size:13.5px;color:var(--secmuted);margin-bottom:22px;max-width:52ch;')}
+      ${listBlock([
+        card('Dairy','Milk · cheese · butter · cream · yogurt','Inflammation · bloating · skin issues · congestion'),
+        card('Sugar','Cane · syrup · dextrose · \u201cnatural flavours\u201d','Energy crashes · cravings · mood swings · poor sleep'),
+        card('Grains','Wheat · corn · rice · oats · barley','Digestive issues · bloating · brain fog'),
+        card('Legumes','Beans · peanuts · soy · lentils','Gas · bloating · discomfort'),
+        card('Alcohol','Beer · wine · spirits · mixers','Sleep disruption · inflammation · next-day fog')
+      ],card('New Suspect','Known aliases here','Potential motives here'),'suspect','display:flex;flex-wrap:wrap;justify-content:center;gap:10px;')}
+    </div>`;}},
+
+  invEvidence:{group:'Investigation',norder:3,icon:'▓',name:'Evidence Collected (progress)',theme:'cream',mode:'graphics',
+    html:()=>{
+      const cell=(n,label,filled)=>`<div class="li-wrap" style="flex:0 1 92px;min-width:78px;text-align:center;position:relative;">
+        <button class="li-del" onclick="delLi(this)">×</button>
+        <div style="height:56px;border:2px solid var(--accent);background:${filled?'var(--accent)':'transparent'};margin-bottom:7px;"></div>
+        ${ph(n,'font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:15px;color:var(--sectext);')}
+        ${ph(label,'font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:1.4px;color:var(--secmuted);margin-top:2px;')}
+      </div>`;
+      return `<div style="background:var(--secbg);padding:36px 48px 40px;border:1px solid rgba(0,0,0,.10);">
+      ${ph('EVIDENCE COLLECTED','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:14px;')}
+      ${listBlock([cell('W1','LOGGED',true),cell('W2','LOGGED',true),cell('W3','PENDING',false),cell('W4','PENDING',false),cell('\u2713','VERDICT',false)],cell('W5','PENDING',false),'marker','display:flex;flex-wrap:wrap;justify-content:center;gap:10px;')}
+      ${ph('Every symptom you log is a data point. Every data point narrows the field.','font-size:13px;color:var(--secmuted);text-align:center;margin-top:18px;max-width:46ch;margin-left:auto;margin-right:auto;')}
+    </div>`;}},
+
+  invClue:{group:'Investigation',norder:4,icon:'🔎',name:'Clue Card',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:40px 48px 44px;">
+      <div style="border:2px solid var(--accent);padding:28px 30px;position:relative;">
+        <div style="position:absolute;top:-11px;left:26px;background:var(--secbg);padding:0 10px;">
+          ${ph('CLUE #3','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--accent);','span')}
+        </div>
+        ${ph('WITNESS STATEMENT','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:3px;color:var(--secmuted);margin:4px 0 12px;')}
+        ${ph('\u201cI stopped crashing after lunch.\u201d','font-family:\'Montserrat\',sans-serif;font-weight:900;font-style:italic;font-size:26px;line-height:1.25;color:var(--sectext);margin-bottom:16px;')}
+        ${ph('Who does this eliminate?','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:14px;color:var(--accent);letter-spacing:.5px;margin-bottom:10px;')}
+        ${tagBlock(['Sugar','Alcohol','Dairy','Stress'],'display:inline-block;font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:1px solid var(--accent);color:var(--accent);padding:5px 12px;','display:flex;flex-wrap:wrap;gap:7px;')}
+      </div>
+    </div>`},
+
+  invMission:{group:'Investigation',norder:5,icon:'◎',name:'Daily Mission',theme:'orange',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:40px 48px 44px;text-align:center;">
+      ${ph('TODAY\u2019S ASSIGNMENT','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,.8);margin-bottom:10px;')}
+      ${ph('DAY 07','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:52px;line-height:1;color:#fff;letter-spacing:1px;margin-bottom:14px;')}
+      ${ph('Collect Physical Evidence','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase;color:#fff;line-height:1.15;margin-bottom:12px;')}
+      ${ph('Photograph today\u2019s breakfast before you eat it. File it with the group.','font-size:15px;line-height:1.6;color:rgba(255,255,255,.92);max-width:42ch;margin:0 auto 18px;')}
+      <div style="display:inline-block;border:2px dashed rgba(255,255,255,.55);padding:8px 18px;">
+        ${ph('EVIDENCE TYPE: PHOTOGRAPHIC','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:2px;color:#fff;')}
+      </div>
+    </div>`},
+
+  invSymptomBoard:{group:'Investigation',norder:6,icon:'☑',name:'Symptom Log',theme:'white',mode:'graphics',
+    html:()=>{
+      const row=(name)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>
+        <td valign="middle" style="background:#fff;border:1px solid #e2ded6;padding:11px 14px;">${ph(name,'font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:14px;color:var(--heading);')}</td>
+        <td valign="middle" width="34%" style="width:34%;background:#fff;border:1px solid #e2ded6;border-left:0;padding:11px 14px;text-align:center;">
+          ${ph('\u2014  \u2014  \u2014  \u2014','font-family:\'JetBrains Mono\',monospace;font-size:14px;letter-spacing:6px;color:var(--accent);')}
+        </td>
+        <td valign="middle" class="li-ctrls" style="width:26px;padding:0 0 0 4px;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></tbody></table>`;
+      return `<div style="background:var(--secbg);padding:36px 48px 40px;">
+      ${ph('EVIDENCE LOG','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('Symptom Log','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase;color:var(--heading);margin-bottom:6px;')}
+      ${ph('Mark each week. Four marks and you have a pattern, not a coincidence.','font-size:13.5px;color:#8a8781;margin-bottom:18px;max-width:50ch;')}
+      ${listBlock([row('Brain fog'),row('Sleep quality'),row('Mood'),row('Energy'),row('Digestion'),row('Skin')],row('New symptom'),'symptom')}
+    </div>`;}},
+
+  invTimeline:{group:'Investigation',norder:7,icon:'⇣',name:'Case Timeline',theme:'dark',mode:'graphics',
+    html:()=>{
+      const stop=(d,t,b)=>`<div class="li-wrap" style="position:relative;padding:0 0 22px 46px;">
+        <button class="li-del" onclick="delLi(this)">×</button>
+        <div style="position:absolute;left:0;top:2px;width:30px;height:30px;border:2px solid var(--accent);border-radius:50%;text-align:center;line-height:27px;">
+          ${ph(d,'font-family:\'JetBrains Mono\',monospace;font-size:9px;font-weight:700;color:var(--accent);display:inline;','span')}
+        </div>
+        ${ph(t,'font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:16px;color:var(--sectext);text-transform:uppercase;margin-bottom:3px;')}
+        ${ph(b,'font-size:13px;line-height:1.55;color:var(--secmuted);max-width:52ch;')}
+      </div>`;
+      return `<div style="background:var(--secbg);padding:40px 48px 44px;">
+      ${ph('CASE TIMELINE','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:16px;')}
+      ${listBlock([
+        stop('D1','Case Opened','Pantry cleared, baseline symptoms logged, suspects identified.'),
+        stop('D5','First Withdrawal','The hardest stretch. Expect resistance from the suspects.'),
+        stop('D10','Early Evidence','Energy and sleep begin to shift. Log everything.'),
+        stop('D20','Pattern Emerges','The field narrows. Some suspects start looking innocent.'),
+        stop('D30','Verdict','Reintroduction begins. You name the guilty party yourself.')
+      ],stop('D0','New stage','What happens here.'),'stage')}
+    </div>`;}},
+
+  invStakeout:{group:'Investigation',norder:8,icon:'👁',name:'Stakeout Notes (from Tim)',theme:'cream',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:38px 48px 42px;border-left:5px solid var(--accent);">
+      ${ph('FROM THE CHIEF INVESTIGATOR','font-family:\'JetBrains Mono\',monospace;font-size:9.5px;font-weight:700;letter-spacing:3.5px;color:var(--accent);margin-bottom:10px;')}
+      ${ph('Stakeout Notes','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;color:var(--sectext);margin-bottom:14px;')}
+      ${listBlock(
+        [`<div class="li-wrap" style="position:relative;margin-bottom:12px;">${ph('Here\u2019s what I want you watching for this week. Most people miss it because they\u2019re looking at the scale instead of the evidence.','font-size:15px;line-height:1.8;color:var(--sectext);')}<button class="li-del" onclick="delLi(this)">×</button></div>`],
+        `<div class="li-wrap" style="position:relative;margin-bottom:12px;">${ph('New paragraph','font-size:15px;line-height:1.8;color:var(--sectext);')}<button class="li-del" onclick="delLi(this)">×</button></div>`,
+        'paragraph')}
+      <div style="margin-top:18px;padding-top:14px;border-top:1px dashed rgba(0,0,0,.2);">
+        ${ph('\u2014 Tim, Chief Investigator','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;color:var(--accent);')}
+      </div>
+    </div>`},
+
+  invRedacted:{group:'Investigation',norder:9,icon:'▬',name:'Redacted Teaser',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:44px 48px 48px;">
+      ${ph('CLASSIFIED','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:5px;color:var(--accent);margin-bottom:16px;')}
+      <div style="margin-bottom:9px;">${ph('Tomorrow you find out which suspect','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:24px;line-height:1.3;color:var(--sectext);')}</div>
+      <div style="display:inline-block;background:var(--sectext);height:26px;width:62%;margin-bottom:9px;"></div>
+      <div style="display:inline-block;background:var(--sectext);height:26px;width:38%;margin-bottom:16px;"></div>
+      ${ph('EVIDENCE LOCKED \u00b7 COMPLETE TODAY\u2019S MISSION TO REVEAL','font-family:\'JetBrains Mono\',monospace;font-size:9.5px;letter-spacing:2px;color:var(--accent);')}
+    </div>`},
+
+  invPantryRaid:{group:'Investigation',norder:10,icon:'🧹',name:'The Raid (pantry clean-out)',theme:'white',mode:'graphics',
+    html:()=>{
+      const item=(t)=>`<div class="li-wrap" style="position:relative;padding:7px 0 7px 28px;font-size:14px;color:var(--heading);"><span style="position:absolute;left:0;top:7px;width:14px;height:14px;border:2px solid var(--accent);"></span>${ph(t,'display:block;min-height:18px;')}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      return `<div style="background:var(--secbg);padding:38px 48px 42px;">
+      ${ph('OPERATION: CLEAN SWEEP','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('The Raid','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:34px;text-transform:uppercase;color:var(--heading);margin-bottom:6px;')}
+      ${ph('Before the investigation begins, the scene has to be cleared. Remove every suspect from the premises.','font-size:14px;line-height:1.6;color:#8a8781;max-width:52ch;margin-bottom:20px;')}
+      ${listBlock([item('Anything with added sugar'),item('Bread, pasta, cereal, crackers'),item('Milk, cheese, yogurt, cream'),item('Beans, peanut butter, soy sauce'),item('Beer, wine, spirits'),item('\u201cJust in case\u201d snacks at the back')],item('New item'),'item','display:flex;flex-wrap:wrap;gap:0 40px;')}
+    </div>`;}},
+
+  invInterrogation:{group:'Investigation',norder:11,icon:'❓',name:'Interrogation (Q&A)',theme:'cream',mode:'graphics',
+    html:()=>{
+      const q=(a,b)=>`<div class="li-wrap" style="position:relative;border-left:3px solid var(--accent);padding:2px 0 2px 16px;margin-bottom:18px;">
+        <button class="li-del" onclick="delLi(this)">×</button>
+        ${ph(a,'font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:16px;color:var(--sectext);margin-bottom:5px;')}
+        ${ph(b,'font-size:13.5px;line-height:1.65;color:var(--secmuted);')}
+      </div>`;
+      return `<div style="background:var(--secbg);padding:38px 48px 42px;">
+      ${ph('INTERROGATION','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('Questions for the subject','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase;color:var(--sectext);margin-bottom:18px;')}
+      ${listBlock([
+        q('What surprised you this week?','There is usually one thing nobody expects.'),
+        q('What was hardest?','Name it. Naming it takes its power away.'),
+        q('What clues have appeared?','Anything you noticed but dismissed.')
+      ],q('New question','Prompt text.'),'question')}
+    </div>`;}},
+
+  invTipOff:{group:'Investigation',norder:12,icon:'💡',name:'Anonymous Tip (tip of the day)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:38px 48px 42px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        ${ph('ANONYMOUS TIP','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);white-space:nowrap;','span')}
+        <span style="flex:1;height:1px;background:var(--accent);opacity:.4;"></span>
+        ${ph('#014','font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--secmuted);','span')}
+      </div>
+      ${ph('Read the label before you read the front of the box.','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:28px;line-height:1.2;color:var(--sectext);margin-bottom:12px;')}
+      ${ph('The front is marketing. The back is evidence. Sugar has more than fifty aliases and most of them live in the last three lines of the ingredient list.','font-size:14.5px;line-height:1.7;color:var(--secmuted);max-width:54ch;')}
+    </div>`},
+
+  invBadge:{group:'Investigation',norder:13,icon:'🛡',name:'Investigator Badge',theme:'cream',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:46px 48px 50px;text-align:center;">
+      <div style="display:inline-block;border:3px solid var(--accent);border-radius:10px;padding:26px 34px;background:rgba(224,90,27,.05);">
+        ${ph('LNGVTY HUB \u00b7 WHOLE30 DIVISION','font-family:\'JetBrains Mono\',monospace;font-size:8.5px;font-weight:700;letter-spacing:2.5px;color:var(--accent);margin-bottom:14px;')}
+        <div style="width:56px;height:56px;margin:0 auto 14px;border:3px solid var(--accent);border-radius:50%;line-height:52px;">
+          ${ph('\u2605','font-size:24px;color:var(--accent);display:inline;','span')}
+        </div>
+        ${ph('CERTIFIED','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;color:var(--secmuted);margin-bottom:4px;')}
+        ${ph('NUTRITIONAL INVESTIGATOR','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:21px;letter-spacing:.5px;color:var(--sectext);text-transform:uppercase;margin-bottom:12px;')}
+        <div style="height:1px;background:var(--accent);opacity:.4;margin:0 auto 12px;width:70%;"></div>
+        ${ph('Special Agent {{contact.first_name}}','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:15px;color:var(--accent);')}
+      </div>
+    </div>`},
+
+  invCaseClosed:{group:'Investigation',norder:14,icon:'✔',name:'Case Closed (finale)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);position:relative;">
+      <div style="height:6px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+      <div style="padding:46px 48px 20px;text-align:center;">
+        ${ph('CASE #W30-001','font-family:\'JetBrains Mono\',monospace;font-size:11px;letter-spacing:3px;color:var(--secmuted);margin-bottom:20px;')}
+        <div style="display:inline-block;border:4px solid var(--accent);padding:12px 30px;transform:rotate(-3deg);margin-bottom:24px;">
+          ${ph('CASE CLOSED','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:38px;letter-spacing:3px;color:var(--accent);line-height:1;')}
+        </div>
+        ${ph('30 days. Evidence gathered. Verdict reached.','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:22px;color:var(--sectext);text-transform:uppercase;margin-bottom:10px;')}
+        ${ph('You did what most people never do \u2014 you stopped guessing and found out.','font-size:14.5px;line-height:1.65;color:var(--secmuted);max-width:46ch;margin:0 auto;')}
+      </div>
+      <div style="padding:14px 48px 44px;text-align:center;">
+        ${statRow([['30','Days'],['5','Suspects'],['1','Verdict']])}
+      </div>
+      <div style="height:6px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</div>
+    </div>`},
+
   /* ═══════════ DOCUMENTATION SECTIONS (mode:'docs') ═══════════
      Building blocks for plan / proposal / strategy documents. Designed for the
      Webpage page-format (wide canvas). Every list, table row and timeline stop is
@@ -2773,7 +3036,7 @@ function applySecColorHex(){
    TABS is the ordered list of tab names shown on the left rail. */
 let CUSTOM={};               // key -> {group,icon,name,theme,raw}
 let TABS=[];                 // ordered tab names for the sections rail
-const DEFAULT_GROUP_ORDER=['Structure','Challenge','Hero','Stats','Body','Lists','Social Proof','Highlight','Offers','Strips','CTA','Embed'];
+const DEFAULT_GROUP_ORDER=['Structure','Challenge','Investigation','Hero','Stats','Body','Lists','Social Proof','Highlight','Offers','Strips','CTA','Embed'];
 
 function allSections(){return Object.assign({},SECTIONS,builtCustomMap());}
 function builtCustomMap(){
@@ -3770,6 +4033,31 @@ function toggleDocExtra(btn){
   btn.textContent=(on?'+ Add ':'− Hide ')+label;
   markDirty&&markDirty();
 }
+
+/* ═══════════ INVESTIGATION: SUSPECT CARDS ═══════════
+   A suspect card has two faces: the mugshot (front) and the charge sheet (back).
+   Clicking swaps which face is shown. Both faces stay in the DOM so both remain
+   editable and survive save/reload; on export the card is emitted showing the
+   front, since a printed graphic or an email cannot flip. */
+function flipSuspect(el){
+  const card=el.closest('.sus-card');if(!card)return;
+  const front=card.querySelector('.sus-front'), back=card.querySelector('.sus-back');
+  if(!front||!back)return;
+  const showingBack=card.dataset.flipped==='1';
+  card.dataset.flipped=showingBack?'0':'1';
+  front.style.display=showingBack?'block':'none';
+  back.style.display=showingBack?'none':'block';
+}
+/* verdict stamp cycles: under investigation -> cleared -> guilty */
+const VERDICTS=[['UNDER INVESTIGATION','#8a8781'],['CLEARED','#3f7d4f'],['GUILTY','#9c3a3a']];
+function cycleVerdict(btn){
+  const i=(parseInt(btn.dataset.v||'0',10)+1)%VERDICTS.length;
+  btn.dataset.v=i;
+  btn.textContent=VERDICTS[i][0];
+  btn.style.color=VERDICTS[i][1];
+  btn.style.borderColor=VERDICTS[i][1];
+  markDirty&&markDirty();
+}
 /* toggle the optional featured-recipe photo on/off */
 function toggleRecipePic(btn){
   const card=btn.closest('.sec');const pic=card.querySelector('.nl-rpic');if(!pic)return;
@@ -4099,9 +4387,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v20.3',
-  name    : 'Documentation Mode',
-  date    : '23 July 2026',
+  version : 'v21.0',
+  name    : 'The Investigation',
+  date    : '24 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -4697,6 +4985,31 @@ function buildExport(){
     if(s.dataset.on!=='1'){s.remove();return;}
     s.classList.remove('nl-steps');s.removeAttribute('data-on');s.style.display='';if(!s.getAttribute('class'))s.removeAttribute('class');
   });
+  // investigation: a printed/emailed suspect card can't flip, so emit the front
+  // face and drop the hidden back; the verdict becomes plain text.
+  clone.querySelectorAll('.sus-card').forEach(c=>{
+    const back=c.querySelector('.sus-back');
+    const front=c.querySelector('.sus-front');
+    const flipped=c.dataset.flipped==='1';
+    // keep whichever face the operator left showing
+    if(flipped){ if(front)front.remove(); if(back)back.style.display='block'; }
+    else { if(back)back.remove(); if(front)front.style.display='block'; }
+    const v=c.querySelector('.sus-verdict');
+    if(v){
+      const span=document.createElement('div');
+      span.setAttribute('style',(v.getAttribute('style')||'')+';cursor:default;');
+      span.textContent=v.textContent;
+      v.parentNode.replaceChild(span,v);
+    }
+    c.removeAttribute('data-flipped');c.removeAttribute('onclick');
+    c.classList.remove('sus-card');
+    if(!c.getAttribute('class'))c.removeAttribute('class');
+    c.querySelectorAll('.sus-front,.sus-back').forEach(f=>{
+      f.classList.remove('sus-front');f.classList.remove('sus-back');
+      if(!f.getAttribute('class'))f.removeAttribute('class');
+    });
+  });
+
   // documentation: drop optional example boxes / badge rows that were never turned on
   clone.querySelectorAll('.doc-ex,.doc-badges').forEach(b=>{
     if(b.dataset.on!=='1'){b.remove();return;}
@@ -5409,7 +5722,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v20.3 "Documentation Mode" · 23 July 2026
+**Current build:** v21.0 "The Investigation" · 24 July 2026
 
 ---
 
@@ -5430,6 +5743,23 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.0 — The Investigation (Whole30 kit) · 24 July 2026
+
+- **Fifteen new Whole30 sections** under a new <b>Investigation</b> sub-tab in Graphics.
+  The conceit runs all the way through: the member is the investigator, the food groups
+  are suspects, and how they feel is the evidence. Enough pieces to build a graphic for
+  every day of the thirty, not just the week markers.
+- **Suspect Board with flip cards.** Click a suspect to open their file — the mugshot
+  turns over to reveal known aliases, potential motives, and a <b>verdict stamp</b> that
+  cycles <i>Under Investigation → Cleared → Guilty</i>. Both faces stay editable, and the
+  export prints whichever face you left showing.
+- **The full kit:** Case File Cover, Investigator Briefing, Suspect Board, Evidence
+  Collected, Clue Card, Daily Mission, Symptom Log, Case Timeline, Stakeout Notes (a note
+  from Tim in case-file dress), Redacted Teaser, The Raid (pantry clean-out),
+  Interrogation, Anonymous Tip, Investigator Badge, and Case Closed.
+- Everything follows LNGVTY colours and the section shade/colour controls, so the whole
+  case file can be re-tinted per section like any other block.
 
 ## v20.3 — Colour control & growable blocks · 23 July 2026
 
@@ -5976,6 +6306,19 @@ function defaultDocs(){return `<div class="docs-body">
   <li><b>Document Footer Bar</b> &mdash; the thin dark strip at the very bottom.</li>
 </ul>
 <p>Every table, column set, card pair and timeline stop has its own <span class="btnrep">+ Add</span> button, so nothing is locked to the length it starts at. When you're done, <b>Copy HTML</b> gives you the finished page &mdash; or use your browser's Print &rarr; Save as PDF to hand someone a document.</p>
+
+<h3>The Whole30 Investigation kit</h3>
+<p>In the <b>Graphics</b> tab there's an <b>Investigation</b> sub-tab holding a full case-file set for the Whole30 challenge. The idea is that the member is the investigator, the food groups are the suspects, and how they feel each day is the evidence.</p>
+<p>There are enough blocks to make a graphic for <b>every day</b> of the thirty:</p>
+<ul>
+  <li><b>Case File Cover</b> and <b>Investigator Briefing</b> — how the challenge opens.</li>
+  <li><b>Suspect Board</b> — the interactive one. <b>Click any suspect card</b> and it turns over to show that food's aliases and suspected motives. Click the verdict stamp at the bottom to cycle <b>Under Investigation → Cleared → Guilty</b>. Whichever side you leave showing is the side that exports.</li>
+  <li><b>Daily Mission</b>, <b>Anonymous Tip</b>, <b>Clue Card</b>, <b>Redacted Teaser</b> — the day-to-day drops.</li>
+  <li><b>Symptom Log</b>, <b>Evidence Collected</b>, <b>Case Timeline</b> — tracking progress.</li>
+  <li><b>The Raid</b> (pantry clean-out), <b>Interrogation</b>, <b>Stakeout Notes</b> — familiar sections in case-file dress.</li>
+  <li><b>Investigator Badge</b> and <b>Case Closed</b> — the finish.</li>
+</ul>
+<p>Every one of them takes colours and shades like any other block, so you can re-tint the whole case file if a future challenge needs a different look.</p>
 
 <h3>Colours: global and per-section</h3>
 <p>There are two levels of colour, and they work the same way.</p>
