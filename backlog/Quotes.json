@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-24T14:46:18.211Z",
+  "updatedAt": "2026-07-24T16:01:05.371Z",
   "items": [
     {
       "id": "quote-001",
@@ -396,11 +396,11 @@
     {
       "id": "quote-031",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-7-july-26",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T13:27:45.431Z",
+      "updatedAt": "2026-07-24T16:01:05.371Z",
       "content": {
         "quote": "We are what we repeatedly do. Excellence, then, is not an act but a habit.",
         "credit": "Will Durant"
@@ -474,11 +474,11 @@
     {
       "id": "quote-037",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-7-july-26",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T14:10:57.962Z",
+      "updatedAt": "2026-07-24T16:01:05.371Z",
       "content": {
         "quote": "Slow progress is still progress.",
         "credit": "Unknown"
@@ -487,11 +487,11 @@
     {
       "id": "quote-038",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-7-july-26",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T13:27:52.101Z",
+      "updatedAt": "2026-07-24T16:01:05.371Z",
       "content": {
         "quote": "Take care of your body — it's the engine that carries you through life.",
         "credit": "Unknown"
