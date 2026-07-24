@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-24T16:13:04.343Z",
+  "updatedAt": "2026-07-24T16:13:13.176Z",
   "items": [
     {
       "id": "quote-001",
@@ -434,12 +434,12 @@
     },
     {
       "id": "quote-034",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-7-july-26",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-24T16:13:06.068Z",
       "content": {
         "quote": "Nothing will work unless you do.",
         "credit": "Maya Angelou"
@@ -733,12 +733,12 @@
     },
     {
       "id": "quote-057",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-7-july-26",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-24T16:13:13.176Z",
       "content": {
         "quote": "Nobody who ever gave their best regretted it.",
         "credit": "George Halas"
