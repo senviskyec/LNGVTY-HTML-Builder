@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-07-21T14:10:26.921Z",
+  "updatedAt": "2026-07-24T13:30:02.368Z",
   "items": [
     {
       "id": "tip-001",
@@ -68,12 +68,12 @@
     },
     {
       "id": "tip-004",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-7-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T00:00:00Z",
+      "updatedAt": "2026-07-24T13:30:02.367Z",
       "content": {
         "main": "The best workout is the one you'll actually repeat.",
         "description": "The workout you'll actually repeat beats the perfect one you dread. Consistency is the whole game.",
