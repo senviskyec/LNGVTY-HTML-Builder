@@ -10,7 +10,7 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   :root{
-    --accent:#e05a1b;--dark:#1a1a1a;--gray:#3a3a3a;--bg:#f2f2f2;--body-text:#555555;--heading:#3a3a3a;
+    --accent:#e05a1b;--dark:#1a1a1a;--gray:#3a3a3a;--bg:#f2f2f2;--paper:#f5f2e8;--body-text:#555555;--heading:#3a3a3a;
   }
   body{font-family:'Open Sans',sans-serif;background:#e8e8ea;color:#1a1a1a;display:flex;height:100vh;overflow:hidden;}
 
@@ -336,6 +336,32 @@
   .doc-hue{position:absolute;top:10px;right:10px;z-index:30;display:none;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.4px;color:#fff;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.45);border-radius:5px;padding:4px 9px;cursor:pointer;}
   .doc-track:hover .doc-hue{display:block;}
   .doc-hue:hover{background:rgba(0,0,0,.65);}
+  /* optional-block toggles inside documentation cells (builder-only) */
+  .doc-extra{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--accent);background:rgba(224,90,27,.06);border:1px dashed var(--accent);border-radius:5px;padding:5px 10px;cursor:pointer;opacity:0;transition:opacity .14s;}
+  .sec:hover .doc-extra{opacity:1;}
+  .doc-extra:hover{background:rgba(224,90,27,.14);}
+  /* per-section colour control */
+  .sc-color{padding:0 8px;}
+  .sc-color .sc-dot{display:inline-block;width:13px;height:13px;border-radius:50%;background:var(--accent);border:1px solid rgba(255,255,255,.55);vertical-align:middle;}
+  .sw-grid{display:flex;flex-wrap:wrap;gap:9px;}
+  .sw{width:38px;height:38px;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:.12s;}
+  .sw:hover{transform:scale(1.08);}
+  .sw.on{border-color:#1a1a1a;box-shadow:0 0 0 2px #fff inset;}
+  .sw-clear{background:#f2f2f2;color:#888;font-size:14px;font-weight:700;border:1px dashed #bbb;}
+  /* text colour popover */
+  .cb-more{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid #4a4b50;border-radius:5px;color:#eee;font-family:'Montserrat';font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer;}
+  .cb-more:hover{border-color:var(--accent);}
+  .cb-more-dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#e05a1b 0%,#3f7d4f 50%,#6b2d5c 100%);display:inline-block;}
+  .cb-pop{position:fixed;display:none;z-index:1200;background:#fff;border:1px solid #ddd;border-radius:10px;box-shadow:0 12px 34px rgba(0,0,0,.22);padding:13px;width:248px;}
+  .cb-pop.show{display:block;}
+  .cb-pop .cb-pop-head{font-family:'Montserrat';font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#999;margin-bottom:7px;}
+  .cb-pop .sw{width:30px;height:30px;border-radius:6px;}
+  /* feedback nav item — set apart from the utility panes */
+  .set-item-feedback{border:1px dashed #4a4b50;border-radius:7px;margin-top:2px;}
+  .set-item-feedback .tx{color:var(--accent);font-weight:700;}
+  .set-item-feedback:hover{border-color:var(--accent);background:rgba(224,90,27,.08);}
+  .set-item-feedback.active{border-color:var(--accent);}
+  .set-item-feedback.active .tx{color:#fff;}
   /* page-format button in the rail */
   .pf-btn{width:100%;display:flex;align-items:center;gap:11px;background:#202126;border:1px solid #34353a;border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;transition:.14s;}
   .pf-btn:hover{border-color:var(--accent);background:#26272c;}
@@ -384,7 +410,7 @@
 
   .li-wrap{position:relative;}
   .li-del{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:4px;border:none;background:rgba(192,57,43,.9);color:#fff;font-size:12px;line-height:1;cursor:pointer;display:none;z-index:30;padding:0;}
-  .li-wrap:hover > .li-del,.li-wrap:hover .li-ctrls > .li-del,.li-wrap:hover .li-ctrls .li-del{display:block;}
+  .li-wrap:hover > .li-del,.li-wrap:hover .li-ctrls > .li-del,.li-wrap:hover .li-ctrls .li-del,.li-wrap:hover > tbody > tr > td > .li-del{display:block;}
   .li-add{margin-top:8px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;}
   .tl-toggle{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:4px;border:none;background:rgba(26,26,26,.85);color:#fff;font-size:11px;line-height:1;cursor:pointer;display:none;z-index:30;padding:0;}
   .li-wrap:hover > .tl-toggle,.li-wrap:hover .li-ctrls > .tl-toggle{display:block;}
@@ -394,7 +420,7 @@
   .li-move{position:absolute;width:17px;height:17px;border-radius:4px;border:none;background:rgba(26,26,26,.78);color:#fff;font-size:10px;line-height:1;cursor:pointer;display:none;z-index:31;padding:0;}
   .li-move.up{top:2px;right:40px;}
   .li-move.dn{top:2px;right:21px;}
-  .li-wrap:hover > .li-move,.li-wrap:hover .li-ctrls > .li-move,.li-wrap:hover .li-ctrls .li-move{display:block;}
+  .li-wrap:hover > .li-move,.li-wrap:hover .li-ctrls > .li-move,.li-wrap:hover .li-ctrls .li-move,.li-wrap:hover > tbody > tr > td > .li-move{display:block;}
   .li-move:hover{background:var(--accent);}
   /* addable inline tags (translucent orange pills) */
   .tag-wrap{display:inline-flex;flex-wrap:wrap;gap:0;align-items:center;}  /* spacing now lives on each .tag-pill as an inline margin so it survives export */
@@ -629,6 +655,7 @@
         <span class="set-brand-sub">Builder Settings</span>
       </div>
       <nav class="set-nav" id="setNav">
+        <button class="set-item" data-pane="pageformat"><span class="ic">&#128207;</span><span class="tx">Page Format</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="theme"><span class="ic">&#127912;</span><span class="tx">Theme &amp; Type</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="images"><span class="ic">&#128247;</span><span class="tx">Images</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
@@ -637,13 +664,14 @@
         <button class="set-item" data-pane="import"><span class="ic">&#128229;</span><span class="tx">Import</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="newsec"><span class="ic">&#10010;</span><span class="tx">New Section</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
+        <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
+        <div class="set-sep"></div>
         <button class="set-item" data-pane="github"><span class="ic">&#9881;</span><span class="tx">GitHub</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Feedback</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="pageformat"><span class="ic">&#128207;</span><span class="tx">Page Format</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
+        <div class="set-sep"></div>
+        <button class="set-item set-item-feedback" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Send Feedback</span><span class="ch">›</span></button>
       </nav>
       <div class="set-foot">
         <span id="setRepoHint">&mdash;</span>
@@ -796,6 +824,7 @@
         <div class="col-row"><label>Dark BG</label><div class="ctrl"><span class="hex" id="hex-dark">#1a1a1a</span><input type="color" id="col-dark" value="#1a1a1a"></div></div>
         <div class="col-row"><label>Gray BG</label><div class="ctrl"><span class="hex" id="hex-gray">#3a3a3a</span><input type="color" id="col-gray" value="#3a3a3a"></div></div>
         <div class="col-row"><label>Page BG</label><div class="ctrl"><span class="hex" id="hex-bg">#f2f2f2</span><input type="color" id="col-bg" value="#f2f2f2"></div></div>
+        <div class="col-row"><label>Cream</label><div class="ctrl"><span class="hex" id="hex-paper">#f5f2e8</span><input type="color" id="col-paper" value="#f5f2e8"></div></div>
         <div class="col-row"><label>Body Text</label><div class="ctrl"><span class="hex" id="hex-body-text">#555555</span><input type="color" id="col-body-text" value="#555555"></div></div>
         <div class="col-row"><label>Heading</label><div class="ctrl"><span class="hex" id="hex-heading">#3a3a3a</span><input type="color" id="col-heading" value="#3a3a3a"></div></div>
       </div>
@@ -875,12 +904,22 @@
 
 <div class="colorbar" id="colorbar">
   <span class="cb-label">Text</span>
-  <div class="cb-sw" data-c="#ffffff" style="background:#fff;" title="White"></div>
-  <div class="cb-sw" data-c="var-accent" style="background:#e05a1b;" title="LNGVTY Orange"></div>
-  <div class="cb-sw" data-c="#1a1a1a" style="background:#1a1a1a;" title="Black"></div>
-  <div class="cb-sw" data-c="#3a3a3a" style="background:#3a3a3a;" title="Dark Gray"></div>
+  <button class="cb-more" id="cbMore" title="Choose a colour"><span class="cb-more-dot"></span> Colour</button>
   <span class="cb-div"></span>
   <button class="cb-link" id="cbLink" title="Add or edit link">&#128279; Link</button>
+</div>
+
+<!-- full text-colour palette (all theme colours + custom hex) -->
+<div class="cb-pop" id="cbPop">
+  <div class="cb-pop-head">Theme colours</div>
+  <div class="sw-grid" id="cbThemeSw"></div>
+  <div class="cb-pop-head" style="margin-top:12px;">Palette</div>
+  <div class="sw-grid" id="cbPaletteSw"></div>
+  <div class="cb-pop-head" style="margin-top:12px;">Custom</div>
+  <div style="display:flex;gap:6px;">
+    <input type="text" id="cbHex" placeholder="#3f7d4f" style="flex:1;padding:7px 9px;border:1px solid #ccc;border-radius:5px;font-family:'JetBrains Mono',monospace;font-size:12px;">
+    <button class="tb-btn primary" style="padding:6px 12px;" onmousedown="event.preventDefault();applyTextHex()">Apply</button>
+  </div>
 </div>
 
 <!-- inline link editor (for selected text) -->
@@ -933,6 +972,24 @@
     <div class="modal-foot">
       <button class="tb-btn" onclick="startNewsletterNoDate()">Skip dates</button>
       <button class="tb-btn primary" onclick="confirmNlDate()">Start Newsletter</button>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION COLOUR modal -->
+<div class="modal-bg" id="secColorBg">
+  <div class="modal" style="width:400px;">
+    <div class="modal-head"><h3>Section Colour</h3><button onclick="closeSecColor()">&times;</button></div>
+    <div class="modal-scroll">
+      <p class="panel-note" style="margin-top:0;">Overrides the global accent for <b>this section only</b> &mdash; rules, bullets, eyebrows and borders all follow it. Use &#10005; to go back to the document colour.</p>
+      <div class="sw-grid" id="secColorSwatches"></div>
+      <div class="field-row" style="margin-top:14px;">
+        <label>Custom hex</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="secColorHex" placeholder="#3f7d4f" style="flex:1;padding:9px 11px;border:1px solid #ccc;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:13px;">
+          <button class="tb-btn primary" onclick="applySecColorHex()">Apply</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2066,7 +2123,7 @@ const SECTIONS = {
     </div>`},
 
   docThesis:{group:'Doc Structure',norder:1,icon:'❖',name:'The Bet / Thesis',theme:'white',mode:'docs',
-    html:()=>`<div style="background:#ffffff;border-bottom:1px solid #e2ded6;padding:44px 7%;">
+    html:()=>`<div style="background:var(--secbg);border-bottom:1px solid #e2ded6;padding:44px 7%;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;">
         <tbody><tr>
           <td valign="top" style="width:150px;padding-right:28px;">
@@ -2084,7 +2141,7 @@ const SECTIONS = {
     </div>`},
 
   docSectionHead:{group:'Doc Structure',norder:2,icon:'—',name:'Section Header (rule)',theme:'white',mode:'docs',
-    html:()=>`<div style="background:#ffffff;padding:56px 7% 0;">
+    html:()=>`<div style="background:var(--secbg);padding:56px 7% 0;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         ${ph('Challenge One',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
         <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
@@ -2094,7 +2151,7 @@ const SECTIONS = {
     </div>`},
 
   docTrackHead:{group:'Doc Content',norder:0,icon:'▰',name:'Colour Track Header',theme:'white',mode:'docs',
-    html:()=>`<div style="background:#ffffff;padding:28px 7% 0;">
+    html:()=>`<div style="background:var(--secbg);padding:28px 7% 0;">
       <div class="doc-track" data-accent="#3f7d4f" style="background:#2b5837;padding:40px 44px;position:relative;overflow:hidden;">
         <button class="doc-hue" onclick="cycleDocHue(this)" title="Change track colour">◐ colour</button>
         ${ph('Positioning',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:rgba(255,255,255,.72);")}
@@ -2106,55 +2163,67 @@ const SECTIONS = {
 
   docPromise:{group:'Doc Content',norder:1,icon:'▥',name:'Promise Grid',theme:'white',mode:'docs',
     html:()=>{
-      const cell=(t,d)=>`<td valign="top" width="33%" style="width:33.33%;background:#fff;border:1px solid #e2ded6;padding:15px 17px;position:relative;">
+      const cell=(t,d)=>`<div class="li-wrap" style="flex:0 1 260px;min-width:210px;background:#fff;border:1px solid #e2ded6;padding:15px 17px;position:relative;">
+        <button class="li-del" onclick="delLi(this)">×</button>
         ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:12.5px;color:var(--heading);margin-bottom:2px;")}
         ${ph(d,"font-size:14px;line-height:1.5;color:var(--body-text);")}
-      </td>`;
-      return `<div style="background:#ffffff;padding:28px 7% 0;">
+      </div>`;
+      return `<div style="background:var(--secbg);padding:28px 7% 0;">
       ${ph('What we promise',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit one','What the participant actually gets.')}${cell('Benefit two','Keep each of these concrete.')}${cell('Benefit three','Avoid vague outcome language.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('Benefit','Description.')}${cell('Benefit','Description.')}${cell('Benefit','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
-        'Add row of 3')}
+        [cell('Benefit one','What the participant actually gets.'),
+         cell('Benefit two','Keep each of these concrete.'),
+         cell('Benefit three','Avoid vague outcome language.')],
+        cell('Benefit','Description.'),
+        'benefit',
+        'display:flex;flex-wrap:wrap;justify-content:center;gap:2px;')}
     </div>`;}},
 
   docPhases:{group:'Doc Content',norder:2,icon:'☷',name:'Phase / Week Columns',theme:'white',mode:'docs',
     html:()=>{
-      const bullets=(arr)=>arr.map(t=>`<div style="font-size:13.2px;line-height:1.5;padding:3.5px 0 3.5px 13px;position:relative;color:var(--body-text);"><span style="position:absolute;left:0;top:10px;width:5px;height:2px;background:var(--accent);"></span>${ph(t,"display:inline;",'span')}</div>`).join('');
-      const col=(n,title,items)=>`<td valign="top" width="25%" style="width:25%;background:#fff;border:1px solid #e2ded6;padding:20px 18px 22px;position:relative;">
+      const bullet=(t)=>`<div class="li-wrap" style="font-size:13.2px;line-height:1.5;padding:3.5px 0 3.5px 13px;position:relative;color:var(--body-text);min-height:20px;"><span style="position:absolute;left:0;top:10px;width:5px;height:2px;background:var(--accent);"></span>${ph(t,"display:block;min-height:19px;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
+      const col=(n,title,items)=>`<div class="li-wrap" style="flex:0 1 240px;min-width:200px;background:#fff;border:1px solid #e2ded6;padding:20px 18px 22px;position:relative;">
         <div style="height:3px;background:var(--accent);position:absolute;top:0;left:0;right:0;"></div>
+        <button class="li-del" onclick="delLi(this)" title="Remove this column">×</button>
         ${ph(n,"font-size:10.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent);margin-bottom:9px;")}
         ${ph(title,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:15.5px;line-height:1.15;color:var(--heading);margin-bottom:10px;")}
-        ${bullets(items)}
-      </td>`;
-      return `<div style="background:#ffffff;padding:22px 7% 0;">
+        ${listBlock(items.map(bullet),bullet('New point'),'point')}
+      </div>`;
+      return `<div style="background:var(--secbg);padding:22px 7% 0;">
       ${ph('The four-week arc',"font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--heading);margin-bottom:8px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 01','Phase name',['First point','Second point','Third point'])}${col('Week 02','Phase name',['First point','Second point','Third point'])}${col('Week 03','Phase name',['First point','Second point','Third point'])}${col('Week 04','Phase name',['First point','Second point','Third point'])}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${col('Week 05','Phase name',['Point'])}${col('Week 06','Phase name',['Point'])}${col('Week 07','Phase name',['Point'])}${col('Week 08','Phase name',['Point'])}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
-        'Add row of 4')}
+        [col('Week 01','Phase name',['First point','Second point','Third point']),
+         col('Week 02','Phase name',['First point','Second point','Third point']),
+         col('Week 03','Phase name',['First point','Second point','Third point']),
+         col('Week 04','Phase name',['First point','Second point','Third point'])],
+        col('Week 05','Phase name',['First point']),
+        'column',
+        'display:flex;flex-wrap:wrap;justify-content:center;gap:2px;')}
       ${ph('An optional note under the columns \u2014 use it to flag the phase that matters most.',"font-size:13.6px;color:#8a8781;margin-top:10px;")}
     </div>`;}},
 
   docMechanics:{group:'Doc Content',norder:3,icon:'⚙',name:'Mechanics Cards',theme:'white',mode:'docs',
     html:()=>{
-      const card=(t,d)=>`<td valign="top" width="50%" style="width:50%;padding:0 9px 18px 0;position:relative;">
+      const card=(t,d)=>`<div class="li-wrap" style="flex:0 1 300px;min-width:250px;padding:2px 0 18px 0;position:relative;">
+        <button class="li-del" onclick="delLi(this)">×</button>
         <div style="border-left:3px solid var(--accent);padding:2px 0 2px 15px;">
           ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:var(--heading);margin-bottom:5px;")}
           ${ph(d,"font-size:13.6px;line-height:1.6;color:var(--body-text);")}
           ${ph('Runs on: where this actually happens.',"font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.55;color:#8a8781;margin-top:7px;")}
         </div>
-      </td>`;
-      return `<div style="background:#ffffff;padding:22px 7% 0;">
+      </div>`;
+      return `<div style="background:var(--secbg);padding:22px 7% 0;">
       ${ph('Engagement mechanics',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gray);margin:20px 0 14px;padding-top:22px;border-top:1px solid #e2ded6;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','What it is and why it works, in one or two sentences.')}${card('Mechanic name','What it is and why it works, in one or two sentences.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Mechanic name','Description.')}${card('Mechanic name','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
-        'Add pair')}
+        [card('Mechanic name','What it is and why it works, in one or two sentences.'),
+         card('Mechanic name','What it is and why it works, in one or two sentences.')],
+        card('Mechanic name','Description.'),
+        'mechanic',
+        'display:flex;flex-wrap:wrap;justify-content:center;gap:0 22px;')}
     </div>`;}},
 
   docExample:{group:'Doc Content',norder:4,icon:'❝',name:'Example / Sample Box',theme:'white',mode:'docs',
-    html:()=>`<div style="background:#ffffff;padding:14px 7% 0;">
+    html:()=>`<div style="background:var(--secbg);padding:14px 7% 0;">
       <div style="padding:13px 15px;border:1px dashed #e2ded6;background:var(--bg);">
         ${ph('Sample copy',"font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:#96938c;margin-bottom:6px;")}
         ${ph('Drop the actual wording here so the reader can hear the voice, not just read about it.',"font-size:13.4px;line-height:1.62;color:var(--body-text);")}
@@ -2174,7 +2243,7 @@ const SECTIONS = {
           ${ph(title,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:#fff;margin-bottom:4px;letter-spacing:-.2px;")}
           ${ph(body,"font-size:14.4px;line-height:1.65;color:#a7a39c;max-width:62ch;")}
         </td>
-      <td valign="top" style="width:0;padding:0;position:relative;white-space:nowrap;"><button class="li-del" onclick="delLi(this)">×</button>${liMoves()}</td></tr></tbody></table>`;
+      <td valign="top" class="li-ctrls" style="width:26px;padding:0 0 0 4px;position:relative;white-space:nowrap;"><button class="li-del" onclick="delLi(this)">×</button>${liMoves()}</td></tr></tbody></table>`;
       return `<div style="background:var(--dark);padding:70px 7% 76px;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         ${ph('The spine of the plan',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
@@ -2192,12 +2261,24 @@ const SECTIONS = {
 
   docPillars:{group:'Doc Planning',norder:1,icon:'▦',name:'Numbered Pillars',theme:'white',mode:'docs',
     html:()=>{
-      const cell=(n,t,d)=>`<td valign="top" width="50%" style="width:50%;background:#fff;border:1px solid #e2ded6;padding:26px 24px 28px;position:relative;">
+      const cell=(n,t,d)=>`<div class="li-wrap" style="flex:0 1 340px;min-width:270px;background:#fff;border:1px solid #e2ded6;padding:26px 24px 28px;position:relative;">
+        <button class="li-del" onclick="delLi(this)">×</button>
         ${ph(n,"font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;letter-spacing:1.6px;color:var(--accent);margin-bottom:9px;")}
         ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:800;font-size:17px;color:var(--heading);margin-bottom:7px;")}
         ${ph(d,"font-size:14px;line-height:1.65;color:var(--body-text);")}
-      </td>`;
-      return `<div style="background:#ffffff;padding:56px 7%;">
+        <div class="doc-ex" data-on="0" style="display:none;margin-top:12px;padding:13px 15px;border:1px dashed #e2ded6;background:var(--paper);">
+          ${ph('Examples',"font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:#96938c;margin-bottom:6px;")}
+          ${ph('Concrete examples, separated by a mid-dot.',"font-size:13.4px;line-height:1.62;color:var(--body-text);")}
+        </div>
+        <div class="doc-badges" data-on="0" style="display:none;margin-top:12px;">
+          ${tagBlock(['Badge name'],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:.3px;background:var(--paper);border:1px solid #e2ded6;border-radius:20px;padding:5px 11px;color:var(--gray);","display:flex;flex-wrap:wrap;gap:6px;")}
+        </div>
+        <div class="doc-extra-btns" style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="doc-extra" type="button" data-target="doc-ex" data-label="example box" onclick="toggleDocExtra(this)">+ Add example box</button>
+          <button class="doc-extra" type="button" data-target="doc-badges" data-label="badges" onclick="toggleDocExtra(this)">+ Add badges</button>
+        </div>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:56px 7%;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         ${ph('Applies to everything',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
         <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
@@ -2205,9 +2286,11 @@ const SECTIONS = {
       ${ph('The shared layer',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:var(--heading);margin-bottom:12px;")}
       ${ph('What these have in common and why they are grouped together.',"font-size:17px;line-height:1.7;color:var(--body-text);max-width:66ch;margin-bottom:30px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('01','Pillar name','What it is, in plain terms.')}${cell('02','Pillar name','What it is, in plain terms.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;margin-bottom:2px;"><tbody><tr>${cell('03','Pillar name','Description.')}${cell('04','Pillar name','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
-        'Add pair')}
+        [cell('01','Pillar name','What it is, in plain terms.'),
+         cell('02','Pillar name','What it is, in plain terms.')],
+        cell('03','Pillar name','Description.'),
+        'pillar',
+        'display:flex;flex-wrap:wrap;justify-content:center;gap:2px;')}
     </div>`;}},
 
   docTable:{group:'Doc Data',norder:0,icon:'▤',name:'Production Table',theme:'white',mode:'docs',
@@ -2256,7 +2339,7 @@ const SECTIONS = {
           <button class="li-del" onclick="delLi(this)">×</button>
         </td>
       </tr></tbody></table>`;
-      return `<div style="background:#ffffff;padding:56px 7%;">
+      return `<div style="background:var(--secbg);padding:56px 7%;">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
         ${ph('Known risks',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:var(--accent);white-space:nowrap;",'span')}
         <span style="flex:1;height:1px;background:var(--accent);opacity:.28;"></span>
@@ -2282,28 +2365,32 @@ const SECTIONS = {
     </div>`;}},
 
   docQuote:{group:'Doc Content',norder:5,icon:'❞',name:'Pull Quote',theme:'white',mode:'docs',
-    html:()=>`<div style="background:#ffffff;padding:44px 7%;">
+    html:()=>`<div style="background:var(--secbg);padding:44px 7%;">
       <div style="border-left:4px solid var(--accent);padding-left:26px;max-width:70ch;">
         ${ph('A line worth setting apart \u2014 a customer quote, a stat, or the sentence you want them to remember.',"font-family:'Montserrat',sans-serif;font-weight:300;font-size:24px;line-height:1.5;color:var(--heading);font-style:italic;")}
         ${ph('Attribution',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-top:14px;")}
       </div>
     </div>`},
 
-  docRecommend:{group:'Doc Close',norder:0,icon:'▶',name:'Recommendation (orange)',theme:'orange',mode:'docs',
+  docRecommend:{group:'Doc Close',norder:0,icon:'▶',name:'Recommendation (accent)',theme:'orange',mode:'docs',
     html:()=>{
-      const card=(t,d)=>`<td valign="top" width="25%" style="width:25%;background:#c44d13;border:1px solid rgba(255,255,255,.3);padding:16px 18px;position:relative;">
+      const card=(t,d)=>`<div class="li-wrap" style="flex:0 1 230px;min-width:190px;background:rgba(0,0,0,.10);border:1px solid rgba(255,255,255,.3);padding:16px 18px;position:relative;">
+        <button class="li-del" onclick="delLi(this)">×</button>
         ${ph(t,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;letter-spacing:.4px;color:#fff;margin-bottom:3px;")}
         ${ph(d,"font-size:13.4px;line-height:1.55;color:#fff;")}
-        <button class="li-del" onclick="delLi(this)">×</button>
-      </td>`;
-      return `<div style="background:#c44d13;padding:56px 7% 60px;">
+      </div>`;
+      return `<div style="background:var(--secbg);padding:56px 7% 60px;">
       ${ph('Recommendation',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:rgba(255,255,255,.75);margin-bottom:10px;")}
       ${ph('Lead with the recommendation.',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;line-height:1.06;letter-spacing:-.6px;color:#fff;margin-bottom:12px;max-width:20ch;")}
       ${ph('Two or three sentences justifying it \u2014 why this one, why now, and what it de-risks.',"font-size:16px;line-height:1.7;color:#fff;max-width:62ch;margin-bottom:26px;")}
       ${listBlock(
-        [`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','What happens first.')}${card('Next step','What happens second.')}${card('Next step','Then this.')}${card('Next step','And this.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`],
-        `<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}${card('Next step','Description.')}<td valign="top" style="width:0;padding:0;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td></tr></tbody></table>`,
-        'Add row of 4')}
+        [card('Next step','What happens first.'),
+         card('Next step','What happens second.'),
+         card('Next step','Then this.'),
+         card('Next step','And this.')],
+        card('Next step','Description.'),
+        'step',
+        'display:flex;flex-wrap:wrap;justify-content:center;gap:2px;')}
     </div>`;}},
 
   docFooterBar:{group:'Doc Close',norder:1,icon:'▬',name:'Document Footer Bar',theme:'dark',mode:'docs',
@@ -2553,12 +2640,13 @@ const SECTIONS = {
    Sections that paint with these vars flip cleanly when you cycle the theme. */
 const SEC_THEMES={
   white :{'--secbg':'#ffffff','--sectext':'var(--heading)','--secmuted':'#888888'},
+  cream :{'--secbg':'var(--paper)','--sectext':'var(--heading)','--secmuted':'#8a8781'},
   gray  :{'--secbg':'var(--gray)','--sectext':'#ffffff','--secmuted':'#b8b8b8'},
   dark  :{'--secbg':'var(--dark)','--sectext':'#ffffff','--secmuted':'#aaaaaa'},
   orange:{'--secbg':'var(--accent)','--sectext':'#ffffff','--secmuted':'rgba(255,255,255,0.85)'}
 };
-const THEME_CYCLE=['white','gray','dark','orange'];
-const THEME_GLYPH={white:'○ White',gray:'◐ Gray',dark:'● Black',orange:'◆ Orange'};
+const THEME_CYCLE=['white','cream','gray','dark','orange'];
+const THEME_GLYPH={white:'○ White',cream:'◍ Cream',gray:'◐ Gray',dark:'● Black',orange:'◆ Accent'};
 
 /* ═══════════ SECTION DESCRIPTIONS (hover preview) ═══════════ */
 const DEFAULT_DESC={
@@ -2638,6 +2726,46 @@ function applySecTheme(sec,theme){
   const btn=sec.querySelector('.sc-theme');if(btn)btn.innerHTML=THEME_GLYPH[theme];
 }
 function cycleTheme(btn){const sec=btn.closest('.sec');const cur=sec.dataset.theme||'white';const next=THEME_CYCLE[(THEME_CYCLE.indexOf(cur)+1)%THEME_CYCLE.length];applySecTheme(sec,next);}
+
+/* ═══════════ PER-SECTION COLOUR ═══════════
+   The global theme sets --accent for the whole document. A section can override
+   it locally, which is what lets one plan run a green track and a purple track
+   side by side. The override is just an inline custom property on the .sec, so
+   everything inside (rules, bullets, borders, eyebrows) follows automatically and
+   the export's variable resolver already walks it. */
+const SEC_PALETTE=[
+  ['Brand',  '#e05a1b'], ['Green',  '#3f7d4f'], ['Plum',   '#6b2d5c'],
+  ['Blue',   '#2f6b96'], ['Amber',  '#a8622a'], ['Rust',   '#9c3a3a'],
+  ['Teal',   '#2f7d76'], ['Ink',    '#3a3a3a']
+];
+let colorTargetSec=null;
+function openSecColor(btn){
+  colorTargetSec=btn.closest('.sec');
+  const cur=(colorTargetSec.style.getPropertyValue('--accent')||'').trim();
+  const host=document.getElementById('secColorSwatches');
+  host.innerHTML=SEC_PALETTE.map(([n,hex])=>
+    `<button class="sw${cur.toLowerCase()===hex.toLowerCase()?' on':''}" style="background:${hex}" title="${n}" onclick="setSecColor('${hex}')"></button>`
+  ).join('')+`<button class="sw sw-clear" title="Use global colour" onclick="setSecColor('')">\u2715</button>`;
+  const hx=document.getElementById('secColorHex');
+  if(hx)hx.value=cur||'';
+  document.getElementById('secColorBg').classList.add('show');
+}
+function closeSecColor(){document.getElementById('secColorBg').classList.remove('show');colorTargetSec=null;}
+function setSecColor(hex){
+  if(!colorTargetSec)return;
+  if(hex){colorTargetSec.style.setProperty('--accent',hex);colorTargetSec.dataset.accent=hex;}
+  else{colorTargetSec.style.removeProperty('--accent');delete colorTargetSec.dataset.accent;}
+  const chip=colorTargetSec.querySelector('.sc-color .sc-dot');
+  if(chip)chip.style.background=hex||'var(--accent)';
+  markDirty&&markDirty();
+  closeSecColor();
+  toast(hex?('Section colour set '+hex):'Using global colour');
+}
+function applySecColorHex(){
+  const v=(document.getElementById('secColorHex').value||'').trim();
+  if(v && !/^#?[0-9a-f]{6}$/i.test(v)){toast('Enter a 6-digit hex, e.g. #3f7d4f');return;}
+  setSecColor(v?(v.charAt(0)==='#'?v:'#'+v):'');
+}
 
 /* ═══════════ CUSTOM SECTIONS + TABS ═══════════
    Built-in sections live in SECTIONS. Custom (user-pasted) sections are
@@ -2890,7 +3018,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -2952,7 +3080,8 @@ document.getElementById('emptyHint').style.display=frame.querySelector('.sec')?'
 function controlsHTML(){
   return `<div class="sec-tag"></div>
     <div class="sec-controls">
-      <button class="sc-btn sc-theme" title="Cycle block theme: black / gray / white" onclick="cycleTheme(this)">○ White</button>
+      <button class="sc-btn sc-theme" title="Cycle block shade: white / cream / gray / black / accent" onclick="cycleTheme(this)">○ White</button>
+      <button class="sc-btn sc-color" title="Set this section's colour" onclick="openSecColor(this)"><span class="sc-dot"></span></button>
       <button class="sc-btn drag" title="Drag to move">⠿</button>
       <button class="sc-btn" title="Up" onclick="moveSec(this,-1)">↑</button>
       <button class="sc-btn" title="Down" onclick="moveSec(this,1)">↓</button>
@@ -3626,6 +3755,21 @@ function toggleRecipeSteps(btn){
   steps.style.display=on?'none':'block';
   btn.textContent=on?'+ Show Instructions Steps':'− Hide Instructions Steps';
 }
+/* Generic show/hide for an optional block inside a documentation cell.
+   The button carries data-target (a class) and data-label (what to call it);
+   we look only inside the button's own cell so sibling columns are unaffected. */
+function toggleDocExtra(btn){
+  const cell=btn.closest('td')||btn.parentElement;
+  const cls=btn.getAttribute('data-target');
+  const label=btn.getAttribute('data-label')||'block';
+  const el=cell.querySelector('.'+cls);
+  if(!el)return;
+  const on=el.dataset.on==='1';
+  el.dataset.on=on?'0':'1';
+  el.style.display=on?'none':'block';
+  btn.textContent=(on?'+ Add ':'− Hide ')+label;
+  markDirty&&markDirty();
+}
 /* toggle the optional featured-recipe photo on/off */
 function toggleRecipePic(btn){
   const card=btn.closest('.sec');const pic=card.querySelector('.nl-rpic');if(!pic)return;
@@ -3825,15 +3969,62 @@ function positionColorbar(){
 }
 document.addEventListener('mouseup',()=>setTimeout(()=>{const s=window.getSelection();if(s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode))positionColorbar();else if(!colorbar.matches(':hover'))colorbar.classList.remove('show');},10));
 document.addEventListener('keyup',()=>{const s=window.getSelection();if(s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode))positionColorbar();});
-colorbar.querySelectorAll('.cb-sw').forEach(sw=>{
-  sw.addEventListener('mousedown',e=>{
-    e.preventDefault();
-    let c=sw.dataset.c;
-    if(c==='var-accent')c=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-    document.execCommand('styleWithCSS',false,true);
-    document.execCommand('foreColor',false,c);
-    colorbar.classList.remove('show');
+/* ═══════════ TEXT COLOUR PALETTE ═══════════
+   The selection toolbar opens a popover listing every theme colour (live values,
+   so a re-themed document shows its own palette), a standing palette, and a hex
+   field. Selection is captured on mousedown because opening the popover would
+   otherwise blur it away. */
+let cbSavedRange=null;
+function cbCaptureRange(){
+  const s=window.getSelection();
+  if(s&&s.rangeCount&&!s.isCollapsed)cbSavedRange=s.getRangeAt(0).cloneRange();
+}
+function cbRestoreRange(){
+  if(!cbSavedRange)return false;
+  const s=window.getSelection();s.removeAllRanges();s.addRange(cbSavedRange);return true;
+}
+function applyTextColor(c){
+  if(!cbRestoreRange())return;
+  document.execCommand('styleWithCSS',false,true);
+  document.execCommand('foreColor',false,c);
+  document.getElementById('cbPop').classList.remove('show');
+  colorbar.classList.remove('show');
+  markDirty&&markDirty();
+}
+function applyTextHex(){
+  const v=(document.getElementById('cbHex').value||'').trim();
+  if(!/^#?[0-9a-f]{6}$/i.test(v)){toast('Enter a 6-digit hex, e.g. #3f7d4f');return;}
+  applyTextColor(v.charAt(0)==='#'?v:'#'+v);
+}
+function renderTextPalette(){
+  const cs=getComputedStyle(document.documentElement);
+  const themeSw=Object.entries(THEME_VARMAP).map(([name,v])=>{
+    const hex=(cs.getPropertyValue(v)||'').trim()||'#000000';
+    return [name.replace('-',' '),hex];
   });
+  const mk=(arr)=>arr.map(([n,hex])=>
+    `<button class="sw" style="background:${hex}" title="${n} ${hex}" onmousedown="event.preventDefault();applyTextColor('${hex}')"></button>`).join('');
+  document.getElementById('cbThemeSw').innerHTML=mk(themeSw);
+  document.getElementById('cbPaletteSw').innerHTML=mk(SEC_PALETTE.concat([['White','#ffffff'],['Black','#1a1a1a']]));
+}
+const cbMore=document.getElementById('cbMore');
+if(cbMore){
+  cbMore.addEventListener('mousedown',e=>{
+    e.preventDefault();
+    cbCaptureRange();
+    renderTextPalette();
+    const pop=document.getElementById('cbPop');
+    const r=colorbar.getBoundingClientRect();
+    pop.style.left=Math.max(8,Math.min(window.innerWidth-260,r.left))+'px';
+    pop.style.top=(r.bottom+6)+'px';
+    pop.classList.toggle('show');
+  });
+}
+document.addEventListener('mousedown',e=>{
+  const pop=document.getElementById('cbPop');
+  if(pop&&pop.classList.contains('show')&&!pop.contains(e.target)&&e.target!==cbMore){
+    pop.classList.remove('show');
+  }
 });
 
 /* ═══════════ INLINE TEXT LINK (link selected text) ═══════════ */
@@ -3893,8 +4084,8 @@ function removeTextLink(){
 }
 
 /* ═══════════ GLOBAL THEME ═══════════ */
-const THEME_DEFAULT={accent:'#e05a1b',dark:'#1a1a1a',gray:'#3a3a3a',bg:'#f2f2f2','body-text':'#555555',heading:'#3a3a3a'};
-const THEME_VARMAP={accent:'--accent',dark:'--dark',gray:'--gray',bg:'--bg','body-text':'--body-text',heading:'--heading'};
+const THEME_DEFAULT={accent:'#e05a1b',dark:'#1a1a1a',gray:'#3a3a3a',bg:'#f2f2f2',paper:'#f5f2e8','body-text':'#555555',heading:'#3a3a3a'};
+const THEME_VARMAP={accent:'--accent',dark:'--dark',gray:'--gray',bg:'--bg',paper:'--paper','body-text':'--body-text',heading:'--heading'};
 function setVar(k,v){document.documentElement.style.setProperty(THEME_VARMAP[k],v);const hx=document.getElementById('hex-'+k);if(hx)hx.textContent=v;}
 Object.keys(THEME_VARMAP).forEach(k=>{const inp=document.getElementById('col-'+k);if(inp)inp.addEventListener('input',()=>setVar(k,inp.value));});
 function resetTheme(){Object.entries(THEME_DEFAULT).forEach(([k,v])=>{const inp=document.getElementById('col-'+k);if(inp)inp.value=v;setVar(k,v);});toast('Theme reset');}
@@ -3908,7 +4099,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v20.1',
+  version : 'v20.3',
   name    : 'Documentation Mode',
   date    : '23 July 2026',
 };
@@ -4397,7 +4588,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar,.doc-hue').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -4409,6 +4600,9 @@ function buildExport(){
       const theme=live.dataset.theme||'white';
       const vars=SEC_THEMES[theme]||SEC_THEMES.white;
       let extra=Object.entries(vars).map(([k,v])=>`${k}:${v}`).join(';');
+      // a per-section colour override must win over the global accent
+      const acc=(live.style.getPropertyValue('--accent')||'').trim();
+      if(acc)extra+=';--accent:'+acc;
       cs.setAttribute('style',((cs.getAttribute('style')||'')+';'+extra).replace(/^;/,''));
     }
   });
@@ -4502,6 +4696,13 @@ function buildExport(){
   clone.querySelectorAll('.nl-steps').forEach(s=>{
     if(s.dataset.on!=='1'){s.remove();return;}
     s.classList.remove('nl-steps');s.removeAttribute('data-on');s.style.display='';if(!s.getAttribute('class'))s.removeAttribute('class');
+  });
+  // documentation: drop optional example boxes / badge rows that were never turned on
+  clone.querySelectorAll('.doc-ex,.doc-badges').forEach(b=>{
+    if(b.dataset.on!=='1'){b.remove();return;}
+    b.classList.remove('doc-ex');b.classList.remove('doc-badges');
+    b.removeAttribute('data-on');b.style.display='';
+    if(!b.getAttribute('class'))b.removeAttribute('class');
   });
   // newsletter: drop the recipe photo if toggled off or no image was chosen
   clone.querySelectorAll('.nl-rpic').forEach(p=>{
@@ -4601,7 +4802,7 @@ ${clone.innerHTML.trim()}
 function resolveVarsOnly(root, vars){
   const baseMap={
     '--accent':vars['--accent'],'--dark':vars['--dark'],'--gray':vars['--gray'],
-    '--bg':vars['--bg'],'--body-text':vars['--body-text'],'--heading':vars['--heading']
+    '--bg':vars['--bg'],'--paper':vars['--paper'],'--body-text':vars['--body-text'],'--heading':vars['--heading']
   };
   function resolveVar(name, secMap){
     let val=(secMap&&secMap[name]!==undefined)?secMap[name]:baseMap[name];
@@ -4641,7 +4842,7 @@ function emailSafe(root, vars){
   // 1) build a flat var->value map, resolving chained vars (e.g. --secbg:var(--dark))
   const baseMap={
     '--accent':vars['--accent'],'--dark':vars['--dark'],'--gray':vars['--gray'],
-    '--bg':vars['--bg'],'--body-text':vars['--body-text'],'--heading':vars['--heading']
+    '--bg':vars['--bg'],'--paper':vars['--paper'],'--body-text':vars['--body-text'],'--heading':vars['--heading']
   };
   function resolveVar(name, secMap){
     let val=(secMap&&secMap[name]!==undefined)?secMap[name]:baseMap[name];
@@ -5208,7 +5409,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v20.1 "Documentation Mode" · 23 July 2026
+**Current build:** v20.3 "Documentation Mode" · 23 July 2026
 
 ---
 
@@ -5229,6 +5430,43 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v20.3 — Colour control & growable blocks · 23 July 2026
+
+- **Per-section colour.** Every block now has a colour dot in its hover controls. Pick a
+  swatch or type a hex code and that section's rules, bullets, eyebrows and borders all
+  follow it — the rest of the document is unaffected. This is what lets one plan run a
+  green track and a purple track side by side. Choose ✕ to fall back to the document
+  colour. Section colours are saved with the document and baked into the export.
+- **The shade button works on documentation blocks now.** Those sections were painted with
+  a hard-coded white background, so cycling the theme appeared to do nothing. They use the
+  block shade properly, and <b>Orange</b> is relabelled <b>Accent</b> since it follows
+  whatever colour that section is set to.
+- **Full text-colour palette.** Selecting text and clicking <b>Colour</b> now opens every
+  colour in your current theme, a standing palette, and a hex box — instead of the old
+  four fixed swatches.
+- **Blocks grow one item at a time.** Promise Grid, Phase Columns, Mechanics Cards,
+  Numbered Pillars and the Recommendation steps used to add a whole row of three or four.
+  Now it's one benefit, one column, one card, one step — and rows re-centre as they fill,
+  so three items don't stretch to fill four slots.
+- **Phase bullets are editable again.** They were zero-width inline spans with nothing to
+  click. They're now proper add/removable list items with their own ×.
+- **Settings menu reorganised.** Page Format sits at the top with Theme &amp; Type and
+  Images; the content tools (Backlog, Library) share a group; GitHub, Docs and Version &amp;
+  Notes share another; and Send Feedback is set apart at the bottom.
+
+## v20.2 — Doc polish: delete, extras, cream · 23 July 2026
+
+- **Delete is back on the wide documentation blocks.** Moving those buttons into a table
+  cell in v20.1 fixed the add, but the hover rule only looked for a direct child, so the
+  × never appeared. Rows, columns and timeline stops can be removed again.
+- **Numbered Pillars gained two optional blocks.** Hover a pillar and you get
+  <b>+ Add example box</b> (the light grey sample panel) and <b>+ Add badges</b> (a row of
+  add/removable pill tags). Both start hidden so cells stay uncluttered, they apply to one
+  pillar at a time, and anything left switched off is dropped from the export.
+- **New Cream section colour.** The theme cycle is now White → Cream → Gray → Black
+  → Orange. Cream is a real theme variable, editable under <b>Settings → Theme &amp;
+  Type</b>, so a document can alternate white and cream bands the way the plan layout does.
 
 ## v20.1 — Wide-table Add fix · 23 July 2026
 
@@ -5731,12 +5969,25 @@ function defaultDocs(){return `<div class="docs-body">
   <li><b>Section Header</b> &mdash; an eyebrow, a title, and a rule. Use one before each major part.</li>
   <li><b>Colour Track Header</b> &mdash; the coloured banner for one thread of the plan. Hover it and click <span class="btnrep">&#9680; colour</span> to cycle through green, plum, blue, amber, rust, and brand orange. Give each track its own colour and the document explains itself at a glance.</li>
   <li><b>Promise Grid</b>, <b>Phase Columns</b>, <b>Mechanics Cards</b> &mdash; the substance of each track.</li>
+  <li><b>Numbered Pillars</b> &mdash; hover any pillar for <span class="btnrep">+ Add example box</span> and <span class="btnrep">+ Add badges</span>. Both stay hidden until you turn them on, so cells don't get crowded.</li>
   <li><b>Route / Timeline</b> &mdash; the dark schedule block. Each stop is add/removable and reorderable.</li>
   <li><b>Production Table</b>, <b>Risks &amp; Mitigations</b>, <b>Owners &amp; Dates</b> &mdash; the operational half.</li>
   <li><b>Recommendation</b> &mdash; the orange close. Lead with what you want them to do.</li>
   <li><b>Document Footer Bar</b> &mdash; the thin dark strip at the very bottom.</li>
 </ul>
 <p>Every table, column set, card pair and timeline stop has its own <span class="btnrep">+ Add</span> button, so nothing is locked to the length it starts at. When you're done, <b>Copy HTML</b> gives you the finished page &mdash; or use your browser's Print &rarr; Save as PDF to hand someone a document.</p>
+
+<h3>Colours: global and per-section</h3>
+<p>There are two levels of colour, and they work the same way.</p>
+<ul>
+  <li><b>Whole document</b> &mdash; <b>Settings &rarr; &#127912; Theme &amp; Type</b>. Changing the accent here re-colours everything at once.</li>
+  <li><b>One section</b> &mdash; hover a block and click the small <b>colour dot</b> in its controls. Pick a swatch or type a hex code. That section's rules, bullets, eyebrows and borders all follow it, and the rest of the document is untouched. This is how a plan runs a green track and a purple track side by side. Choose <b>&#10005;</b> to go back to the document colour.</li>
+</ul>
+<p>The shade button next to it (<b>&#9675; White</b>) cycles the block background: <b>White &rarr; Cream &rarr; Gray &rarr; Black &rarr; Accent</b>. "Accent" follows whatever colour that section is set to, so it stays correct if you re-colour later.</p>
+<p><b>Colouring words:</b> select any text and a small bar appears. Click <b>Colour</b> for the full palette &mdash; every colour in your current theme, a standing palette, and a hex box for anything else.</p>
+
+<h3>Lists that grow</h3>
+<p>Anywhere you see a dashed <span class="btnrep">+ Add</span> button, that block grows one item at a time &mdash; one benefit, one column, one card, one step. Rows re-centre themselves as you add or remove, so a set of three doesn't stretch awkwardly to fill four slots. Hover any item and click its <span class="chip red">&times;</span> to remove it. (A list always keeps at least one item, so a block can't collapse into nothing.)</p>
 
 <h3>Widgets</h3>
 <p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
@@ -6018,7 +6269,11 @@ function serializeSections(){
   return [...frame.querySelectorAll('.sec')].map(s=>{
     const c=s.cloneNode(true);
     c.querySelectorAll('.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
-    return {key:s.dataset.key,theme:s.dataset.theme||'white',html:c.innerHTML};
+    const o={key:s.dataset.key,theme:s.dataset.theme||'white',html:c.innerHTML};
+    // remember a per-section colour override so it survives save/reload
+    const acc=(s.style.getPropertyValue('--accent')||'').trim();
+    if(acc)o.accent=acc;
+    return o;
   });
 }
 
@@ -6070,7 +6325,9 @@ function loadSections(sections,append){
       if(!nm && s.key && s.key.startsWith('widget-')){const wk=s.key.slice(7);nm=(WIDGETS[wk]?.name||'Widget')+' (widget)';}
       tag.textContent=nm;
     }
-    applySecTheme(sec,s.theme);wireSec(sec);frame.appendChild(sec);
+    applySecTheme(sec,s.theme);
+    if(s.accent){sec.style.setProperty('--accent',s.accent);sec.dataset.accent=s.accent;}
+    wireSec(sec);frame.appendChild(sec);
   });
   refreshState();
 }
