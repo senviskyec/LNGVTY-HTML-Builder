@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-07-21T16:57:47.044Z",
+  "updatedAt": "2026-07-24T14:46:09.943Z",
   "items": [
     {
       "id": "quote-001",
@@ -330,12 +330,12 @@
     },
     {
       "id": "quote-026",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-7-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-07-24T14:46:09.943Z",
       "content": {
         "quote": "If it doesn't challenge you, it won't change you.",
         "credit": "Fred DeVito"
