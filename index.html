@@ -445,6 +445,12 @@
   .li-wrap:hover > .sched-addsub,.li-wrap:hover .li-ctrls > .sched-addsub{display:block;}
   .sched-addsub:hover{background:var(--accent);}
   .sched-sub + .sched-sub{border-top:1px dashed #eee;}
+  /* delete buttons inside stat cells and multi-event schedule days */
+  .stat-cell{ }
+  .stat-cell > .li-del{display:none;}
+  .stat-cell:hover > .li-del{display:block;}
+  .sched-sub > .li-del{display:none;}
+  .sched-sub:hover > .li-del{display:block;}
 
   /* link-edit pill on buttons/links */
   .link-edit{position:absolute;top:-9px;right:-6px;z-index:35;background:#1a1a1a;color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;white-space:nowrap;}
@@ -1884,6 +1890,37 @@ const SECTIONS = {
         <button class="nl-steptoggle" type="button" onclick="toggleRecipeSteps(this)" style="margin-top:10px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;">+ Show Instructions Steps</button>
       </div>`;}},
 
+
+  nlproduct:{group:'Recipe',icon:'🛍',name:'Featured Product',theme:'white',mode:'newsletter',
+    html:()=>{
+      // one detail chip: an editable label + value, add/removable. Kept roomy in a
+      // 2-up flex so a product can carry price, size, calories, etc. without crowding.
+      const field=(label,val)=>`<div class="li-wrap" style="flex:0 1 200px;min-width:150px;position:relative;padding:2px 0;">
+        <button class="li-del" onclick="delLi(this)">\u00d7</button>
+        ${ph(label,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--secmuted);margin-bottom:2px;")}
+        ${ph(val,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--sectext);")}
+      </div>`;
+      return `<div class="nl-prod" style="background:var(--secbg);padding:34px 40px 38px;border:1px solid rgba(127,127,127,.18);">
+      ${ph('FEATURED PRODUCT',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;")}
+      <div class="nl-ppic" data-on="0" style="display:none;margin-bottom:16px;">
+        <img class="nl-ppic-img" src="" alt="" style="display:block;width:100%;max-width:100%;height:auto;border:1px solid #e8e8e8;"/>
+        <button class="nl-ppic-btn" type="button" onclick="openProductPic(this)" style="margin-top:6px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px 10px;border-radius:4px;cursor:pointer;">Set product photo</button>
+      </div>
+      <button class="nl-pptoggle" type="button" onclick="toggleProductPic(this)" data-on="0" style="margin-bottom:16px;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px;border-radius:5px;cursor:pointer;">+ Show product photo</button>
+      ${ph('Product Name',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;line-height:1.15;color:var(--sectext);margin-bottom:6px;")}
+      ${ph('One or two sentences on what it is and why a member would want it.',"font-size:14px;line-height:1.6;color:var(--secmuted);margin-bottom:18px;max-width:56ch;")}
+      ${listBlock(
+        [field('Price','$0.00'),field('Size','12 oz'),field('Best for','Post-workout')],
+        field('Label','Value'),
+        'field',
+        'display:flex;flex-wrap:wrap;gap:14px 22px;margin-bottom:18px;')}
+      <div class="editable-link nav-link" data-href="#" data-filled="1" style="display:inline-block;">
+        <a href="#" contenteditable="true" style="display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px;text-decoration:none;padding:12px 26px;border-radius:6px;">Shop Now \u203a</a>
+        <button class="link-edit" type="button" onclick="openLinkModal(this)" title="Edit link">\ud83d\udd17</button>
+      </div>
+    </div>`;},
+    desc:'A featured product with a toggleable photo, name, blurb, add/removable detail fields (price, size, etc.), and a linkable Shop button.'},
+
   nltip:{group:'Tips',icon:'💡',name:'Tip Tuesday',theme:'gray',mode:'newsletter',
     html:()=>{
       const mini=(icon,label,text)=>`<div class="li-wrap" style="flex:1 1 45%;min-width:150px;background:rgba(255,255,255,0.05);border-top:2px solid var(--accent);padding:14px;position:relative;">${ph(icon,"font-size:16px;margin-bottom:6px;")}${ph(label,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;")}${ph(text,"font-size:12px;color:#aaa;line-height:1.5;font-weight:300;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
@@ -2194,7 +2231,7 @@ const SECTIONS = {
     html:()=>{
       const cell=(n,label,filled)=>`<div class="li-wrap" style="flex:0 1 92px;min-width:78px;text-align:center;position:relative;">
         <button class="li-del" onclick="delLi(this)">×</button>
-        <div style="height:56px;border:2px solid var(--accent);background:${filled?'var(--accent)':'transparent'};margin-bottom:7px;"></div>
+        <div class="ev-box" data-filled="${filled?'1':'0'}" onclick="toggleEvidence(this)" title="Click: solid = collected, outline = pending" style="height:56px;border:2px solid var(--accent);background:${filled?'var(--accent)':'transparent'};margin-bottom:7px;cursor:pointer;"></div>
         ${ph(n,'font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:15px;color:var(--sectext);')}
         ${ph(label,'font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:1.4px;color:var(--secmuted);margin-top:2px;')}
       </div>`;
@@ -3281,7 +3318,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -4058,6 +4095,27 @@ function cycleVerdict(btn){
   btn.style.borderColor=VERDICTS[i][1];
   markDirty&&markDirty();
 }
+/* evidence box: click to toggle solid (collected) vs outline (pending) */
+function toggleEvidence(el){
+  const filled=el.dataset.filled==='1';
+  el.dataset.filled=filled?'0':'1';
+  el.style.backgroundColor=filled?'transparent':'var(--accent)';
+  markDirty&&markDirty();
+}
+/* featured product: show/hide and set a per-product photo (own scope, so a
+   multi-product section keeps each image independent). Mirrors the recipe photo. */
+function toggleProductPic(btn){
+  const card=btn.closest('.nl-prod');const pic=card.querySelector('.nl-ppic');if(!pic)return;
+  const on=pic.dataset.on==='1';
+  pic.dataset.on=on?'0':'1';
+  pic.style.display=on?'none':'block';
+  btn.dataset.on=on?'0':'1';
+  btn.textContent=on?'+ Show product photo':'\u2212 Hide product photo';
+}
+function openProductPic(btn){
+  const host=btn.closest('.nl-ppic');const img=host.querySelector('.nl-ppic-img');
+  openImageLib((url,name)=>{img.src=url;img.alt=name||'';host.dataset.src=url;saveStateLocal();});
+}
 /* toggle the optional featured-recipe photo on/off */
 function toggleRecipePic(btn){
   const card=btn.closest('.sec');const pic=card.querySelector('.nl-rpic');if(!pic)return;
@@ -4387,9 +4445,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.0',
+  version : 'v21.1',
   name    : 'The Investigation',
-  date    : '24 July 2026',
+  date    : '27 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -4876,7 +4934,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -5010,6 +5068,14 @@ function buildExport(){
     });
   });
 
+  // investigation: evidence boxes — freeze current fill, drop the click affordance
+  clone.querySelectorAll('.ev-box').forEach(b=>{
+    b.removeAttribute('onclick');b.removeAttribute('data-filled');b.removeAttribute('title');
+    b.style.cursor='';
+    b.classList.remove('ev-box');
+    if(!b.getAttribute('class'))b.removeAttribute('class');
+  });
+
   // documentation: drop optional example boxes / badge rows that were never turned on
   clone.querySelectorAll('.doc-ex,.doc-badges').forEach(b=>{
     if(b.dataset.on!=='1'){b.remove();return;}
@@ -5024,6 +5090,14 @@ function buildExport(){
     p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
     const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
   });
+  // featured product photo — same rule as the recipe photo
+  clone.querySelectorAll('.nl-ppic').forEach(p=>{
+    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    if(!shown){p.remove();return;}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
+    const img=p.querySelector('.nl-ppic-img');if(img){img.classList.remove('nl-ppic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
+  });
+  clone.querySelectorAll('.nl-prod').forEach(p=>{p.classList.remove('nl-prod');if(!p.getAttribute('class'))p.removeAttribute('class');});
   clone.querySelectorAll('.sec').forEach(s=>{
     const key=s.dataset.key||'';const theme=s.dataset.theme||'';
     s.removeAttribute('class');s.removeAttribute('draggable');s.removeAttribute('data-key');s.removeAttribute('data-theme');s.style.opacity='';
@@ -5722,7 +5796,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.0 "The Investigation" · 24 July 2026
+**Current build:** v21.1 "The Investigation" · 27 July 2026
 
 ---
 
@@ -5743,6 +5817,24 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.1 — Fixes & Featured Product · 27 July 2026
+
+- **Featured Product** (Newsletter). A new section with a toggleable photo (same as the
+  recipe photo, pulls from your image library), product name, a short blurb, and
+  <b>add/removable detail fields</b> — price, size, best-for to start, each removable, more
+  addable — plus a linkable <b>Shop Now</b> button. Roomy 2-up layout so it never feels
+  cramped.
+- **Recipe macros can be removed again.** The × on each macro stat existed but never
+  appeared on hover, so stats could only be added. Fixed.
+- **Multi-event schedule days can be trimmed.** Same fix — the × on the second, third,
+  etc. event of a day now shows on hover so extra events can be removed.
+- **Evidence board boxes toggle.** On the investigation Evidence Collected block, click any
+  box to switch it between <b>solid</b> (collected) and <b>outline</b> (pending). The
+  export keeps whatever state you left.
+- **Quote generator into the header.** Hardened so it reliably fills the newsletter
+  header’s quote line, tolerates alternate field names, and tells you what’s wrong instead
+  of doing nothing if the header is missing or the item has no text.
 
 ## v21.0 — The Investigation (Whole30 kit) · 24 July 2026
 
@@ -6974,11 +7066,16 @@ function setSectionTags(sec,tags){
   });
 }
 function fillQuote(item){
-  const sec=sectionByKey('nlheader');if(!sec)return false;
+  const sec=sectionByKey('nlheader');
+  if(!sec){toast('Add a Newsletter Header section first');return false;}
   const c=item.content||{};
+  const quote=c.quote||c.text||c.body||'';
+  if(!quote){toast('That quote item has no text');return false;}
   const eds=[...sec.querySelectorAll('[contenteditable][data-ph]')];
-  const q=eds.find(e=>/quote/i.test(e.getAttribute('data-ph')||''));
-  if(q)libSetField(q,c.credit?('"'+c.quote+'" — '+c.credit):('"'+c.quote+'"'));
+  let q=eds.find(e=>/quote/i.test(e.getAttribute('data-ph')||''));
+  if(!q)q=eds.find(e=>/this week/i.test(e.getAttribute('data-ph')||''));
+  if(!q){toast('Could not find the quote line in the header');return false;}
+  libSetField(q,c.credit?('“'+quote+'” — '+c.credit):('“'+quote+'”'));
   return true;
 }
 function fillSwap(item){
