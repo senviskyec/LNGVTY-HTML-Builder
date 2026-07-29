@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-07-29T13:44:08.829Z",
+  "updatedAt": "2026-07-29T14:21:05.790Z",
   "items": [
     {
       "id": "tip-001",
@@ -237,11 +237,11 @@
     {
       "id": "tip-012",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-8-8-02",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-29T13:44:08.829Z",
+      "updatedAt": "2026-07-29T14:21:05.790Z",
       "content": {
         "main": "Strong is the goal — lean is the byproduct.",
         "description": "Motivation fades — systems don't. Build the habit so you don't have to rely on willpower.",
