@@ -1,16 +1,16 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-07-29T16:32:41.184Z",
+  "updatedAt": "2026-07-29T16:32:47.989Z",
   "items": [
     {
       "id": "recipe-001",
-      "status": "reserved",
-      "reservedBy": "newsletter-8-8-02",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-29T16:32:41.184Z",
+      "updatedAt": "2026-07-29T16:32:47.989Z",
       "content": {
         "name": "High-Protein Overnight Oats",
         "image": "",
