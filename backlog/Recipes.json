@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-07-29T16:32:49.015Z",
+  "updatedAt": "2026-07-29T16:33:13.095Z",
   "items": [
     {
       "id": "recipe-001",
@@ -145,11 +145,11 @@
     {
       "id": "recipe-005",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-8-8-02",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T14:10:48.832Z",
+      "updatedAt": "2026-07-29T16:33:13.095Z",
       "content": {
         "name": "Egg & Veggie Scramble",
         "image": "",
