@@ -1924,6 +1924,46 @@ const SECTIONS = {
     </div>`;},
     desc:'A featured product with a toggleable photo, name, blurb, add/removable detail fields (price, size, etc.), and a linkable Shop button.'},
 
+  nlproductgrid:{group:'Recipe',icon:'🛒',name:'Featured Products (grid)',theme:'white',mode:'newsletter',
+    html:()=>{
+      // one detail chip inside a card: compact label+value, add/removable.
+      const field=(label,val)=>`<div class="li-wrap" style="flex:0 1 auto;min-width:0;position:relative;padding:1px 0;">
+        <button class="li-del" onclick="delLi(this)">\u00d7</button>
+        ${ph(label,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:8px;letter-spacing:1.2px;text-transform:uppercase;color:var(--secmuted);margin-bottom:1px;")}
+        ${ph(val,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:14px;color:var(--sectext);")}
+      </div>`;
+      // one product card. Image is height-capped so it never balloons.
+      const cardProto=`<div class="li-wrap nl-prod" style="flex:0 1 calc(50% - 9px);min-width:210px;position:relative;border:1px solid rgba(127,127,127,.18);background:var(--secbg);padding:0;display:flex;flex-direction:column;">
+        <button class="li-del" onclick="delLi(this)" style="top:6px;right:6px;z-index:5;">\u00d7</button>
+        <div class="nl-ppic" data-on="1" style="display:block;">
+          <img class="nl-ppic-img" src="" alt="" style="display:block;width:100%;height:170px;object-fit:cover;background:#f0eee9;border-bottom:1px solid rgba(127,127,127,.15);"/>
+          <button class="nl-ppic-btn" type="button" onclick="openProductPic(this)" style="display:block;width:100%;border:0;border-bottom:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 8px;cursor:pointer;">Set photo</button>
+        </div>
+        <div style="padding:16px 18px 18px;display:flex;flex-direction:column;flex:1;">
+          ${ph('Product Name',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;line-height:1.15;color:var(--sectext);margin-bottom:5px;")}
+          ${ph('A short line on why members want it.',"font-size:12.5px;line-height:1.5;color:var(--secmuted);margin-bottom:12px;flex:1;")}
+          ${listBlock(
+            [field('Price','$0.00'),field('Size','12 oz')],
+            field('Label','Value'),
+            'field',
+            'display:flex;flex-wrap:wrap;gap:6px 16px;margin-bottom:14px;')}
+          <div class="editable-link nav-link" data-href="#" data-filled="1" style="display:block;margin-top:auto;">
+            <a href="#" contenteditable="true" style="display:block;text-align:center;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:.5px;text-decoration:none;padding:10px 14px;border-radius:5px;">Shop Now \u203a</a>
+            <button class="link-edit" type="button" onclick="openLinkModal(this)" title="Edit link">\ud83d\udd17</button>
+          </div>
+        </div>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:34px 40px 38px;">
+      ${ph('FEATURED PRODUCTS',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+      ${ph('Member picks this month',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;line-height:1.15;color:var(--sectext);margin-bottom:20px;")}
+      ${listBlock(
+        [cardProto,cardProto],
+        cardProto,
+        'product',
+        'display:flex;flex-wrap:wrap;gap:18px;align-items:stretch;')}
+    </div>`;},
+    desc:'A grid of featured products, two per row, each with a fixed-size photo, name, blurb, add/removable detail fields, and a Shop button. Add or remove whole product cards.'},
+
   nltip:{group:'Tips',icon:'💡',name:'Tip Tuesday',theme:'gray',mode:'newsletter',
     html:()=>{
       const mini=(icon,label,text)=>`<div class="li-wrap" style="flex:1 1 45%;min-width:150px;background:rgba(255,255,255,0.05);border-top:2px solid var(--accent);padding:14px;position:relative;">${ph(icon,"font-size:16px;margin-bottom:6px;")}${ph(label,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:4px;")}${ph(text,"font-size:12px;color:#aaa;line-height:1.5;font-weight:300;")}<button class="li-del" onclick="delLi(this)">×</button></div>`;
@@ -4455,9 +4495,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.2',
+  version : 'v21.3',
   name    : 'The Investigation',
-  date    : '28 July 2026',
+  date    : '30 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -5807,7 +5847,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.2 "The Investigation" · 28 July 2026
+**Current build:** v21.3 "The Investigation" · 30 July 2026
 
 ---
 
@@ -5828,6 +5868,15 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.3 — Featured Products grid · 30 July 2026
+
+- **New “Featured Products (grid)” section** (Newsletter). Shows products two per row in
+  neat, equal-sized cards — each with a fixed-height photo (no more oversized images),
+  a name, a short blurb, add/removable detail fields, and a Shop button. Add or remove
+  whole product cards; they reflow two-up automatically and convert cleanly to an
+  email-safe two-column table on export. The original single Featured Product section is
+  unchanged for when you want one hero product.
 
 ## v21.2 — Suspect card editing · 28 July 2026
 
