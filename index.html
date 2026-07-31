@@ -2359,6 +2359,156 @@ const SECTIONS = {
       </div>
     </div>`},
 
+  invBriefingWeeks:{group:'Investigation',norder:1.5,icon:'🗂',name:'Briefing — Week by Week',theme:'cream',mode:'graphics',
+    html:()=>{
+      const wk=(tag,title,desc)=>`<div class="li-wrap" style="position:relative;display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:1px dashed rgba(0,0,0,.14);">
+        <button class="li-del" onclick="delLi(this)">×</button>
+        ${ph(tag,'font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--accent);white-space:nowrap;min-width:58px;padding-top:2px;')}
+        <div style="flex:1;">
+          ${ph(title,'font-family:\'Montserrat\',sans-serif;font-weight:800;font-size:15px;color:var(--sectext);margin-bottom:2px;')}
+          ${ph(desc,'font-size:13px;color:var(--secmuted);line-height:1.5;')}
+        </div>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:40px 48px 44px;border:1px solid rgba(0,0,0,.10);">
+      ${ph('INVESTIGATOR BRIEFING','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('A new case opens this month.','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:24px;line-height:1.15;color:var(--sectext);text-transform:uppercase;margin-bottom:8px;')}
+      ${ph('Over the next four weeks you\u2019ll build the case yourself: cut the usual suspects, gather the evidence, and finally find out what\u2019s been working against you.','font-size:14px;line-height:1.65;color:var(--secmuted);max-width:52ch;margin-bottom:20px;')}
+      ${listBlock([
+        wk('WEEK 1','Arrive at the Crime Scene','Gather baseline evidence. Observe \u2014 don\u2019t accuse anyone yet.'),
+        wk('WEEK 2','Interview the Suspects','One food group in the spotlight each day. Investigating, not convicting.'),
+        wk('WEEK 3','Build the Case','Watch the trends connect. Your own evidence starts telling the story.'),
+        wk('WEEK 4','Close the Case','Name the culprit, plan reintroduction, and get your final report.')
+      ],wk('WEEK 5','New phase','What happens in this stretch.'),'week','')}
+      <div style="margin-top:22px;padding-top:18px;border-top:2px solid var(--accent);">
+        ${ph('THE GOAL','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:3px;color:var(--accent);margin-bottom:6px;')}
+        ${ph('By Day 30 you\u2019ll have a complete case file \u2014 and finally know which foods have been holding you back.','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:16px;line-height:1.5;color:var(--sectext);max-width:48ch;')}
+      </div>
+    </div>`;}},
+
+  invCaseDetails:{group:'Investigation',norder:1.7,icon:'📑',name:'Case Details (table)',theme:'white',mode:'graphics',
+    html:()=>{
+      const row=(k,v)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tbody><tr>
+        <td valign="top" width="34%" style="width:34%;border-bottom:1px solid #e2ded6;padding:10px 12px 10px 0;">${ph(k,'font-family:\'Montserrat\',sans-serif;font-weight:800;font-size:13px;color:var(--heading);')}</td>
+        <td valign="top" style="border-bottom:1px solid #e2ded6;padding:10px 0;">${ph(v,'font-size:13.5px;color:#54524e;line-height:1.5;')}</td>
+        <td valign="middle" class="li-ctrls" style="width:26px;padding:0 0 0 4px;position:relative;"><button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></tbody></table>`;
+      return `<div style="background:var(--secbg);padding:36px 48px 40px;border-bottom:1px solid #e2ded6;">
+      ${ph('CASE DETAILS','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;')}
+      ${listBlock([
+        row('Starts','Monday, [DATE] \u2014 enroll any time before Day 1'),
+        row('Duration','30 days \u00b7 4 weeks of investigation + reintroduction'),
+        row('What you get','Daily case briefings, a suspect board, evidence tracking, and a personalized Final Investigation Report'),
+        row('The rule','Miss a day? It\u2019s an \u201cincomplete report,\u201d never a failure. The case keeps building.'),
+        row('Cost','Free for members \u00b7 [price] for non-members')
+      ],row('New row','Detail goes here'),'row')}
+    </div>`;}},
+
+  invFileChecklist:{group:'Investigation',norder:6.5,icon:'🗒',name:'File Checklist (opening report)',theme:'white',mode:'graphics',
+    html:()=>{
+      const item=(t,d)=>`<div class="li-wrap" style="position:relative;display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #e2ded6;">
+        <button class="li-del" onclick="delLi(this)">×</button>
+        <div style="width:15px;height:15px;border:2px solid var(--accent);flex-shrink:0;margin-top:2px;"></div>
+        <div style="flex:1;">
+          ${ph(t,'font-family:\'Montserrat\',sans-serif;font-weight:800;font-size:14px;color:var(--heading);margin-bottom:1px;')}
+          ${ph(d,'font-size:12.5px;color:#8a8781;line-height:1.5;')}
+        </div>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:36px 48px 40px;">
+      ${ph('OPENING REPORT','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:8px;')}
+      ${ph('File Your First Evidence','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;color:var(--heading);margin-bottom:6px;')}
+      ${ph('Takes two minutes. Log it in the form linked below.','font-size:13.5px;color:#8a8781;margin-bottom:18px;')}
+      ${listBlock([
+        item('Starting stats','Weight or measurements \u2014 optional and private.'),
+        item('Symptom checklist','Afternoon crashes, poor sleep, brain fog, cravings, low energy, joint pain, mood swings.'),
+        item('Baseline ratings','Energy, sleep, and mood \u2014 each on a scale of 1 to 5.'),
+        item('Case notes','One line: what made you open this case?')
+      ],item('New item','What to record.'),'item')}
+    </div>`;}},
+
+  invLogButton:{group:'Investigation',norder:8.3,icon:'▬',name:'Log Evidence Bar',theme:'orange',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:32px 44px;text-align:center;">
+      ${ph('Log today\u2019s evidence','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:19px;color:#fff;text-transform:uppercase;margin-bottom:8px;')}
+      ${ph('One photo, one rating, one note. Under a minute.','font-size:13px;color:rgba(255,255,255,.9);margin-bottom:18px;')}
+      ${realBtn('Log Evidence \u203a',"display:inline-block;background:#fff;color:var(--accent);font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;letter-spacing:.5px;text-decoration:none;padding:13px 30px;border-radius:6px;",'#')}
+    </div>`,
+    desc:'A call-to-action bar with a headline, subline, and a linkable button. Works on any theme \u2014 use orange or dark (black) shade.'},
+
+  invLogButtonTop:{group:'Investigation',norder:8.4,icon:'▤',name:'Log Evidence Bar (with kicker)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:32px 44px;text-align:center;">
+      ${ph('COMING UP \u00b7 WEEK 2','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:10px;')}
+      ${ph('Interview the Suspects','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:20px;color:#fff;text-transform:uppercase;margin-bottom:8px;')}
+      ${ph('Sugar. Dairy. Grains. Alcohol. Each one gets its day in the interrogation room.','font-size:13px;color:var(--secmuted);max-width:46ch;margin:0 auto 18px;line-height:1.6;')}
+      ${realBtn('File Your Week 1 Summary \u203a',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;letter-spacing:.5px;text-decoration:none;padding:13px 30px;border-radius:6px;",'#')}
+    </div>`,
+    desc:'A CTA bar with an orange kicker line above the headline, subline, and linkable button. Works on orange or dark shade.'},
+
+  invWeekLog:{group:'Investigation',norder:3.5,icon:'▪',name:'Weekly Evidence Log (7 days)',theme:'white',mode:'graphics',
+    html:()=>{
+      const sq=(n,on)=>`<div style="text-align:center;">
+        <div class="ev-box" data-filled="${on?'1':'0'}" onclick="toggleEvidence(this)" title="Click: solid = logged, outline = pending" style="width:32px;height:32px;border:2px solid var(--accent);background:${on?'var(--accent)':'transparent'};cursor:pointer;margin:0 auto 5px;"></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--secmuted);">${n}</div>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:30px 48px 34px;border:1px solid rgba(0,0,0,.10);">
+      ${ph('WEEK 1 EVIDENCE \u2014 DAYS LOGGED','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:2px;color:var(--secmuted);margin-bottom:14px;text-align:center;')}
+      <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+        ${sq('1',true)}${sq('2',true)}${sq('3',true)}${sq('4',false)}${sq('5',false)}${sq('6',false)}${sq('7',false)}
+      </div>
+    </div>`;},
+    desc:'A compact 7-day evidence strip. Click any square to toggle solid (logged) or outline (pending). Fixed at 7 days.'},
+
+  invDebrief:{group:'Investigation',norder:6.8,icon:'📰',name:'Debrief Header',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:34px 48px 40px;">
+      ${ph('WEEK 1 DEBRIEF','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:10px;')}
+      ${ph('Week One: Evidence Filed','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:34px;line-height:1.02;text-transform:uppercase;color:#fff;margin-bottom:12px;')}
+      ${ph('Seven days of surveillance complete. Here\u2019s what your case file looks like so far, Detective.','font-size:14px;line-height:1.6;color:var(--secmuted);max-width:50ch;')}
+    </div>`,
+    desc:'A bold debrief header with a kicker, large title, and intro line. Use the dark shade for the classic look.'},
+
+  invSuspectFile:{group:'Investigation',norder:2.5,icon:'🗃',name:'Suspect File (single)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:36px 48px 40px;">
+      ${ph('SUSPECT FILE','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:4px;color:var(--accent);margin-bottom:16px;')}
+      <div style="border:1px solid rgba(255,255,255,.2);border-top:3px solid var(--accent);padding:24px 26px;">
+        ${ph('NOW INTERVIEWING','font-family:\'JetBrains Mono\',monospace;font-size:8.5px;letter-spacing:2px;color:var(--secmuted);margin-bottom:6px;')}
+        ${ph('Sugar','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase;color:#fff;letter-spacing:1px;margin-bottom:16px;')}
+        <div style="display:flex;flex-wrap:wrap;gap:18px;margin-bottom:14px;">
+          <div style="flex:1;min-width:150px;">
+            ${ph('KNOWN ALIASES','font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:1.5px;color:var(--accent);margin-bottom:4px;')}
+            ${ph('Cane, syrup, dextrose, maltose, \u201cevaporated cane juice,\u201d and 50+ more.','font-size:12.5px;line-height:1.5;color:#c9c5bd;')}
+          </div>
+          <div style="flex:1;min-width:150px;">
+            ${ph('POTENTIAL MOTIVES','font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:1.5px;color:var(--accent);margin-bottom:4px;')}
+            ${ph('Afternoon crashes, relentless cravings, mood swings, poor sleep.','font-size:12.5px;line-height:1.5;color:#c9c5bd;')}
+          </div>
+        </div>
+        <button class="sus-verdict" data-v="0" onclick="cycleVerdict(this)" style="width:100%;background:transparent;border:1.5px dashed #8a8781;color:#8a8781;font-family:'Montserrat',sans-serif;font-weight:900;font-size:10px;letter-spacing:2px;padding:8px;cursor:pointer;margin-top:8px;">UNDER INVESTIGATION</button>
+      </div>
+    </div>`,
+    desc:'A single suspect dossier \u2014 name, aliases, motives, and a click-to-cycle verdict stamp. Best on the dark shade.'},
+
+  invLockerBar:{group:'Investigation',norder:13.5,icon:'🥇',name:'Reward / Status Bar',theme:'cream',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:24px 44px;display:flex;align-items:center;gap:18px;">
+      <div style="width:46px;height:46px;border:2px solid var(--accent);border-radius:50%;flex-shrink:0;text-align:center;line-height:42px;">${ph('🗄','display:inline;font-size:22px;','span')}</div>
+      <div style="flex:1;">
+        ${ph('EVIDENCE UNLOCKED','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:2px;color:var(--secmuted);margin-bottom:3px;')}
+        ${ph('Evidence Locker','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:16px;color:var(--sectext);margin-bottom:2px;')}
+        ${ph('Suspect interviews are now open. One culprit per day this week.','font-size:12.5px;color:var(--secmuted);line-height:1.5;')}
+      </div>
+    </div>`,
+    desc:'A horizontal bar with a circular emoji badge and text \u2014 use for reward unlocks (Evidence Locker, Magnifying Glass) or a full-board status note. Change the emoji and copy to suit.'},
+
+  invClueDark:{group:'Investigation',norder:4.5,icon:'🖤',name:'Clue Card (data / dark)',theme:'dark',mode:'graphics',
+    html:()=>`<div style="background:var(--secbg);padding:40px 48px 44px;">
+      <div style="border:2px solid var(--accent);padding:28px 30px;position:relative;">
+        <div style="position:absolute;top:-11px;left:26px;background:var(--secbg);padding:0 10px;">
+          ${ph('CLUE #15','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--accent);','span')}
+        </div>
+        ${ph('PATTERN DETECTED \u00b7 FROM YOUR LOGS','font-family:\'JetBrains Mono\',monospace;font-size:9px;letter-spacing:3px;color:var(--secmuted);margin:4px 0 12px;')}
+        ${ph('\u201cYou\u2019ve reported afternoon fatigue 8 times \u2014 and every one was before Day 12.\u201d','font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:22px;line-height:1.3;color:#fff;margin-bottom:14px;')}
+        ${ph('So what changed on Day 12?','font-family:\'Montserrat\',sans-serif;font-weight:700;font-size:13.5px;color:var(--accent);letter-spacing:.5px;')}
+      </div>
+    </div>`,
+    desc:'A dark clue card for surfacing a data pattern from member logs \u2014 clue number, source line, the finding, and a follow-up question.'},
+
   invRedacted:{group:'Investigation',norder:9,icon:'▬',name:'Redacted Teaser',theme:'dark',mode:'graphics',
     html:()=>`<div style="background:var(--secbg);padding:44px 48px 48px;">
       ${ph('CLASSIFIED','font-family:\'JetBrains Mono\',monospace;font-size:10px;font-weight:700;letter-spacing:5px;color:var(--accent);margin-bottom:16px;')}
@@ -4495,9 +4645,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.3',
+  version : 'v21.4',
   name    : 'The Investigation',
-  date    : '30 July 2026',
+  date    : '31 July 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -5117,6 +5267,13 @@ function buildExport(){
       f.classList.remove('sus-front');f.classList.remove('sus-back');
       if(!f.getAttribute('class'))f.removeAttribute('class');
     });
+  });
+  // standalone suspect verdict (Suspect File single section) -> freeze to plain text
+  clone.querySelectorAll('.sus-verdict').forEach(v=>{
+    const span=document.createElement('div');
+    span.setAttribute('style',(v.getAttribute('style')||'')+';cursor:default;');
+    span.textContent=v.textContent;
+    v.parentNode.replaceChild(span,v);
   });
 
   // investigation: evidence boxes — freeze current fill, drop the click affordance
@@ -5847,7 +6004,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.3 "The Investigation" · 30 July 2026
+**Current build:** v21.4 "The Investigation" · 31 July 2026
 
 ---
 
@@ -5868,6 +6025,28 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.4 — Investigation section pack · 31 July 2026
+
+Ten new Investigation sections, pulled from the Whole30 daily graphics so the whole
+campaign can be built in-app:
+
+- **Briefing — Week by Week.** The week-by-week version of the Investigator Briefing.
+  Add or remove weeks; each has a tag, title, and description.
+- **Case Details (table).** A clean two-column detail table (starts, duration, cost…) with
+  add/removable rows.
+- **File Checklist (opening report).** A checkbox list for the member’s opening evidence.
+- **Log Evidence Bar** and **Log Evidence Bar (with kicker).** Two call-to-action bars with a
+  real linkable button. The kicker version adds an orange line above the headline. Both
+  work on the orange or dark (black) shade.
+- **Weekly Evidence Log (7 days).** A compact seven-square strip; click any square to toggle
+  solid (logged) or outline (pending). Smaller squares than the existing progress block.
+- **Debrief Header.** A bold kicker + big title + intro line for week debriefs.
+- **Suspect File (single).** One suspect dossier — name, aliases, motives, and a
+  click-to-cycle verdict stamp.
+- **Reward / Status Bar.** A circular emoji badge beside a label and note — for reward
+  unlocks or a board-status line. Swap the emoji and text to reuse it anywhere.
+- **Clue Card (data / dark).** A dark clue card for surfacing a pattern from member logs.
 
 ## v21.3 — Featured Products grid · 30 July 2026
 
