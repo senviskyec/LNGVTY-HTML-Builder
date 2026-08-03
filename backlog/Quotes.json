@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-08-03T15:22:08.963Z",
+  "updatedAt": "2026-08-03T15:29:10.139Z",
   "items": [
     {
       "id": "quote-001",
@@ -136,11 +136,11 @@
     {
       "id": "quote-011",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:22:08.963Z",
+      "updatedAt": "2026-08-03T15:29:10.139Z",
       "content": {
         "quote": "Strength does not come from the physical capacity. It comes from an indomitable will.",
         "credit": "Mahatma Gandhi"
