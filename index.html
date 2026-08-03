@@ -431,6 +431,14 @@
   .li-move.dn{top:2px;right:21px;}
   .li-wrap:hover > .li-move,.li-wrap:hover .li-ctrls > .li-move,.li-wrap:hover .li-ctrls .li-move,.li-wrap:hover > tbody > tr > td > .li-move{display:block;}
   .li-move:hover{background:var(--accent);}
+  /* drag-to-reorder handle for list items (schedules, etc.) */
+  .li-drag{position:absolute;width:17px;height:17px;border-radius:4px;border:none;background:rgba(26,26,26,.78);color:#fff;font-size:10px;line-height:15px;text-align:center;cursor:grab;display:none;z-index:31;padding:0;}
+  .li-wrap:hover > .li-drag,.li-wrap:hover .li-ctrls > .li-drag,.li-wrap:hover .li-ctrls .li-drag,.li-wrap:hover > tbody > tr > td > .li-drag{display:block;}
+  .li-drag:hover{background:var(--accent);}
+  .li-drag:active{cursor:grabbing;}
+  .li-wrap.li-dragging{opacity:.45;}
+  .li-wrap.li-drop-before{box-shadow:0 -3px 0 0 var(--accent);}
+  .li-wrap.li-drop-after{box-shadow:0 3px 0 0 var(--accent);}
   /* addable inline tags (translucent orange pills) */
   .tag-wrap{display:inline-flex;flex-wrap:wrap;gap:0;align-items:center;}  /* spacing now lives on each .tag-pill as an inline margin so it survives export */
   .tag-pill{position:relative;display:inline-block;}
@@ -983,6 +991,19 @@
         <input type="date" id="nlDateInput"/>
       </div>
       <div class="panel-note" id="nlDateNote" style="margin-top:0;">Pick any day in the week you're sending. We'll snap to that week's <b>Sunday</b> and auto-fill the header date, the seven schedule days, and next week's <b>Mark Your Calendar</b> dates.</div>
+      <div class="field-row" style="margin-top:14px;border-top:1px solid #ececef;padding-top:14px;">
+        <label>Reuse a calendar from a past newsletter <span style="color:#aaa;font-weight:400;">(optional)</span></label>
+        <div id="nlPullStatus" style="font-size:12px;color:#888;margin:2px 0 8px;">Bring over the Weekly Schedule and Upcoming Events from a previous newsletter — the event names carry over, only the dates change to your chosen week.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+          <button class="tb-btn" id="nlPullBtn" onclick="openPullCalendar()" style="font-size:11px;">&#128197; Pull calendar from a newsletter…</button>
+          <span id="nlPullChosen" style="font-size:11px;color:#e05a1b;font-weight:700;"></span>
+          <button class="tb-btn" id="nlPullClear" onclick="clearPullCalendar()" style="font-size:10px;padding:5px 9px;display:none;">Clear</button>
+        </div>
+        <div id="nlPullPicker" style="display:none;margin-top:10px;border:1px solid #ececef;border-radius:8px;background:#fafafa;padding:10px;">
+          <div id="nlPullFilterBar" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;"></div>
+          <div id="nlPullList" style="max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="tb-btn" onclick="startNewsletterNoDate()">Skip dates</button>
@@ -1368,6 +1389,16 @@ function listBlock(items,proto,addLabel,containerStyle){
 }
 /* reorder buttons to drop inside a .li-wrap (call alongside the li-del button) */
 function liMoves(){return `<button class="li-move up" onclick="moveLi(this,-1)" title="Move up">▲</button><button class="li-move dn" onclick="moveLi(this,1)" title="Move down">▼</button>`;}
+/* A drag handle for reordering list items by dragging (nicer than clicking the
+   arrows many times). Used by the schedule sections. The handle sets draggable
+   on its .li-wrap on mousedown; global handlers (wired once) do the reordering. */
+function liDrag(){return `<button class="li-drag" title="Drag to reorder" onmousedown="startLiDrag(this)" onclick="return false;">⠿</button>`;}
+let liDragSrc=null;
+function startLiDrag(btn){
+  const wrap=btn.closest('.li-wrap');if(!wrap)return;
+  wrap.setAttribute('draggable','true');
+  liDragSrc=wrap;
+}
 /* a single editable tag pill (translucent orange) */
 function tagPill(text,style){
   const s=style||"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(224,90,27,.12);color:var(--accent);padding:3px 10px;";
@@ -1830,7 +1861,7 @@ const SECTIONS = {
           </td>
           <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">
             <button class="sched-addsub" onclick="addSchedSub(this)" title="Add another event on this day">＋ event</button>
-            ${liMoves()}<button class="li-del" onclick="delLi(this)">×</button>
+            ${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button>
           </td>
         </tr>
       </table>`;
@@ -1935,10 +1966,11 @@ const SECTIONS = {
       // one product card. Image is height-capped so it never balloons.
       const cardProto=`<div class="li-wrap nl-prod" style="flex:0 1 calc(50% - 9px);min-width:210px;position:relative;border:1px solid rgba(127,127,127,.18);background:var(--secbg);padding:0;display:flex;flex-direction:column;">
         <button class="li-del" onclick="delLi(this)" style="top:6px;right:6px;z-index:5;">\u00d7</button>
-        <div class="nl-ppic" data-on="1" style="display:block;">
+        <div class="nl-ppic" data-on="0" style="display:none;">
           <img class="nl-ppic-img" src="" alt="" style="display:block;width:100%;height:170px;object-fit:cover;background:#f0eee9;border-bottom:1px solid rgba(127,127,127,.15);"/>
           <button class="nl-ppic-btn" type="button" onclick="openProductPic(this)" style="display:block;width:100%;border:0;border-bottom:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 8px;cursor:pointer;">Set photo</button>
         </div>
+        <button class="nl-pptoggle" type="button" onclick="toggleProductPic(this)" data-on="0" style="margin:10px 12px 0;width:calc(100% - 24px);border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px;border-radius:4px;cursor:pointer;">+ Photo</button>
         <div style="padding:16px 18px 18px;display:flex;flex-direction:column;flex:1;">
           ${ph('Product Name',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;line-height:1.15;color:var(--sectext);margin-bottom:5px;")}
           ${ph('A short line on why members want it.',"font-size:12.5px;line-height:1.5;color:var(--secmuted);margin-bottom:12px;flex:1;")}
@@ -1963,6 +1995,17 @@ const SECTIONS = {
         'display:flex;flex-wrap:wrap;gap:18px;align-items:stretch;')}
     </div>`;},
     desc:'A grid of featured products, two per row, each with a fixed-size photo, name, blurb, add/removable detail fields, and a Shop button. Add or remove whole product cards.'},
+
+  nlquicktip:{group:'Tips',ngroup:'Newsletter',icon:'✦',name:'Quick Tip',theme:'white',mode:'newsletter',
+    html:()=>{
+      const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
+        <td valign="top" style="text-align:center;">${ph(txt,"font-size:14px;color:var(--body-text);line-height:1.85;font-weight:300;margin-bottom:14px;text-align:center;",'p')}</td>
+        <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+      </tr></table>`;
+      return `<div style="background:var(--secbg);padding:40px 48px 34px;border-bottom:1px solid #eee;text-align:center;">
+        ${ph('QUICK TIP',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px;text-align:center;")}
+        ${listBlock([para("A short, punchy tip goes here — one or two sentences the reader can act on this week.")],para('New paragraph'),'Add paragraph')}
+      </div>`;}},
 
   nltip:{group:'Tips',icon:'💡',name:'Tip Tuesday',theme:'gray',mode:'newsletter',
     html:()=>{
@@ -2014,7 +2057,7 @@ const SECTIONS = {
             ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
             <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
           </td>
-          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
         </tr>
       </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
@@ -3190,6 +3233,7 @@ const DEFAULT_DESC={
   nlschedule:'Recurring weekly schedule. Reorder days, and add multiple events to the same day with one connected bar.',
   nlmembers:'Welcome new members. Toggle member photos on or off and upload a picture for each.',
   nlrecipe:'Featured recipe with addable tags, add/removable macro stats, a grocery list, an optional photo, and an optional steps list.',
+  nlquicktip:'A centered quick tip with an orange kicker and add/removable paragraphs.',
   nltip:'Tip Tuesday — a featured tip plus add/removable mini-tip cards and addable focus tags.',
   nlswaps:'Smarter swaps (instead of / try this) plus a budget-protein list, both add/removable.',
   nlevents:'Upcoming events as date boxes (month / day / weekday). Reorder them, add tags, and add an optional time chip by the title.',
@@ -3512,7 +3556,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -3587,7 +3631,7 @@ function wireSec(sec){
   const handle=sec.querySelector('.sc-btn.drag');
   if(handle){
     handle.addEventListener('mousedown',()=>sec.setAttribute('draggable','true'));
-    sec.addEventListener('dragstart',()=>{dragSrc=sec;sec.style.opacity='.4';});
+    sec.addEventListener('dragstart',e=>{if(liDragSrc){return;}dragSrc=sec;sec.style.opacity='.4';});
     sec.addEventListener('dragend',()=>{sec.style.opacity='';sec.setAttribute('draggable','false');clearDrop();});
     sec.addEventListener('dragover',e=>{e.preventDefault();const r=sec.getBoundingClientRect();const after=e.clientY>r.top+r.height/2;clearDrop();sec.classList.add(after?'dragover-bot':'dragover-top');});
     sec.addEventListener('dragleave',()=>clearDrop());
@@ -3595,6 +3639,14 @@ function wireSec(sec){
   }
   // restore any saved media/embed in this section
   hydrateMedia(sec);
+  // Re-assert contenteditable on every editable. Some browsers don't fully
+  // activate editing on elements injected via innerHTML (especially inside
+  // table cells), which left Intro Box / Letter Body text uneditable after a
+  // reload. Setting the IDL property forces the editing host to initialise.
+  sec.querySelectorAll('[contenteditable]').forEach(el=>{
+    const v=(el.getAttribute('contenteditable')||'').toLowerCase();
+    el.contentEditable = (v==='false') ? 'false' : 'true';
+  });
   wireParagraphKeys(sec);
   injectFillBar(sec);
 }
@@ -3742,7 +3794,7 @@ function insertWidget(key){
    first asks for the send date, then snaps to that week's Sunday and auto-fills
    the header date, the seven schedule day-dates, and next week's Mark-Your-Calendar
    dates — so the only things left to fill are the quote and the week's content. */
-const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nltip','nlrecipe','nlevents','footer'];
+const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nlquicktip','nltip','nlrecipe','nlevents','footer'];
 
 /* Entry point from the "Start a newsletter" button — asks for the date first. */
 function buildNewsletterTemplate(){
@@ -3751,6 +3803,7 @@ function buildNewsletterTemplate(){
   openNlDate();
 }
 function openNlDate(){
+  clearPullCalendar();
   const inp=document.getElementById('nlDateInput');
   if(inp && !inp.value){
     // default to the upcoming Sunday
@@ -3768,6 +3821,102 @@ function confirmNlDate(){
   buildNewsletterSkeleton(v||null);
 }
 function startNewsletterNoDate(){closeNlDate();buildNewsletterSkeleton(null);}
+
+/* ═══════════ REUSE CALENDAR FROM A PAST NEWSLETTER ═══════════
+   Lets the operator bring the Weekly Schedule + Upcoming Events sections over
+   from a previously-saved newsletter so they don't rewrite every event each
+   week. The event names/times carry over; applyNewsletterDates() re-stamps the
+   dates for the newly chosen week. Stored as raw serialized sections. */
+let pulledCalendar=null;   // {schedule:{...section}, events:{...section}, name:''}
+let nlPullItems=[];        // cached list metadata
+let nlPullTag='All';
+
+function clearPullCalendar(){
+  pulledCalendar=null;
+  const chosen=document.getElementById('nlPullChosen');if(chosen)chosen.textContent='';
+  const clr=document.getElementById('nlPullClear');if(clr)clr.style.display='none';
+  const pick=document.getElementById('nlPullPicker');if(pick)pick.style.display='none';
+}
+
+async function openPullCalendar(){
+  const picker=document.getElementById('nlPullPicker');
+  const status=document.getElementById('nlPullStatus');
+  if(!ghReady()){toast('Connect a GitHub repo first (\u2699 GitHub).');openGithubSettings();return;}
+  picker.style.display='block';
+  document.getElementById('nlPullList').innerHTML='<div style="color:#aaa;font-size:12px;padding:8px;">Loading saved newsletters\u2026</div>';
+  try{
+    const files=await ghList();
+    const items=[];
+    for(const f of files){
+      try{
+        const nl=await ghLoadFile(f);
+        const hasCal=(nl.sections||[]).some(s=>s.key==='nlschedule'||s.key==='nlevents');
+        if(hasCal)items.push({id:nl.id||f.name.replace(/\.json$/i,''),name:nl.name||f.name.replace(/\.json$/i,''),tag:nl.tag||'',updated:nl.updatedAt||'',file:f});
+      }catch(e){}
+    }
+    nlPullItems=items;
+    renderPullFilters();renderPullList();
+    if(!items.length)document.getElementById('nlPullList').innerHTML='<div style="color:#aaa;font-size:12px;padding:8px;">No saved newsletters have a schedule or events section yet.</div>';
+  }catch(e){
+    document.getElementById('nlPullList').innerHTML='<div style="color:#c0392b;font-size:12px;padding:8px;">Couldn\u2019t reach GitHub: '+esc(e.message||String(e))+'</div>';
+  }
+}
+
+function renderPullFilters(){
+  const bar=document.getElementById('nlPullFilterBar');if(!bar)return;bar.innerHTML='';
+  const present=new Set();nlPullItems.forEach(it=>{const t=(it.tag||'').trim();if(t)present.add(t);});
+  const tags=['All',...present];
+  tags.forEach(t=>{
+    const count=(t==='All')?nlPullItems.length:nlPullItems.filter(it=>(it.tag||'').toLowerCase()===t.toLowerCase()).length;
+    const chip=document.createElement('button');
+    chip.className='saved-chip'+(nlPullTag.toLowerCase()===t.toLowerCase()?' active':'');
+    chip.style.cssText='font-size:10px;padding:3px 9px;';
+    chip.textContent=t+(t!=='All'?` (${count})`:'');
+    chip.onclick=()=>{nlPullTag=t;renderPullFilters();renderPullList();};
+    bar.appendChild(chip);
+  });
+}
+
+function renderPullList(){
+  const list=document.getElementById('nlPullList');if(!list)return;list.innerHTML='';
+  let view=nlPullItems;
+  if(nlPullTag&&nlPullTag!=='All')view=view.filter(it=>(it.tag||'').toLowerCase()===nlPullTag.toLowerCase());
+  if(!view.length){list.innerHTML='<div style="color:#aaa;font-size:12px;padding:8px;">Nothing tagged \u201c'+esc(nlPullTag)+'\u201d.</div>';return;}
+  // newest first when we have timestamps
+  view=[...view].sort((a,b)=>String(b.updated).localeCompare(String(a.updated)));
+  view.forEach(it=>{
+    const row=document.createElement('button');
+    row.type='button';
+    row.style.cssText='text-align:left;border:1px solid #e3e3e6;border-radius:7px;background:#fff;padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;';
+    const when=it.updated?new Date(it.updated):null;
+    const whenStr=when&&!isNaN(when)?when.toLocaleDateString([], {month:'short',day:'numeric'}):'';
+    row.innerHTML=`<span style="min-width:0;"><span style="font-family:'Montserrat';font-size:12px;font-weight:700;color:#222;">${esc(it.name||'Untitled')}</span>
+      ${it.tag?`<span style="font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;background:#e05a1b;padding:1px 6px;border-radius:4px;margin-left:6px;">${esc(it.tag)}</span>`:''}</span>
+      <span style="font-size:10px;color:#aaa;white-space:nowrap;">${esc(whenStr)} \u203a</span>`;
+    row.onclick=()=>choosePullCalendar(it,row);
+    list.appendChild(row);
+  });
+}
+
+async function choosePullCalendar(it,rowEl){
+  const list=document.getElementById('nlPullList');
+  if(rowEl)rowEl.style.opacity='.5';
+  try{
+    const nl=await ghLoadFile(it.file||{path:`${ghDir()}/${(it.id||slugify(it.name))}.json`});
+    const secs=nl.sections||[];
+    const schedule=secs.find(s=>s.key==='nlschedule')||null;
+    const events=secs.find(s=>s.key==='nlevents')||null;
+    if(!schedule&&!events){toast('That newsletter has no calendar sections.');if(rowEl)rowEl.style.opacity='';return;}
+    pulledCalendar={schedule,events,name:nl.name||it.name||''};
+    const chosen=document.getElementById('nlPullChosen');
+    if(chosen)chosen.textContent='Using calendar from \u201c'+(pulledCalendar.name||'newsletter')+'\u201d';
+    document.getElementById('nlPullClear').style.display='';
+    document.getElementById('nlPullPicker').style.display='none';
+  }catch(e){
+    toast('Couldn\u2019t load that newsletter: '+(e.message||e));
+    if(rowEl)rowEl.style.opacity='';
+  }
+}
 
 /* ISO yyyy-mm-dd for a local Date (no timezone drift) */
 function isoDate(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -3791,11 +3940,40 @@ function buildNewsletterSkeleton(dateStr){
     }
   });
   prefillNewsletterStatics();
+  // if the operator chose to reuse a past newsletter's calendar, swap the blank
+  // schedule/events sections for the saved ones (event copy carries over; dates
+  // get re-stamped below for the chosen week)
+  if(pulledCalendar){
+    applyPulledCalendar();
+  }
   const picked=parseLocalDate(dateStr);
   if(picked)applyNewsletterDates(picked);
   saveStateLocal();
   frame.scrollIntoView({behavior:'smooth',block:'start'});
-  toast(picked?'\u2713 Newsletter started — dates filled for the week':'\u2713 Newsletter started — add your quote and content');
+  const pulledMsg=pulledCalendar?' (calendar reused)':'';
+  toast(picked?'\u2713 Newsletter started — dates filled for the week'+pulledMsg:'\u2713 Newsletter started — add your quote and content'+pulledMsg);
+  pulledCalendar=null; // consume it so the next start is clean
+}
+
+/* Replace the freshly-added blank nlschedule / nlevents with the pulled saved
+   versions, in place, preserving their position in the skeleton. */
+function applyPulledCalendar(){
+  const swap=(key,saved)=>{
+    if(!saved)return;
+    const cur=frame.querySelector('.sec[data-key="'+key+'"]');
+    if(!cur)return;
+    const sec=document.createElement('div');sec.className='sec';sec.dataset.key=key;
+    sec.innerHTML=saved.html+controlsHTML();
+    const tag=sec.querySelector('.sec-tag');
+    if(tag){const S=allSections();tag.textContent=S[key]?.name||'';}
+    applySecTheme(sec,saved.theme||cur.dataset.theme||'white');
+    if(saved.accent){sec.style.setProperty('--accent',saved.accent);sec.dataset.accent=saved.accent;}
+    cur.replaceWith(sec);
+    wireSec(sec);
+  };
+  swap('nlschedule',pulledCalendar.schedule);
+  swap('nlevents',pulledCalendar.events);
+  refreshState();
 }
 
 /* Pre-fill the fields that are the SAME on every newsletter (brand identity and
@@ -4310,7 +4488,12 @@ function toggleProductPic(btn){
   pic.dataset.on=on?'0':'1';
   pic.style.display=on?'none':'block';
   btn.dataset.on=on?'0':'1';
-  btn.textContent=on?'+ Show product photo':'\u2212 Hide product photo';
+  // grid cards use a compact "+ Photo" button; the single product uses the
+  // full-width "+ Show product photo" button. Tell them apart by the label
+  // the button currently carries (both start with their own short/long form).
+  const compact=/photo$/i.test((btn.textContent||'').trim()) && !/show product|hide product/i.test(btn.textContent||'');
+  if(compact) btn.textContent=on?'+ Photo':'\u2212 Photo';
+  else btn.textContent=on?'+ Show product photo':'\u2212 Hide product photo';
 }
 function openProductPic(btn){
   const host=btn.closest('.nl-ppic');const img=host.querySelector('.nl-ppic-img');
@@ -4342,6 +4525,49 @@ function markEmpty(el){const empty=el.textContent.replace(/\u200b/g,'').trim().l
 frame.addEventListener('input',e=>{if(e.target.matches('[contenteditable]'))markEmpty(e.target);});
 frame.addEventListener('focusin',e=>{if(e.target.matches('[contenteditable]'))lastEditable=e.target;});
 frame.addEventListener('blur',e=>{if(e.target.matches('[contenteditable]'))markEmpty(e.target);},true);
+
+/* ═══════════ LIST-ITEM DRAG-AND-DROP ═══════════
+   Reorder items within a single .li-list by dragging their grip handle. Only
+   items sharing the same parent list can swap, so a schedule day can't jump into
+   an unrelated list. Wired once on the frame. */
+function liDragSiblingWrap(node){
+  // nearest .li-wrap that is a direct child of liDragSrc's list
+  if(!liDragSrc)return null;
+  const list=liDragSrc.parentElement;
+  let el=node;
+  while(el&&el!==frame){ if(el.classList&&el.classList.contains('li-wrap')&&el.parentElement===list)return el; el=el.parentElement; }
+  return null;
+}
+function clearLiDrop(){frame.querySelectorAll('.li-drop-before,.li-drop-after').forEach(e=>e.classList.remove('li-drop-before','li-drop-after'));}
+frame.addEventListener('dragstart',e=>{
+  if(!liDragSrc)return;
+  liDragSrc.classList.add('li-dragging');
+  try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain','li');}catch(_){}
+});
+frame.addEventListener('dragover',e=>{
+  if(!liDragSrc)return;
+  const tgt=liDragSiblingWrap(e.target);
+  if(!tgt||tgt===liDragSrc)return;
+  e.preventDefault();
+  const r=tgt.getBoundingClientRect();const after=e.clientY>r.top+r.height/2;
+  clearLiDrop();tgt.classList.add(after?'li-drop-after':'li-drop-before');
+});
+frame.addEventListener('drop',e=>{
+  if(!liDragSrc)return;
+  const tgt=liDragSiblingWrap(e.target);
+  if(tgt&&tgt!==liDragSrc){
+    e.preventDefault();
+    const r=tgt.getBoundingClientRect();const after=e.clientY>r.top+r.height/2;
+    if(after)tgt.after(liDragSrc);else tgt.before(liDragSrc);
+    renumberSteps(liDragSrc.parentElement);
+    saveStateLocal();
+  }
+  clearLiDrop();
+});
+frame.addEventListener('dragend',()=>{
+  if(liDragSrc){liDragSrc.classList.remove('li-dragging');liDragSrc.removeAttribute('draggable');}
+  clearLiDrop();liDragSrc=null;
+});
 
 /* ═══════════ LINK EDITOR ═══════════ */
 let linkTargetWrap=null;
@@ -4645,9 +4871,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.4',
+  version : 'v21.5',
   name    : 'The Investigation',
-  date    : '31 July 2026',
+  date    : '3 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -5134,7 +5360,7 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -6004,7 +6230,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.4 "The Investigation" · 31 July 2026
+**Current build:** v21.5 "The Investigation" · 3 August 2026
 
 ---
 
@@ -6025,6 +6251,26 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.5 — Newsletter workflow · 3 August 2026
+
+- **Fixed: Intro Box / Letter Body text was uneditable after a reload.** Editing now
+  re-activates correctly when a saved newsletter is reopened (or the page is closed and
+  reopened).
+- **New “Quick Tip” newsletter section.** A centered version of the letter body with an
+  orange “QUICK TIP” kicker and add/removable paragraphs. It’s now part of the
+  ⚡ Start a Newsletter skeleton.
+- **Drag-and-drop for the schedules.** Both the Weekly Schedule and Upcoming Events now
+  have a grip handle (⠹) on each row — drag a day to reorder instead of clicking the
+  arrows repeatedly. The arrows still work too.
+- **Featured Products photos toggle off by default.** The product grid now hides photos
+  until you turn them on per card (matching the single Featured Product), so cards aren’t
+  dominated by oversized images.
+- **Reuse a calendar from a past newsletter.** In the ⚡ Start a Newsletter date popup
+  there’s now a “Pull calendar from a newsletter…” button: pick a previous newsletter
+  (filter by tag), and its Weekly Schedule + Upcoming Events come across with the event
+  names intact — only the dates change to your chosen week. No more rewriting the calendar
+  every week.
 
 ## v21.4 — Investigation section pack · 31 July 2026
 
