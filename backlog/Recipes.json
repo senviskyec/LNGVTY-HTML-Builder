@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-08-03T15:21:41.728Z",
+  "updatedAt": "2026-08-03T15:29:09.255Z",
   "items": [
     {
       "id": "recipe-001",
@@ -41,11 +41,11 @@
     {
       "id": "recipe-002",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:21:41.728Z",
+      "updatedAt": "2026-08-03T15:29:09.255Z",
       "content": {
         "name": "Sheet-Pan Chicken & Veg",
         "image": "",
