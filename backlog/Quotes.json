@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-08-03T15:52:04.284Z",
+  "updatedAt": "2026-08-03T15:56:54.780Z",
   "items": [
     {
       "id": "quote-001",
@@ -110,11 +110,11 @@
     {
       "id": "quote-009",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:52:04.284Z",
+      "updatedAt": "2026-08-03T15:56:54.780Z",
       "content": {
         "quote": "Fall seven times, stand up eight.",
         "credit": "Japanese Proverb"
