@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-08-03T14:49:59.832Z",
+  "updatedAt": "2026-08-03T14:50:26.109Z",
   "items": [
     {
       "id": "recipe-001",
@@ -110,11 +110,11 @@
     {
       "id": "recipe-004",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:49:59.832Z",
+      "updatedAt": "2026-08-03T14:50:26.109Z",
       "content": {
         "name": "Turkey Chili",
         "image": "",
