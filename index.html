@@ -3794,7 +3794,7 @@ function insertWidget(key){
    first asks for the send date, then snaps to that week's Sunday and auto-fills
    the header date, the seven schedule day-dates, and next week's Mark-Your-Calendar
    dates — so the only things left to fill are the quote and the week's content. */
-const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nlquicktip','nltip','nlrecipe','nlevents','footer'];
+const NEWSLETTER_TEMPLATE=['nlheader','introbox','nlschedule','nlquicktip','nltip','nlproductgrid','nlrecipe','nlevents','footer'];
 
 /* Entry point from the "Start a newsletter" button — asks for the date first. */
 function buildNewsletterTemplate(){
@@ -4009,6 +4009,11 @@ const NL_STATIC_PREFILL={
   // events
   'Special Events':'Upcoming Events',
   'Mark Your Calendar':'Mark Your Calendar',
+  // quick tip — the kicker is constant, fill it as real text
+  'QUICK TIP':'QUICK TIP',
+  // featured products (grid) — section labels are constant
+  'FEATURED PRODUCTS':'FEATURED PRODUCTS',
+  'Member picks this month':'Member picks of the month',
 };
 function prefillNewsletterStatics(){
   frame.querySelectorAll('.sec [contenteditable][data-ph]').forEach(el=>{
@@ -4871,7 +4876,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.5',
+  version : 'v21.6',
   name    : 'The Investigation',
   date    : '3 August 2026',
 };
@@ -6230,7 +6235,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.5 "The Investigation" · 3 August 2026
+**Current build:** v21.6 "The Investigation" · 3 August 2026
 
 ---
 
@@ -6251,6 +6256,14 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.6 — Starter template polish · 3 August 2026
+
+- **Featured Products (grid) is now part of the ⚡ Start a Newsletter skeleton**, placed
+  right below Tip Tuesday.
+- **Section titles come pre-written, not as ghost text.** The Quick Tip “QUICK TIP” kicker
+  and the Featured Products “FEATURED PRODUCTS” / “Member picks of the month” titles are
+  filled in as real text when you start a newsletter, so there’s nothing to retype.
 
 ## v21.5 — Newsletter workflow · 3 August 2026
 
