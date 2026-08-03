@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-03T15:21:35.953Z",
+  "updatedAt": "2026-08-03T15:29:08.525Z",
   "items": [
     {
       "id": "tip-001",
@@ -90,11 +90,11 @@
     {
       "id": "tip-005",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:21:35.953Z",
+      "updatedAt": "2026-08-03T15:29:08.525Z",
       "content": {
         "main": "Recovery is where the results actually get built.",
         "description": "You don't get stronger in the gym — you get stronger when you recover from it. Prioritize these four this week.",
