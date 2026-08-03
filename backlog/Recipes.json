@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-08-03T15:52:25.070Z",
+  "updatedAt": "2026-08-03T15:56:54.044Z",
   "items": [
     {
       "id": "recipe-001",
@@ -387,11 +387,11 @@
     {
       "id": "recipe-012",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:52:25.070Z",
+      "updatedAt": "2026-08-03T15:56:54.044Z",
       "content": {
         "name": "Beef & Broccoli Stir-Fry",
         "image": "",
