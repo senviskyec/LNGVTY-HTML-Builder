@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-08-03T14:41:24.904Z",
+  "updatedAt": "2026-08-03T14:47:58.848Z",
   "items": [
     {
       "id": "quote-001",
@@ -460,12 +460,12 @@
     },
     {
       "id": "quote-036",
-      "status": "reserved",
+      "status": "published",
       "reservedBy": "draft",
-      "publishedIn": null,
-      "publishedDate": null,
+      "publishedIn": "Newsletter #9 - 8/02",
+      "publishedDate": "2026-08-03",
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:41:24.904Z",
+      "updatedAt": "2026-08-03T14:47:58.848Z",
       "content": {
         "quote": "Believe you can and you're halfway there.",
         "credit": "Theodore Roosevelt"
@@ -512,12 +512,12 @@
     },
     {
       "id": "quote-040",
-      "status": "reserved",
+      "status": "published",
       "reservedBy": "draft",
-      "publishedIn": null,
-      "publishedDate": null,
+      "publishedIn": "Newsletter #9 - 8/02",
+      "publishedDate": "2026-08-03",
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:39:20.668Z",
+      "updatedAt": "2026-08-03T14:47:58.848Z",
       "content": {
         "quote": "Rome wasn't built in a day, but they were laying bricks every hour.",
         "credit": "James Clear"
