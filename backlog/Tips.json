@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-03T14:49:45.773Z",
+  "updatedAt": "2026-08-03T14:50:25.308Z",
   "items": [
     {
       "id": "tip-001",
@@ -195,11 +195,11 @@
     {
       "id": "tip-010",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:49:45.773Z",
+      "updatedAt": "2026-08-03T14:50:25.308Z",
       "content": {
         "main": "Show up on the hard days — those are the ones that count double.",
         "description": "Today's boring choices build tomorrow's results. Show up for the small stuff.",
