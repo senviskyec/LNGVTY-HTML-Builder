@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-03T14:43:20.618Z",
+  "updatedAt": "2026-08-03T14:43:40.303Z",
   "items": [
     {
       "id": "tip-001",
@@ -152,12 +152,12 @@
     },
     {
       "id": "tip-008",
-      "status": "reserved",
-      "reservedBy": "draft",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:43:20.618Z",
+      "updatedAt": "2026-08-03T14:43:40.303Z",
       "content": {
         "main": "Fuel the work — under-eating protein stalls everything.",
         "description": "Under-eating protein quietly stalls everything. Fuel the work so the work pays off.",
