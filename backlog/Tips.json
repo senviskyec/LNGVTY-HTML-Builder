@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-03T15:52:14.453Z",
+  "updatedAt": "2026-08-03T15:56:53.269Z",
   "items": [
     {
       "id": "tip-001",
@@ -27,11 +27,11 @@
     {
       "id": "tip-002",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-test-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:52:14.453Z",
+      "updatedAt": "2026-08-03T15:56:53.269Z",
       "content": {
         "main": "Progress is data, not a verdict — track it, don't judge it.",
         "description": "Your numbers are feedback, not a grade. Track them so you can adjust — not so you can judge yourself.",
