@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-08-03T14:50:26.861Z",
+  "updatedAt": "2026-08-03T15:21:27.964Z",
   "items": [
     {
       "id": "quote-001",
@@ -668,12 +668,12 @@
     },
     {
       "id": "quote-052",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "draft",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-20T00:00:00Z",
+      "updatedAt": "2026-08-03T15:21:27.963Z",
       "content": {
         "quote": "Champions keep playing until they get it right.",
         "credit": "Billie Jean King"
