@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-08-03T15:51:55.360Z",
+  "updatedAt": "2026-08-03T15:52:03.545Z",
   "items": [
     {
       "id": "quote-001",
@@ -18,12 +18,12 @@
     },
     {
       "id": "quote-002",
-      "status": "reserved",
-      "reservedBy": "draft",
+      "status": "available",
+      "reservedBy": null,
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T15:51:55.360Z",
+      "updatedAt": "2026-08-03T15:52:03.545Z",
       "content": {
         "quote": "The groundwork for all happiness is good health.",
         "credit": "Leigh Hunt"
