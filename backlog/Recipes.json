@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-08-03T14:43:52.825Z",
+  "updatedAt": "2026-08-03T14:47:58.110Z",
   "items": [
     {
       "id": "recipe-001",
@@ -249,12 +249,12 @@
     },
     {
       "id": "recipe-008",
-      "status": "reserved",
+      "status": "published",
       "reservedBy": "draft",
-      "publishedIn": null,
-      "publishedDate": null,
+      "publishedIn": "Newsletter #9 - 8/02",
+      "publishedDate": "2026-08-03",
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:43:52.825Z",
+      "updatedAt": "2026-08-03T14:47:58.110Z",
       "content": {
         "name": "Protein Pancakes",
         "image": "",
