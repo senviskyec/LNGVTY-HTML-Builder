@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-03T14:43:41.135Z",
+  "updatedAt": "2026-08-03T14:47:57.411Z",
   "items": [
     {
       "id": "tip-001",
@@ -173,12 +173,12 @@
     },
     {
       "id": "tip-009",
-      "status": "reserved",
+      "status": "published",
       "reservedBy": "draft",
-      "publishedIn": null,
-      "publishedDate": null,
+      "publishedIn": "Newsletter #9 - 8/02",
+      "publishedDate": "2026-08-03",
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-03T14:43:41.135Z",
+      "updatedAt": "2026-08-03T14:47:57.411Z",
       "content": {
         "main": "You can't out-train a body you never let rest.",
         "description": "Rest isn't the opposite of progress — it's part of it. Build recovery into the plan.",
