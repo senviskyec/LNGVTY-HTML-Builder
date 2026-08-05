@@ -993,7 +993,7 @@
       <div class="panel-note" id="nlDateNote" style="margin-top:0;">Pick any day in the week you're sending. We'll snap to that week's <b>Sunday</b> and auto-fill the header date, the seven schedule days, and next week's <b>Mark Your Calendar</b> dates.</div>
       <div class="field-row" style="margin-top:14px;border-top:1px solid #ececef;padding-top:14px;">
         <label>Reuse a calendar from a past newsletter <span style="color:#aaa;font-weight:400;">(optional)</span></label>
-        <div id="nlPullStatus" style="font-size:12px;color:#888;margin:2px 0 8px;">Bring over the Weekly Schedule and Upcoming Events from a previous newsletter — the event names carry over, only the dates change to your chosen week.</div>
+        <div id="nlPullStatus" style="font-size:12px;color:#888;margin:2px 0 8px;">Bring over the Weekly Schedule and Upcoming Events from a previous newsletter — the events and their dates carry over exactly. Only the header date changes to your chosen week.</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
           <button class="tb-btn" id="nlPullBtn" onclick="openPullCalendar()" style="font-size:11px;">&#128197; Pull calendar from a newsletter…</button>
           <span id="nlPullChosen" style="font-size:11px;color:#e05a1b;font-weight:700;"></span>
@@ -1230,6 +1230,37 @@
     <div class="modal-foot">
       <span style="flex:1;font-size:11px;color:#999;" id="savedStatus">Not connected to GitHub yet.</span>
       <button class="tb-btn" onclick="closeSaved()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT SAVED ITEM metadata modal -->
+<div class="modal-bg" id="savedEditBg">
+  <div class="modal" style="width:440px;">
+    <div class="modal-head"><h3>&#9998; Edit Details</h3><button onclick="closeSavedEdit()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="panel-note" style="margin-top:0;">Change the name, tag, status, or notes. Saves straight to GitHub — no need to load the newsletter.</div>
+      <div class="field-row" style="margin-top:12px;">
+        <label>Name</label>
+        <input type="text" id="seName" placeholder="Newsletter name"/>
+      </div>
+      <div class="field-row">
+        <label>Tag</label>
+        <select id="seTag"></select>
+      </div>
+      <div class="field-row">
+        <label>Status <span style="color:#aaa;font-weight:400;">(optional)</span></label>
+        <input type="text" id="seStatus" placeholder="e.g. Draft, Sent"/>
+      </div>
+      <div class="field-row">
+        <label>Notes <span style="color:#aaa;font-weight:400;">(optional)</span></label>
+        <textarea id="seNotes" rows="3" placeholder="Any notes for yourself" style="resize:vertical;"></textarea>
+      </div>
+      <div id="seStatusMsg" style="font-size:11px;color:#999;min-height:14px;"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="tb-btn" onclick="closeSavedEdit()">Cancel</button>
+      <button class="tb-btn primary" id="seSaveBtn" onclick="saveSavedEdit()">Save changes</button>
     </div>
   </div>
 </div>
@@ -3941,17 +3972,18 @@ function buildNewsletterSkeleton(dateStr){
   });
   prefillNewsletterStatics();
   // if the operator chose to reuse a past newsletter's calendar, swap the blank
-  // schedule/events sections for the saved ones (event copy carries over; dates
-  // get re-stamped below for the chosen week)
+  // schedule/events sections for the saved ones (event copy AND their dates carry
+  // over untouched — only the header date changes to the new send date)
+  const reused=!!pulledCalendar;
   if(pulledCalendar){
     applyPulledCalendar();
   }
   const picked=parseLocalDate(dateStr);
-  if(picked)applyNewsletterDates(picked);
+  if(picked)applyNewsletterDates(picked,reused);
   saveStateLocal();
   frame.scrollIntoView({behavior:'smooth',block:'start'});
-  const pulledMsg=pulledCalendar?' (calendar reused)':'';
-  toast(picked?'\u2713 Newsletter started — dates filled for the week'+pulledMsg:'\u2713 Newsletter started — add your quote and content'+pulledMsg);
+  const pulledMsg=reused?' (calendar reused — dates kept)':'';
+  toast(picked?'\u2713 Newsletter started — header dated'+(reused?'':' and week filled')+pulledMsg:'\u2713 Newsletter started — add your quote and content'+pulledMsg);
   pulledCalendar=null; // consume it so the next start is clean
 }
 
@@ -4029,7 +4061,7 @@ function prefillNewsletterStatics(){
    • header date  → "Month D, YYYY" (the picked date)
    • schedule     → this week's Sun–Sat dates under each day label
    • events       → NEXT week's Sun–Sat date boxes (Mark Your Calendar) */
-function applyNewsletterDates(picked){
+function applyNewsletterDates(picked,headerOnly){
   const sun=weekSunday(picked);
   // header date
   const header=frame.querySelector('.sec[data-key="nlheader"]');
@@ -4039,6 +4071,9 @@ function applyNewsletterDates(picked){
     const dateEd=eds.find(e=>/\b\d{4}\b/.test(e.getAttribute('data-ph')||'')) || eds[3];
     if(dateEd){dateEd.textContent=NL_MONTHS[picked.getMonth()]+' '+picked.getDate()+', '+picked.getFullYear();markEmpty(dateEd);}
   }
+  // when a calendar was pulled from a past newsletter, keep that calendar's own
+  // dates untouched — only the header date reflects the new send date.
+  if(headerOnly)return;
   // schedule: fill the small date line under each day (rows are Sun..Sat in order)
   const sched=frame.querySelector('.sec[data-key="nlschedule"]');
   if(sched){
@@ -4876,9 +4911,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.6',
+  version : 'v21.7',
   name    : 'The Investigation',
-  date    : '3 August 2026',
+  date    : '4 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -6070,6 +6105,57 @@ function renderSavedFilters(){
   });
 }
 
+/* ── Edit a saved item's metadata (name/tag/status/notes) straight to GitHub,
+   without loading the whole newsletter into the builder. ── */
+let savedEditItem=null;
+function openSavedEdit(it){
+  if(!ghReady()){toast('Connect a GitHub repo first (\u2699 GitHub).');openGithubSettings();return;}
+  savedEditItem=it;
+  const sel=document.getElementById('seTag');
+  // build tag options from the standard set plus whatever tags exist
+  const present=new Set();(savedCurrentItems||[]).forEach(x=>{const t=(x.tag||'').trim();if(t)present.add(t);});
+  const tags=[...SAVED_STD_TAGS];present.forEach(t=>{if(!tags.some(x=>x.toLowerCase()===t.toLowerCase()))tags.push(t);});
+  if(it.tag && !tags.some(x=>x.toLowerCase()===String(it.tag).toLowerCase()))tags.unshift(it.tag);
+  sel.innerHTML=tags.map(t=>`<option value="${esc(t)}"${(it.tag||'').toLowerCase()===t.toLowerCase()?' selected':''}>${esc(t)}</option>`).join('');
+  document.getElementById('seName').value=it.name||'';
+  document.getElementById('seStatus').value=it.status||'';
+  document.getElementById('seNotes').value=it.notes||'';
+  document.getElementById('seStatusMsg').textContent='';
+  document.getElementById('savedEditBg').classList.add('show');
+}
+function closeSavedEdit(){document.getElementById('savedEditBg').classList.remove('show');savedEditItem=null;}
+async function saveSavedEdit(){
+  if(!savedEditItem)return;
+  const btn=document.getElementById('seSaveBtn');
+  const msg=document.getElementById('seStatusMsg');
+  const name=document.getElementById('seName').value.trim();
+  const tag=document.getElementById('seTag').value;
+  const statusV=document.getElementById('seStatus').value.trim();
+  const notes=document.getElementById('seNotes').value.trim();
+  if(!name){msg.style.color='#c0392b';msg.textContent='Name can\u2019t be empty.';return;}
+  btn.disabled=true;btn.textContent='Saving\u2026';msg.style.color='#999';msg.textContent='Saving to GitHub\u2026';
+  try{
+    const file=savedEditItem.file||{path:`${ghDir()}/${(savedEditItem.id||slugify(savedEditItem.name))}.json`};
+    const nl=await ghLoadFile(file);
+    // keep the same id/file (renaming only changes the display name, not the filename,
+    // so we never orphan or duplicate the stored file)
+    nl.name=name;nl.tag=tag;nl.status=statusV;nl.notes=notes;
+    nl.updatedAt=new Date().toISOString();
+    await ghPut(nl);
+    // reflect in the local registry + in-memory list so the grid updates immediately
+    const id=nl.id||savedEditItem.id||slugify(name);
+    const list=getSavedList().map(r=>((r.id||slugify(r.name))===id)?{...r,name,tag,status:statusV,notes,updated:nl.updatedAt}:r);
+    setSavedList(list);
+    (savedCurrentItems||[]).forEach(x=>{if((x.id||slugify(x.name))===id){x.name=name;x.tag=tag;x.status=statusV;x.notes=notes;x.updated=nl.updatedAt;}});
+    closeSavedEdit();
+    renderSavedFilters();renderSaved(savedCurrentItems,savedCurrentPlaceholder);
+    toast('\u2713 Details updated');
+  }catch(e){
+    msg.style.color='#c0392b';msg.textContent='Save failed: '+(e.message||e);
+  }
+  btn.disabled=false;btn.textContent='Save changes';
+}
+
 function renderSaved(items,isPlaceholder){
   const grid=document.getElementById('savedGrid');grid.innerHTML='';
   // apply the active tag filter
@@ -6128,6 +6214,13 @@ function renderSaved(items,isPlaceholder){
       row.appendChild(pv);
     }
     if(!isPlaceholder){
+      const ed=document.createElement('button');
+      ed.className='tb-btn';ed.style.cssText='font-size:10px;padding:6px 10px;';
+      ed.innerHTML='&#9998; Edit';
+      ed.onclick=()=>openSavedEdit(it);
+      row.appendChild(ed);
+    }
+    if(!isPlaceholder){
       const del=document.createElement('button');
       del.className='tb-btn danger';del.style.cssText='font-size:10px;padding:6px 10px;';
       del.innerHTML='&#128465; Delete';
@@ -6153,8 +6246,7 @@ async function reloadSaved(){
   const status=document.getElementById('savedStatus');
   const btn=document.getElementById('savedReload');
   const setBtn=(t)=>{if(btn)btn.innerHTML=t;};
-  if(!ghReady()){status.textContent='No GitHub repo connected. Click \u2699 GitHub to set one up.';openGithubSettings();return;}
-  status.textContent='Loading from GitHub…';setBtn('&#8635; Reloading…');
+  if(!ghReady()){status.textContent='No GitHub repo connected. Click \u2699 GitHub to set one up.';openGithubSettings();return;}  status.textContent='Loading from GitHub…';setBtn('&#8635; Reloading…');
   try{
     const files=await ghList();
     if(!files.length){
@@ -6235,7 +6327,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.6 "The Investigation" · 3 August 2026
+**Current build:** v21.7 "The Investigation" · 4 August 2026
 
 ---
 
@@ -6256,6 +6348,18 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.7 — Saved editing & smarter calendar reuse · 4 August 2026
+
+- **Reused calendars keep their own dates.** When you pull a calendar from a past
+  newsletter in the ⚡ Start a Newsletter popup, the Weekly Schedule and Upcoming Events
+  now come across exactly as they were — dates included. Only the header date updates to
+  your chosen week. (If you *don’t* pull a calendar, the dates still auto-fill from the
+  date you pick, as before.)
+- **Edit saved newsletters without loading them.** The ⭐ Saved menu now has an
+  ✎ Edit button on each card. Change the name, tag, status, or notes and it saves the
+  change straight to GitHub — no need to load the whole newsletter first. The stored file
+  keeps its original filename, so nothing is duplicated or orphaned.
 
 ## v21.6 — Starter template polish · 3 August 2026
 
