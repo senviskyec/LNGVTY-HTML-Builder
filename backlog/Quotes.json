@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-08-05T15:11:00.991Z",
+  "updatedAt": "2026-08-05T15:14:39.774Z",
   "items": [
     {
       "id": "quote-001",
@@ -617,11 +617,11 @@
     {
       "id": "quote-048",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-10-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-08-05T15:11:00.991Z",
+      "updatedAt": "2026-08-05T15:14:39.774Z",
       "content": {
         "quote": "Don't count the days, make the days count.",
         "credit": "Muhammad Ali"
