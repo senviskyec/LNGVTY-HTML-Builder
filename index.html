@@ -245,6 +245,37 @@
   .set-item.active .ic{filter:none;}
   .set-item.active .ch{opacity:.85;transform:none;}
   .set-sep{height:1px;background:#26272d;margin:10px 12px;}
+  /* ── Section Organizer ── */
+  .org-wrap{color:#ddd;}
+  .org-toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+  .org-modes{display:flex;gap:4px;background:#1c1d22;border:1px solid #303138;border-radius:8px;padding:3px;}
+  .org-mode{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#aaa;background:transparent;border:none;border-radius:6px;padding:6px 11px;cursor:pointer;}
+  .org-mode.active{background:var(--accent);color:#fff;}
+  .org-btn{font-family:'Montserrat';font-size:11px;font-weight:700;color:#eee;background:#26272d;border:1px solid #34353a;border-radius:6px;padding:6px 11px;cursor:pointer;}
+  .org-btn:hover{border-color:var(--accent);}
+  .org-btn.ghost{background:transparent;color:#999;}
+  .org-hint{font-size:11px;color:#888;margin-bottom:12px;line-height:1.5;}
+  .org-tab{border:1px solid #303138;border-radius:9px;background:#191a1e;margin-bottom:10px;overflow:hidden;}
+  .org-tab.drop-tab{border-color:var(--accent);box-shadow:0 0 0 2px rgba(224,90,27,.25);}
+  .org-tab-head{display:flex;align-items:center;gap:8px;padding:9px 11px;background:#1f2025;border-bottom:1px solid #2a2b30;cursor:grab;}
+  .org-tab-head .thandle{color:#666;font-size:12px;}
+  .org-tab-name{flex:1;font-family:'Montserrat';font-size:12px;font-weight:800;letter-spacing:.5px;color:#f0f0f0;background:transparent;border:1px solid transparent;border-radius:5px;padding:3px 6px;}
+  .org-tab-name:focus{outline:none;border-color:#3a3b40;background:#151519;}
+  .org-tab-count{font-size:10px;color:#888;font-family:'JetBrains Mono';}
+  .org-tab-del{color:#888;background:none;border:none;cursor:pointer;font-size:14px;padding:2px 6px;}
+  .org-tab-del:hover{color:#e05a1b;}
+  .org-secs{padding:8px;display:flex;flex-wrap:wrap;gap:6px;min-height:38px;}
+  .org-secs.empty{align-items:center;justify-content:center;color:#666;font-size:11px;font-style:italic;}
+  .org-chip{display:flex;align-items:center;gap:6px;background:#25262c;border:1px solid #34353a;border-radius:7px;padding:5px 8px;cursor:grab;max-width:100%;}
+  .org-chip.dragging{opacity:.4;}
+  .org-chip .cic{font-size:12px;}
+  .org-chip .cnm{font-family:'Montserrat';font-size:11px;font-weight:600;color:#e6e6e6;background:transparent;border:1px solid transparent;border-radius:4px;padding:1px 4px;max-width:150px;}
+  .org-chip .cnm:focus{outline:none;border-color:#3a3b40;background:#141418;}
+  .org-chip .cdup{color:#888;cursor:pointer;font-size:11px;}
+  .org-chip .cdup:hover{color:var(--accent);}
+  .org-chip .cdel{color:#7a4;cursor:pointer;font-size:12px;display:none;}
+  .org-chip.is-dupe .cdel{display:inline;color:#c86;}
+  .org-chip.is-dupe{border-style:dashed;}
   .set-foot{padding:12px 20px;border-top:1px solid #26272d;font-size:10px;color:#6a6b73;
     font-family:'Montserrat';letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
@@ -686,6 +717,7 @@
         <button class="set-item" data-pane="html"><span class="ic">&#10216;&#10217;</span><span class="tx">View HTML</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="import"><span class="ic">&#128229;</span><span class="tx">Import</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="newsec"><span class="ic">&#10010;</span><span class="tx">New Section</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="organize"><span class="ic">&#9776;</span><span class="tx">Organize Sections</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
         <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
@@ -729,6 +761,7 @@
         <div class="set-pane" data-pane="html" id="pane-html"></div>
         <div class="set-pane" data-pane="import" id="pane-import"></div>
         <div class="set-pane" data-pane="newsec" id="pane-newsec"></div>
+        <div class="set-pane" data-pane="organize" id="pane-organize"></div>
         <div class="set-pane" data-pane="github" id="pane-github"></div>
         <div class="set-pane" data-pane="docs" id="pane-docs"></div>
 
@@ -1230,6 +1263,22 @@
     <div class="modal-foot">
       <span style="flex:1;font-size:11px;color:#999;" id="savedStatus">Not connected to GitHub yet.</span>
       <button class="tb-btn" onclick="closeSaved()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY PICKER modal (choose a specific item, no randomness) -->
+<div class="modal-bg" id="libPickBg">
+  <div class="modal" style="width:560px;">
+    <div class="modal-head"><h3 id="libPickTitle">📖 Choose a Recipe</h3><button onclick="closeLibPicker()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="panel-note" style="margin-top:0;">Pick exactly which item goes into the section — nothing random. <span id="libPickNote"></span></div>
+      <input type="text" id="libPickSearch" placeholder="Search…" oninput="renderLibPickList()" style="width:100%;margin:12px 0 8px;padding:8px 10px;border:1px solid #ddd;border-radius:7px;font-size:13px;"/>
+      <div id="libPickList" style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:7px;"></div>
+    </div>
+    <div class="modal-foot">
+      <span style="flex:1;font-size:11px;color:#999;" id="libPickStatus"></span>
+      <button class="tb-btn" onclick="closeLibPicker()">Close</button>
     </div>
   </div>
 </div>
@@ -3344,7 +3393,38 @@ let CUSTOM={};               // key -> {group,icon,name,theme,raw}
 let TABS=[];                 // ordered tab names for the sections rail
 const DEFAULT_GROUP_ORDER=['Structure','Challenge','Investigation','Hero','Stats','Body','Lists','Social Proof','Highlight','Offers','Strips','CTA','Embed'];
 
-function allSections(){return Object.assign({},SECTIONS,builtCustomMap());}
+function allSections(){
+  const all=Object.assign({},SECTIONS,builtCustomMap(),builtDuplicateMap());
+  Object.keys(all).forEach(k=>{if(all[k]&&typeof all[k]==='object')all[k].__key=k;});
+  return all;
+}
+
+/* ═══════════ LOCAL SECTION ORGANIZATION (no GitHub) ═══════════
+   Operators can locally re-home sections into different tabs/modes, rename them,
+   duplicate a section into several tabs, and create/rename/reorder tabs. All of
+   this is a thin override layer over the built-in registry, saved to
+   localStorage — it never touches the section HTML or the saved newsletters. */
+const ORG_KEY='lngvty_section_org';
+let SECTION_ORG=loadOrg();
+function loadOrg(){
+  try{const o=JSON.parse(localStorage.getItem(ORG_KEY)||'{}');
+    return {over:o.over||{}, dupes:o.dupes||{}, tabOrder:o.tabOrder||{}, tabNames:o.tabNames||{}, newTabs:o.newTabs||{}};
+  }catch(e){return {over:{},dupes:{},tabOrder:{},tabNames:{},newTabs:{}};}
+}
+function saveOrg(){try{localStorage.setItem(ORG_KEY,JSON.stringify(SECTION_ORG));}catch(e){}}
+/* per-section override: {group, ngroup, mode, name} — any subset */
+function orgOver(key){return SECTION_ORG.over[key]||null;}
+/* duplicate sections: {dupKey:{base, group, mode, name, ngroup}} — clones a base
+   section into another tab. Rendered via allSections through builtDuplicateMap. */
+function builtDuplicateMap(){
+  const m={};
+  Object.entries(SECTION_ORG.dupes||{}).forEach(([k,d])=>{
+    const base=(SECTIONS[d.base]||builtCustomMap()[d.base]);
+    if(!base)return;
+    m[k]=Object.assign({},base,{group:d.group||base.group,mode:d.mode||base.mode,name:d.name||base.name,ngroup:d.ngroup,__dupBase:d.base});
+  });
+  return m;
+}
 function builtCustomMap(){
   const m={};
   Object.entries(CUSTOM).forEach(([k,c])=>{
@@ -3353,13 +3433,20 @@ function builtCustomMap(){
   return m;
 }
 /* does a section belong in the currently-shown rail tab? */
-function secMode(s){return s.mode||'graphics';}
+function secMode(s){const ov=s&&s.__key&&orgOver(s.__key);return (ov&&ov.mode)||s.mode||'graphics';}
 /* A shared section can sit in a different rail group depending on the mode —
    e.g. the Intro Box is "Body" in Graphics but belongs with the Newsletter blocks. */
 function secGroup(s){
+  const ov=s&&s.__key&&orgOver(s.__key);
+  if(ov){
+    if(railMode==='newsletter'&&ov.ngroup)return ov.ngroup;
+    if(ov.group)return ov.group;
+  }
   if(railMode==='newsletter'&&s.ngroup)return s.ngroup;
   return s.group;
 }
+/* display name honoring a local rename */
+function secName(key,s){const ov=orgOver(key);return (ov&&ov.name)||(s&&s.name)||key;}
 function inCurrentMode(s){
   const m=secMode(s);
   if(railMode==='docs')return m==='docs';            // docs tab: only documentation sections
@@ -3374,16 +3461,22 @@ const DOCS_GROUP_ORDER=['Doc Structure','Doc Content','Doc Data','Doc Planning',
 function computeTabs(){
   const groups=new Set();
   Object.values(allSections()).forEach(s=>{if(inCurrentMode(s))groups.add(secGroup(s));});
-  // start from default order, then any custom-created tabs in creation order
+  // include any empty tabs the operator created for this mode (so you can make a
+  // tab first, then drag sections into it)
+  (SECTION_ORG.newTabs[railMode]||[]).forEach(g=>groups.add(g));
   const ordered=[];
-  const orderList=(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:(railMode==='docs')?DOCS_GROUP_ORDER:DEFAULT_GROUP_ORDER;
+  // a saved per-mode order takes precedence when present
+  const savedOrder=SECTION_ORG.tabOrder[railMode];
+  const orderList=savedOrder&&savedOrder.length?savedOrder
+    :(railMode==='newsletter')?NEWSLETTER_GROUP_ORDER:(railMode==='blog')?BLOG_GROUP_ORDER:(railMode==='docs')?DOCS_GROUP_ORDER:DEFAULT_GROUP_ORDER;
   orderList.forEach(g=>{if(groups.has(g)){ordered.push(g);groups.delete(g);}});
-  // preserve any previously-known custom tab order
   TABS.forEach(g=>{if(groups.has(g)){ordered.push(g);groups.delete(g);}});
   groups.forEach(g=>ordered.push(g));
   TABS=ordered;
   return ordered;
 }
+/* display label for a tab (honoring a local rename) */
+function tabLabel(g){const nm=SECTION_ORG.tabNames&&SECTION_ORG.tabNames[g];return nm||g;}
 
 /* ═══════════ RAIL: MODE TOGGLE + ACCORDION PALETTE ═══════════ */
 let railMode='newsletter';                // default tab | 'graphics' | 'newsletter' | 'blog' | 'hotkeys'
@@ -3535,7 +3628,7 @@ function renderRail(filter=''){
 
   TABS.forEach((g)=>{
     const all=grouped[g]||[];
-    const items=all.filter(([k,s])=>!f||s.name.toLowerCase().includes(f)||g.toLowerCase().includes(f));
+    const items=all.filter(([k,s])=>!f||secName(k,s).toLowerCase().includes(f)||tabLabel(g).toLowerCase().includes(f));
     if(f && !items.length)return;                 // hide empty groups while searching
     // while filtering, force-open any group with matches
     const isOpen = f ? true : openGroups.has(g);
@@ -3545,7 +3638,7 @@ function renderRail(filter=''){
 
     const head=document.createElement('button');
     head.className='acc-head';
-    head.innerHTML=`<span class="chev">▶</span><span class="lbl">${g}</span><span class="cnt">${all.length}</span>`;
+    head.innerHTML=`<span class="chev">▶</span><span class="lbl">${esc(tabLabel(g))}</span><span class="cnt">${all.length}</span>`;
     head.onclick=()=>{ if(f){document.getElementById('palSearch').value='';openGroups=new Set([g]);renderRail('');} else toggleGroup(g); };
     group.appendChild(head);
 
@@ -3554,7 +3647,7 @@ function renderRail(filter=''){
     items.forEach(([k,s])=>{
       const el=document.createElement('div');el.className='pal-item';
       const delBtn=s.custom?`<span class="pal-del" title="Delete custom section" onclick="event.stopPropagation();deleteCustom('${k}')">×</span>`:'';
-      el.innerHTML=`<span class="ic">${s.icon}</span><span class="nm">${s.name}</span>${delBtn}<span class="plus">+</span>`;
+      el.innerHTML=`<span class="ic">${s.icon}</span><span class="nm">${esc(secName(k,s))}</span>${delBtn}<span class="plus">+</span>`;
       armPaletteDrag(el,k);   // click = append; click-and-hold = drag into place
       el.addEventListener('mouseenter',()=>showSecPreview(k,s,el));
       el.addEventListener('mouseleave',hideSecPreview);
@@ -3704,6 +3797,12 @@ function injectFillBar(sec){
   let html=`<span class="fb-label">📚 ${cfg.label}</span>
     <button class="fb-btn primary" type="button" onclick="libGenerate('${cfg.type}')">🎲 Generate</button>
     <button class="fb-btn" type="button" onclick="libNext('${cfg.type}')">🔄 Next</button>`;
+  // Recipes are chosen deliberately, not at random — the Generate button opens a
+  // picker of every recipe in the library instead of pulling one blindly.
+  if(cfg.type==='recipes'){
+    html=`<span class="fb-label">📚 ${cfg.label}</span>
+      <button class="fb-btn primary" type="button" onclick="openLibPicker('recipes')">📖 Choose recipe…</button>`;
+  }
   if(key==='nltip'){
     html+=`<span class="fb-sep"></span><span class="fb-mini-label">reroll one:</span>`+
       ['hydration','protein','sleep','mobility'].map(f=>`<button class="fb-btn mini" type="button" onclick="libNextTipField('${f}')">${f}</button>`).join('');
@@ -4911,9 +5010,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.7',
+  version : 'v21.8',
   name    : 'The Investigation',
-  date    : '4 August 2026',
+  date    : '6 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -5059,6 +5158,7 @@ const SET_PANES={
   html   : {title:'View HTML',    src:'modalBg'},
   import : {title:'Import',       src:'importBg'},
   newsec : {title:'New Section',  src:'addBg'},
+  organize:{title:'Organize Sections', src:null},   // authored inline
   github : {title:'GitHub',       src:'githubBg'},
   docs   : {title:'Docs',         src:'docsBg'},
   about  : {title:'Version & Notes', src:null},   // authored inline
@@ -5113,6 +5213,155 @@ function openSettings(pane){
 }
 function closeSettings(){document.getElementById('settingsBg').classList.remove('show');}
 
+/* ═══════════ SECTION ORGANIZER (local only) ═══════════ */
+let orgMode='newsletter';   // which rail mode we're organizing
+let orgDragKey=null, orgDragFrom=null;
+const ORG_MODES=[['graphics','Graphics'],['newsletter','Newsletter'],['blog','Webpage'],['docs','Docs']];
+function renderOrganize(){
+  const pane=document.getElementById('pane-organize');if(!pane)return;
+  pane.innerHTML=`
+    <div class="org-wrap">
+      <div class="org-toolbar">
+        <div class="org-modes">${ORG_MODES.map(([m,l])=>`<button class="org-mode${m===orgMode?' active':''}" onclick="orgSetMode('${m}')">${l}</button>`).join('')}</div>
+        <button class="org-btn" onclick="orgAddTab()">＋ New tab</button>
+        <button class="org-btn ghost" onclick="orgReset()">Reset all</button>
+      </div>
+      <div class="org-hint">Drag a section chip into another tab to move it, or drag a tab by its header to reorder. Use ⧉ to duplicate a section into more than one tab, and click a name to rename it. These changes are local to this browser and don't affect saved newsletters or exports.</div>
+      <div id="orgTabs"></div>
+    </div>`;
+  orgRenderTabs();
+}
+function orgSetMode(m){orgMode=m;renderOrganize();}
+function orgRenderTabs(){
+  const host=document.getElementById('orgTabs');if(!host)return;host.innerHTML='';
+  // compute tabs for the target mode (temporarily switch railMode for grouping math)
+  const savedRail=railMode;railMode=orgMode;
+  const sections=allSections();
+  const grouped={};const order=[];
+  Object.entries(sections).forEach(([k,s])=>{if(inCurrentMode(s)){const g=secGroup(s);if(!grouped[g]){grouped[g]=[];order.push(g);}grouped[g].push([k,s]);}});
+  (SECTION_ORG.newTabs[orgMode]||[]).forEach(g=>{if(!grouped[g]){grouped[g]=[];order.push(g);}});
+  // honor saved order first
+  const savedOrder=SECTION_ORG.tabOrder[orgMode]||[];
+  const tabs=[];savedOrder.forEach(g=>{if(grouped[g]&&!tabs.includes(g))tabs.push(g);});order.forEach(g=>{if(!tabs.includes(g))tabs.push(g);});
+  railMode=savedRail;
+  tabs.forEach(g=>{
+    const list=grouped[g]||[];
+    const tab=document.createElement('div');tab.className='org-tab';tab.dataset.tab=g;
+    tab.setAttribute('draggable','true');
+    tab.addEventListener('dragstart',e=>{if(orgDragKey)return;e.stopPropagation();orgDragTab=g;});
+    tab.addEventListener('dragend',()=>{orgDragTab=null;host.querySelectorAll('.drop-tab').forEach(t=>t.classList.remove('drop-tab'));});
+    tab.addEventListener('dragover',e=>{e.preventDefault();if(orgDragKey||orgDragTab)tab.classList.add('drop-tab');});
+    tab.addEventListener('dragleave',()=>tab.classList.remove('drop-tab'));
+    tab.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();tab.classList.remove('drop-tab');
+      if(orgDragKey){orgMoveSection(orgDragKey,g);}
+      else if(orgDragTab&&orgDragTab!==g){orgReorderTab(orgDragTab,g);}
+    });
+    const canDelTab=list.length===0;   // only empty tabs can be removed (keeps sections safe)
+    tab.innerHTML=`<div class="org-tab-head">
+        <span class="thandle">⠿</span>
+        <input class="org-tab-name" value="${esc(tabLabel(g))}" onchange="orgRenameTab('${esc(g)}',this.value)" onclick="event.stopPropagation()"/>
+        <span class="org-tab-count">${list.length}</span>
+        ${canDelTab?`<button class="org-tab-del" title="Remove empty tab" onclick="orgDeleteTab('${esc(g)}')">×</button>`:''}
+      </div>
+      <div class="org-secs${list.length?'':' empty'}">${list.length?'':'Drop sections here'}</div>`;
+    const secBox=tab.querySelector('.org-secs');
+    list.forEach(([k,s])=>{
+      const isDupe=!!(SECTION_ORG.dupes&&SECTION_ORG.dupes[k]);
+      const chip=document.createElement('div');chip.className='org-chip'+(isDupe?' is-dupe':'');chip.dataset.key=k;
+      chip.setAttribute('draggable','true');
+      chip.addEventListener('dragstart',e=>{e.stopPropagation();orgDragKey=k;orgDragFrom=g;chip.classList.add('dragging');});
+      chip.addEventListener('dragend',()=>{orgDragKey=null;orgDragFrom=null;chip.classList.remove('dragging');host.querySelectorAll('.drop-tab').forEach(t=>t.classList.remove('drop-tab'));});
+      chip.innerHTML=`<span class="cic">${s.icon||'◧'}</span>
+        <input class="cnm" value="${esc(secName(k,s))}" onchange="orgRenameSection('${k}',this.value)"/>
+        <span class="cdup" title="Duplicate into another tab" onclick="orgDuplicate('${k}')">⧉</span>
+        <span class="cdel" title="Remove this duplicate" onclick="orgDeleteDupe('${k}')">×</span>`;
+      secBox.appendChild(chip);
+    });
+    host.appendChild(tab);
+  });
+}
+let orgDragTab=null;
+function orgWriteMode(key){
+  // moving/duplicating within newsletter uses ngroup; other modes use group.
+  return orgMode==='newsletter'?'ngroup':'group';
+}
+function orgMoveSection(key,toGroup){
+  const s=allSections()[key];if(!s)return;
+  const ov=SECTION_ORG.over[key]||{};
+  // ensure the section is visible in this mode
+  ov.mode = (orgMode==='newsletter') ? (s.mode==='graphics'||s.mode==='both'?'both':'newsletter') : orgMode;
+  if(orgMode==='newsletter'){ov.ngroup=toGroup;}
+  else {ov.group=toGroup;ov.ngroup=ov.ngroup;}
+  // for dupes, update the dupe record instead
+  if(SECTION_ORG.dupes[key]){
+    if(orgMode==='newsletter')SECTION_ORG.dupes[key].ngroup=toGroup;else SECTION_ORG.dupes[key].group=toGroup;
+    SECTION_ORG.dupes[key].mode=ov.mode;
+  } else {
+    SECTION_ORG.over[key]=ov;
+  }
+  saveOrg();orgRenderTabs();refreshRailIfVisible();toast('Moved to '+tabLabel(toGroup));
+}
+function orgRenameSection(key,name){
+  name=(name||'').trim();if(!name)return;
+  if(SECTION_ORG.dupes[key]){SECTION_ORG.dupes[key].name=name;}
+  else{SECTION_ORG.over[key]=Object.assign({},SECTION_ORG.over[key],{name});}
+  saveOrg();refreshRailIfVisible();
+}
+function orgDuplicate(key){
+  const base=SECTION_ORG.dupes[key]?SECTION_ORG.dupes[key].base:key;
+  const s=allSections()[key]||allSections()[base];if(!s)return;
+  const dupKey='dup_'+base+'_'+Math.random().toString(36).slice(2,7);
+  SECTION_ORG.dupes[dupKey]={base, name:(secName(key,s)+' copy'),
+    group:(orgMode!=='newsletter')?secGroup(s):s.group,
+    ngroup:(orgMode==='newsletter')?secGroup(s):undefined,
+    mode:(orgMode==='newsletter')?'both':orgMode};
+  saveOrg();orgRenderTabs();refreshRailIfVisible();toast('Duplicated — drag the copy where you want it');
+}
+function orgDeleteDupe(key){
+  if(!SECTION_ORG.dupes[key])return;
+  delete SECTION_ORG.dupes[key];saveOrg();orgRenderTabs();refreshRailIfVisible();toast('Duplicate removed');
+}
+function orgAddTab(){
+  const name=prompt('Name the new tab:');if(!name||!name.trim())return;
+  const g=name.trim();
+  SECTION_ORG.newTabs[orgMode]=SECTION_ORG.newTabs[orgMode]||[];
+  if(!SECTION_ORG.newTabs[orgMode].includes(g))SECTION_ORG.newTabs[orgMode].push(g);
+  // append to order
+  const ord=SECTION_ORG.tabOrder[orgMode]||orgCurrentOrder();
+  if(!ord.includes(g))ord.push(g);SECTION_ORG.tabOrder[orgMode]=ord;
+  saveOrg();orgRenderTabs();refreshRailIfVisible();
+}
+function orgDeleteTab(g){
+  // only empty tabs reach here. Remove from newTabs + order + name.
+  SECTION_ORG.newTabs[orgMode]=(SECTION_ORG.newTabs[orgMode]||[]).filter(x=>x!==g);
+  SECTION_ORG.tabOrder[orgMode]=(SECTION_ORG.tabOrder[orgMode]||[]).filter(x=>x!==g);
+  delete SECTION_ORG.tabNames[g];
+  saveOrg();orgRenderTabs();refreshRailIfVisible();
+}
+function orgRenameTab(g,name){
+  name=(name||'').trim();if(!name){orgRenderTabs();return;}
+  SECTION_ORG.tabNames[g]=name;saveOrg();refreshRailIfVisible();
+}
+function orgCurrentOrder(){
+  const savedRail=railMode;railMode=orgMode;
+  const groups=[];const seen=new Set();
+  Object.values(allSections()).forEach(s=>{if(inCurrentMode(s)){const g=secGroup(s);if(!seen.has(g)){seen.add(g);groups.push(g);}}});
+  (SECTION_ORG.newTabs[orgMode]||[]).forEach(g=>{if(!seen.has(g)){seen.add(g);groups.push(g);}});
+  railMode=savedRail;return groups;
+}
+function orgReorderTab(from,to){
+  let ord=(SECTION_ORG.tabOrder[orgMode]&&SECTION_ORG.tabOrder[orgMode].length)?SECTION_ORG.tabOrder[orgMode].slice():orgCurrentOrder();
+  ord=ord.filter(x=>x!==from);
+  const idx=ord.indexOf(to);
+  if(idx<0)ord.push(from);else ord.splice(idx,0,from);
+  SECTION_ORG.tabOrder[orgMode]=ord;saveOrg();orgRenderTabs();refreshRailIfVisible();
+}
+function orgReset(){
+  if(!confirm('Reset all section organization back to defaults? Your saved newsletters are not affected.'))return;
+  SECTION_ORG={over:{},dupes:{},tabOrder:{},tabNames:{},newTabs:{}};saveOrg();renderOrganize();refreshRailIfVisible();toast('Organization reset');
+}
+function refreshRailIfVisible(){try{TABS=[];computeTabs();renderRail(document.getElementById('palSearch')?.value||'');}catch(e){}}
+
 function setPane(key){
   if(!SET_PANES[key])key='theme';
   document.querySelectorAll('#setNav .set-item').forEach(b=>b.classList.toggle('active',b.dataset.pane===key));
@@ -5120,6 +5369,7 @@ function setPane(key){
   document.getElementById('setTitle').textContent=SET_PANES[key].title;
   // pane-specific refreshes
   if(key==='images')loadImageLib();
+  if(key==='organize')renderOrganize();
   if(key==='docs'){
     // the sidebar reaches this pane directly, so it has to fill itself
     const view=document.getElementById('docsView');
@@ -6185,9 +6435,9 @@ function renderSaved(items,isPlaceholder){
       <div style="font-family:'Montserrat';font-size:13px;font-weight:700;color:#222;line-height:1.3;">${esc(it.name||'Untitled')}</div>
       ${it.notes?`<div style="font-size:11px;color:#777;line-height:1.4;">${esc(it.notes)}</div>`:''}
       <div style="font-size:10px;color:#aaa;">${isPlaceholder?'Preview placeholder':('Updated '+esc(whenStr))}</div>`;
-    const row=document.createElement('div');row.style.cssText='display:flex;gap:6px;margin-top:2px;';
+    const row=document.createElement('div');row.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;';
     const load=document.createElement('button');
-    load.className='tb-btn';load.style.cssText='font-size:10px;padding:6px 10px;';
+    load.className='tb-btn';load.style.cssText='font-size:10px;padding:7px 6px;width:100%;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     load.innerHTML='&#128229; Load';
     load.onclick=async()=>{
       if(isPlaceholder){toast('Connect GitHub and Reload first.');return;}
@@ -6203,7 +6453,7 @@ function renderSaved(items,isPlaceholder){
     row.appendChild(load);
     if(!isPlaceholder){
       const pv=document.createElement('button');
-      pv.className='tb-btn';pv.style.cssText='font-size:10px;padding:6px 10px;';
+      pv.className='tb-btn';pv.style.cssText='font-size:10px;padding:7px 6px;width:100%;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
       pv.innerHTML='&#128065; Preview';
       pv.onclick=async()=>{
         pv.disabled=true;pv.innerHTML='&#128065; …';
@@ -6215,14 +6465,14 @@ function renderSaved(items,isPlaceholder){
     }
     if(!isPlaceholder){
       const ed=document.createElement('button');
-      ed.className='tb-btn';ed.style.cssText='font-size:10px;padding:6px 10px;';
+      ed.className='tb-btn';ed.style.cssText='font-size:10px;padding:7px 6px;width:100%;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
       ed.innerHTML='&#9998; Edit';
       ed.onclick=()=>openSavedEdit(it);
       row.appendChild(ed);
     }
     if(!isPlaceholder){
       const del=document.createElement('button');
-      del.className='tb-btn danger';del.style.cssText='font-size:10px;padding:6px 10px;';
+      del.className='tb-btn danger';del.style.cssText='font-size:10px;padding:7px 6px;width:100%;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
       del.innerHTML='&#128465; Delete';
       del.onclick=async()=>{
         if(!confirm('Delete "'+(it.name||'this')+'" from GitHub? This removes the saved file (version history keeps a copy).'))return;
@@ -6327,7 +6577,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.7 "The Investigation" · 4 August 2026
+**Current build:** v21.8 "The Investigation" · 6 August 2026
 
 ---
 
@@ -6348,6 +6598,24 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.8 — Recipe picker, free-form stats & the Section Organizer · 6 August 2026
+
+- **Pick recipes by hand — no more random pulls.** The Recipe section’s fill bar now has a
+  “������ Choose recipe…” button that opens a searchable list of every recipe in your library.
+  Pick the exact one you want; randomness is gone for recipes.
+- **Recipe stats & tags are now free-form lists.** In ⚙ Content Library, a recipe’s stats are
+  entered one per line, amount first: “6g Protein”, “410 Calories”, “$2.75 Per Serving” —
+  any combination you like. Tags work the same way, one per line. When you place the recipe,
+  the builder reads each line and fills the stat blocks and tag pills automatically, growing
+  or shrinking to match. These save to GitHub like everything else in the library.
+- **Saved tab buttons tidied up.** Load / Preview / Edit / Delete now sit in a neat 2×2 grid
+  instead of overflowing the card.
+- **New “Organize Sections” settings page.** Drag any section into a different tab, drag tabs
+  to reorder them, rename sections and tabs inline, make brand-new tabs, and duplicate a
+  section so the same block lives in several tabs at once. It works across Graphics,
+  Newsletter, Webpage and Docs. All of this is local to your browser — it never changes your
+  saved newsletters or what gets exported — and there’s a one-click “Reset all”.
 
 ## v21.7 — Saved editing & smarter calendar reuse · 4 August 2026
 
@@ -7585,6 +7853,16 @@ async function libReserve(type){
   try{await libSave(type,'library: reserve '+item.id);}catch(e){toast('Reserved locally — GitHub sync failed');}
   return item;
 }
+/* Reserve a SPECIFIC item chosen from the picker (deliberate, not random). */
+async function libReserveSpecific(type,id){
+  await libLoad(type);
+  const item=libFind(type,id);if(!item)return null;
+  if(item.status==='available'||!item.status){
+    item.status='reserved';item.reservedBy=currentNewsletterKey();item.updatedAt=new Date().toISOString();
+    try{await libSave(type,'library: reserve '+item.id);}catch(e){toast('Reserved locally — GitHub sync failed');}
+  }
+  return item;
+}
 /* Release a specific reserved item back to available (used by "Next" + unpublish). */
 async function libRelease(type,id,persist){
   const item=libFind(type,id);if(!item)return;
@@ -7713,25 +7991,12 @@ function fillRecipe(item){
   // subtitle → time · servings
   const desc=eds.find(e=>/one-pan|simple, high-protein/i.test(e.getAttribute('data-ph')||''));
   if(desc){const bits=[c.time,c.servings&&(c.servings+' servings')].filter(Boolean).join(' · ');if(bits)libSetField(desc,bits);}
-  // stats — set each cell by its LABEL text (works no matter the order/count).
-  const money=v=>{if(v==null||v==='')return '';v=String(v).trim();return v.charAt(0)==='$'?v:'$'+v;};
-  const g=v=>{if(v==null||v==='')return '';v=String(v).trim();return /[a-z]/i.test(v)?v:v+'g';};
-  const statMap=[
-    [/protein/i, g(c.protein)],
-    [/calor/i, c.calories],
-    [/per serving|cost/i, money(c.cost)],
-    [/total carb/i, g(c.totalCarbs)],
-    [/net carb/i, g(c.netCarbs)],
-    [/sugar/i, g(c.sugar)]
-  ];
-  statMap.forEach(([re,val])=>{
-    if(val==null||val==='')return;
-    // search ONLY within stat cells, so a matching word elsewhere (e.g. the
-    // "High protein · Easy prep" subtitle) can't steal the match.
-    const cells=[...sec.querySelectorAll('.stat-cell')];
-    const cell=cells.find(cl=>{const lab=cl.querySelectorAll('[contenteditable]')[1];return lab&&re.test(lab.getAttribute('data-ph')||'');});
-    if(cell){const num=cell.querySelectorAll('[contenteditable]')[0];if(num)libSetField(num,val);}
-  });
+  // stats — now a free-text list, one per line "6g Protein" (amount first, label rest).
+  // Grow/shrink the stat row to match, then write amount + label into each cell.
+  const stats=parseStatLines(c.stats);
+  if(stats.length)fillStatRow(sec,stats);
+  // tags — free-text list, one tag per line.
+  if(Array.isArray(c.tags)&&c.tags.length)fillTagWrap(sec,c.tags.filter(t=>String(t).trim()));
   // ingredients → the non-step list; steps → the step-num list
   const lists=[...sec.querySelectorAll('.li-list')];
   const stepList=lists.find(l=>/step-num/.test(l.getAttribute('data-proto')||''));
@@ -7744,7 +8009,48 @@ function fillRecipe(item){
     const toggle=sec.querySelector('.nl-steptoggle');
     if(panel&&panel.dataset.on!=='1'&&toggle)toggleRecipeSteps(toggle);
   }
+  // image, if provided and a photo toggle exists
+  if(c.image){
+    const pic=sec.querySelector('.nl-rpic');const img=sec.querySelector('.nl-rpic-img');
+    if(pic&&img){img.src=c.image;pic.dataset.on='1';pic.dataset.src=c.image;pic.style.display='block';
+      const tg=sec.querySelector('.nl-rpictoggle');if(tg){tg.dataset.on='1';tg.textContent='\u2212 Hide Recipe Photo';}}
+  }
   return true;
+}
+/* Split a free-text stat line into [amount, label]: the first whitespace-delimited
+   token is the amount ("6g", "$3.50", "520"), the rest is the label ("Protein"). */
+function parseStatLines(lines){
+  if(!Array.isArray(lines))lines=(lines==null?'':String(lines)).split('\n');
+  return lines.map(l=>String(l).trim()).filter(Boolean).map(l=>{
+    const i=l.indexOf(' ');
+    if(i<0)return [l,''];              // one token → treat as the amount
+    return [l.slice(0,i).trim(), l.slice(i+1).trim()];
+  });
+}
+/* Grow/shrink the recipe stat row to N cells and write amount+label into each. */
+function fillStatRow(sec,pairs){
+  const row=sec.querySelector('.stat-row');if(!row)return;
+  const addBtn=row.querySelector('.stat-add');
+  let cells=[...row.querySelectorAll(':scope > .stat-cell')];
+  while(cells.length<pairs.length && addBtn){addStat(addBtn);cells=[...row.querySelectorAll(':scope > .stat-cell')];}
+  for(let i=cells.length-1;i>=pairs.length && i>0;i--){const del=cells[i].querySelector('.li-del');if(del)delStat(del);}
+  cells=[...row.querySelectorAll(':scope > .stat-cell')];
+  pairs.forEach((p,i)=>{
+    const cell=cells[i];if(!cell)return;
+    const ce=cell.querySelectorAll('[contenteditable]');
+    if(ce[0])libSetField(ce[0],p[0]);
+    if(ce[1])libSetField(ce[1],p[1]);
+  });
+}
+/* Grow/shrink the recipe tag row to match and write each tag. */
+function fillTagWrap(sec,tags){
+  const wrap=sec.querySelector('.tag-wrap');if(!wrap)return;
+  const addBtn=wrap.querySelector('.tag-add');
+  let pills=[...wrap.querySelectorAll(':scope > .tag-pill')];
+  while(pills.length<tags.length && addBtn){addTag(addBtn);pills=[...wrap.querySelectorAll(':scope > .tag-pill')];}
+  for(let i=pills.length-1;i>=tags.length && i>0;i--){pills[i].remove();}
+  pills=[...wrap.querySelectorAll(':scope > .tag-pill')];
+  tags.forEach((t,i)=>{const pill=pills[i];if(!pill)return;const ce=pill.querySelector('[contenteditable]');if(ce)libSetField(ce,t);});
 }
 /* fill a li-list with array values, growing/shrinking it to match the array */
 function fillList(list,arr){
@@ -7803,6 +8109,76 @@ async function libNext(type,only){
   if(cur){libSkipSet(type).add(cur);await libRelease(type,cur,true);}
   await libGenerate(type,only);
 }
+
+/* ── LIBRARY PICKER: choose a specific item (no randomness). ── */
+let libPickType=null, libPickItems=[];
+async function openLibPicker(type){
+  libPickType=type;
+  const label=(LIB_TYPES[type]&&LIB_TYPES[type].label)||'Item';
+  document.getElementById('libPickTitle').textContent='📖 Choose a '+label.replace(/s$/,'');
+  document.getElementById('libPickNote').textContent='';
+  document.getElementById('libPickSearch').value='';
+  document.getElementById('libPickStatus').textContent='';
+  document.getElementById('libPickList').innerHTML='<div style="color:#aaa;font-size:12px;padding:10px;">Loading…</div>';
+  document.getElementById('libPickBg').classList.add('show');
+  try{
+    await libLoad(type);
+    libPickItems=libItems(type)||[];
+    renderLibPickList();
+    if(!libPickItems.length)document.getElementById('libPickList').innerHTML='<div style="color:#aaa;font-size:12px;padding:10px;">No '+label+' in the library yet. Add some under ⚙ Content Library.</div>';
+  }catch(e){
+    document.getElementById('libPickList').innerHTML='<div style="color:#c0392b;font-size:12px;padding:10px;">Couldn\u2019t load: '+esc(e.message||String(e))+'</div>';
+  }
+}
+function closeLibPicker(){document.getElementById('libPickBg').classList.remove('show');libPickType=null;}
+function libItemTitle(type,it){
+  const c=it.content||{};
+  if(type==='recipes')return c.name||'Untitled recipe';
+  if(type==='quotes')return (c.quote||'').slice(0,60)||'Untitled';
+  if(type==='swaps')return (c.instead?('Instead of '+c.instead):'Swap');
+  if(type==='proteins')return c.name||'Protein';
+  if(type==='myths')return (c.myth||'').slice(0,60)||'Myth';
+  if(type==='tips')return c.main||'Tip';
+  return c.name||it.id||'Item';
+}
+function libItemSub(type,it){
+  const c=it.content||{};
+  if(type==='recipes'){const bits=[c.time,c.servings&&(c.servings+' servings')].filter(Boolean).join(' · ');const stats=parseStatLines(c.stats).map(p=>p.join(' ')).slice(0,3).join('  ·  ');return [bits,stats].filter(Boolean).join('   ');}
+  return '';
+}
+function renderLibPickList(){
+  const list=document.getElementById('libPickList');if(!list||!libPickType)return;
+  const q=(document.getElementById('libPickSearch').value||'').toLowerCase().trim();
+  let view=libPickItems.slice();
+  // hide items already published/used elsewhere? show all, but mark status
+  if(q)view=view.filter(it=>(libItemTitle(libPickType,it)+' '+libItemSub(libPickType,it)).toLowerCase().includes(q));
+  list.innerHTML='';
+  if(!view.length){list.innerHTML='<div style="color:#aaa;font-size:12px;padding:10px;">Nothing matches “'+esc(q)+'”.</div>';return;}
+  view.forEach(it=>{
+    const row=document.createElement('button');
+    row.type='button';
+    row.style.cssText='text-align:left;border:1px solid #e3e3e6;border-radius:8px;background:#fff;padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;';
+    const sub=libItemSub(libPickType,it);
+    const status=(it.status&&it.status!=='available')?`<span style="font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;background:#eee;padding:2px 7px;border-radius:4px;">${esc(it.status)}</span>`:'';
+    row.innerHTML=`<span style="min-width:0;"><span style="font-family:'Montserrat';font-size:13px;font-weight:700;color:#222;">${esc(libItemTitle(libPickType,it))}</span>${sub?`<span style="display:block;font-size:11px;color:#999;margin-top:2px;">${esc(sub)}</span>`:''}</span><span style="display:flex;gap:6px;align-items:center;white-space:nowrap;">${status}<span style="color:#e05a1b;font-weight:700;font-size:12px;">Use ›</span></span>`;
+    row.onclick=()=>chooseLibItem(it,row);
+    list.appendChild(row);
+  });
+}
+async function chooseLibItem(it,rowEl){
+  if(!libPickType)return;
+  if(rowEl)rowEl.style.opacity='.5';
+  try{
+    const type=libPickType;
+    // place it deliberately: mark reserved, fill the section, track it
+    LIB_PLACED[type]=it.id;
+    (LIB_FILLERS[type]||(()=>{}))(it);
+    try{await libReserveSpecific(type,it.id);}catch(_){}
+    refreshState();saveStateLocal();
+    closeLibPicker();
+    toast('\u2713 '+libItemTitle(type,it)+' added');
+  }catch(e){toast(e.message||'Could not add');if(rowEl)rowEl.style.opacity='';}
+}
 /* PUBLIC: cycle just one Tip sub-field from the per-field pool (hydration…). */
 async function libNextTipField(field){
   try{
@@ -7824,7 +8200,7 @@ const LIB_FIELDS={
   tips:[['main','Main Tip (headline)','textarea'],['description','Description','textarea'],['tags','Tags (one per line)','list'],['hydration','Hydration','text'],['protein','Protein','text'],['sleep','Sleep','text'],['mobility','Mobility','text'],['misc','Misc','text']],
   swaps:[['instead','Instead of…','text'],['insteadCals','Cals (A)','text'],['swap','Try this…','text'],['swapCals','Cals (B)','text'],['saved','Cals saved','text']],
   proteins:[['name','Protein source','text'],['serving','Serving','text'],['protein','Protein (g)','text'],['price','Price / serving','text'],['per10g','$ per 10g','text'],['notes','Notes','textarea']],
-  recipes:[['name','Recipe name','text'],['image','Image URL','text'],['protein','Protein (g)','text'],['calories','Calories','text'],['cost','Cost / serving','text'],['totalCarbs','Total carbs (g)','text'],['netCarbs','Net carbs (g)','text'],['sugar','Sugar (g)','text'],['servings','Servings','text'],['time','Prep + cook','text'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
+  recipes:[['name','Recipe name','text'],['image','Image URL','text'],['servings','Servings','text'],['time','Prep + cook','text'],['stats','Stats (one per line, e.g. "6g Protein")','list'],['tags','Tags (one per line)','list'],['ingredients','Ingredients (one per line)','list'],['steps','Steps (one per line)','list']],
   quotes:[['quote','Quote','textarea'],['credit','Credit','text']],
   myths:[['myth','The myth','textarea'],['truth','The truth','textarea'],['source','Source / note','text']]
 };
