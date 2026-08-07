@@ -4595,8 +4595,8 @@ function toggleMemberPics(btn){
 let memberPicTarget=null;
 function openMemberPic(btn){
   const wrap=btn.closest('.li-wrap');const host=wrap.querySelector('.nl-pic');const img=host.querySelector('.nl-pic-img');
-  openImageLib((url,name)=>{
-    img.src=url;img.alt=name||'';host.dataset.src=url;
+  openImageLib((url,name,logoHTML)=>{
+    setPhotoHost(host,img,url,name,logoHTML);
     saveStateLocal();
   });
 }
@@ -4678,7 +4678,37 @@ function toggleProductPic(btn){
 }
 function openProductPic(btn){
   const host=btn.closest('.nl-ppic');const img=host.querySelector('.nl-ppic-img');
-  openImageLib((url,name)=>{img.src=url;img.alt=name||'';host.dataset.src=url;saveStateLocal();});
+  openImageLib((url,name,logoHTML)=>{setPhotoHost(host,img,url,name,logoHTML);saveStateLocal();});
+}
+/* Put either a URL image or an inline HTML logo into a photo host. When a logo
+   is chosen we swap the <img> for the logo markup (kept in a .logo-slot wrapper)
+   so it exports as real HTML — Gmail-safe — while the host still tracks state so
+   the toggle/preview keep working. Passing a url restores the plain <img>. */
+function setPhotoHost(host,img,url,name,logoHTML){
+  if(!host)return;
+  const old=host.querySelector('.logo-slot');if(old)old.remove();
+  if(logoHTML){
+    if(img)img.style.display='none';
+    host.dataset.logo='1';host.removeAttribute('data-src');
+    const slot=document.createElement('div');
+    slot.className='logo-slot';slot.style.cssText='text-align:center;';
+    slot.innerHTML=logoHTML;
+    host.insertBefore(slot,host.firstChild);
+  } else if(url){
+    host.removeAttribute('data-logo');
+    if(img){img.src=url;img.alt=name||'';img.style.display='';}
+    host.dataset.src=url;
+  }
+  // reveal the host and flip its toggle on (product/recipe photos are off by default)
+  host.dataset.on='1';host.style.display='block';
+  const card=host.closest('.nl-prod')||host.closest('.sec');
+  if(card){
+    const tg=card.querySelector('.nl-pptoggle,.nl-rpictoggle');
+    if(tg){tg.dataset.on='1';
+      if(tg.classList.contains('nl-pptoggle')){const compact=/photo$/i.test((tg.textContent||'').trim())&&!/show product|hide product/i.test(tg.textContent||'');tg.textContent=compact?'\u2212 Photo':'\u2212 Hide product photo';}
+      else tg.textContent='\u2212 Hide Recipe Photo';
+    }
+  }
 }
 /* toggle the optional featured-recipe photo on/off */
 function toggleRecipePic(btn){
@@ -4694,8 +4724,8 @@ function toggleRecipePic(btn){
 function openRecipePic(btn){
   const host=btn.closest('.nl-rpic');const img=host.querySelector('.nl-rpic-img');
   // pull from the repo's image library (URL-referenced, keeps the email light)
-  openImageLib((url,name)=>{
-    img.src=url;img.alt=name||'';host.dataset.src=url;
+  openImageLib((url,name,logoHTML)=>{
+    setPhotoHost(host,img,url,name,logoHTML);
     saveStateLocal();
   });
 }
@@ -5052,9 +5082,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.9',
+  version : 'v21.10',
   name    : 'The Investigation',
-  date    : '6 August 2026',
+  date    : '7 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -5798,14 +5828,14 @@ async function deleteLogo(path,sha){
    standalone centered logo block to the canvas. Either way it's inline HTML,
    so Gmail can't strip it. */
 function pickLogo(lg){
-  const markup=`<div class="logo-embed" style="text-align:center;">${lg.html}</div>`;
   if(imagePickTarget && typeof imagePickTarget==='function'){
-    // signal HTML mode via a data: sentinel the known targets ignore — instead,
-    // insert a standalone block right after the targeted section for reliability.
-    insertLogoBlock(lg.html);
+    // a photo slot opened the picker — hand it the logo HTML so it goes into
+    // that slot (product/recipe/member photo) as inline, Gmail-safe markup.
+    imagePickTarget(null, lg.name.replace(/\.html?$/i,''), lg.html);
     closeImageLib();
     return;
   }
+  // opened standalone — drop a centered logo block onto the canvas
   insertLogoBlock(lg.html);
   closeImageLib();
 }
@@ -5992,17 +6022,21 @@ function buildExport(){
   });
   // newsletter: drop the recipe photo if toggled off or no image was chosen
   clone.querySelectorAll('.nl-rpic').forEach(p=>{
-    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    const hasLogo=p.dataset.logo==='1' && p.querySelector('.logo-slot');
+    const shown=hasLogo || (p.dataset.on==='1' && (p.dataset.src||''));
     if(!shown){p.remove();return;}
-    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
-    const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.removeAttribute('data-logo');p.style.display='';
+    if(hasLogo){const im=p.querySelector('.nl-rpic-img');if(im)im.remove();const sl=p.querySelector('.logo-slot');if(sl)sl.removeAttribute('class');}
+    else{const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}}
   });
   // featured product photo — same rule as the recipe photo
   clone.querySelectorAll('.nl-ppic').forEach(p=>{
-    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    const hasLogo=p.dataset.logo==='1' && p.querySelector('.logo-slot');
+    const shown=hasLogo || (p.dataset.on==='1' && (p.dataset.src||''));
     if(!shown){p.remove();return;}
-    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
-    const img=p.querySelector('.nl-ppic-img');if(img){img.classList.remove('nl-ppic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.removeAttribute('data-logo');p.style.display='';
+    if(hasLogo){const im=p.querySelector('.nl-ppic-img');if(im)im.remove();const sl=p.querySelector('.logo-slot');if(sl)sl.removeAttribute('class');}
+    else{const img=p.querySelector('.nl-ppic-img');if(img){img.classList.remove('nl-ppic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}}
   });
   clone.querySelectorAll('.nl-prod').forEach(p=>{p.classList.remove('nl-prod');if(!p.getAttribute('class'))p.removeAttribute('class');});
   clone.querySelectorAll('.sec').forEach(s=>{
@@ -6760,7 +6794,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.9 "The Investigation" · 6 August 2026
+**Current build:** v21.10 "The Investigation" · 7 August 2026
 
 ---
 
@@ -6781,6 +6815,15 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.10 — Logos in photo slots · 7 August 2026
+
+- **HTML logos now drop into the photo slots**, not just as a standalone block. Click
+  “Set photo” (or “+ Photo”) on a Featured Product card or the Featured Recipe, switch to
+  the HTML Logos tab, and pick a logo — it lands right in that photo spot as inline HTML.
+  The slot reveals itself automatically and the logo exports Gmail-safe (no image to strip).
+  Picking a logo with no photo slot open still drops a centered logo block as before, and
+  regular URL images work exactly as they did.
 
 ## v21.9 — HTML Logos · 6 August 2026
 
