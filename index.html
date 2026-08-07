@@ -495,8 +495,8 @@
   .sched-addsub{position:absolute;bottom:2px;right:21px;background:rgba(224,90,27,.9);color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;z-index:31;}
   .li-wrap:hover > .sched-addsub,.li-wrap:hover .li-ctrls > .sched-addsub{display:block;}
   .sched-addsub:hover{background:var(--accent);}
-  .sched-cal{position:absolute;bottom:2px;left:2px;background:rgba(26,26,26,.72);color:#fff;border:none;border-radius:4px;font-size:12px;line-height:1;padding:3px 5px;cursor:pointer;display:none;z-index:32;}
-  .li-wrap:hover > .sched-cal,.li-wrap:hover .li-ctrls > .sched-cal,.li-wrap:hover .sched-lctrls > .sched-cal{display:block;}
+  .sched-cal{position:static;display:none;width:20px;height:20px;border-radius:4px;border:none;background:rgba(26,26,26,.82);color:#fff;padding:0;cursor:pointer;z-index:32;line-height:0;text-align:center;}
+  .li-wrap:hover > .sched-cal,.li-wrap:hover .li-ctrls > .sched-cal,.li-wrap:hover .sched-lctrls .sched-cal,.li-wrap:hover .sched-lwrap > .sched-cal{display:inline-block;vertical-align:top;}
   .sched-cal:hover{background:var(--accent);}
   /* schedule day: left-hand controls column (drag + delete-whole-day) */
   .sched-lctrls{position:relative;width:26px;font-size:0;line-height:0;white-space:nowrap;padding:0;vertical-align:top;}
@@ -1565,6 +1565,8 @@ function liMoves(){return `<button class="li-move up" onclick="moveLi(this,-1)" 
    arrows many times). Used by the schedule sections. The handle sets draggable
    on its .li-wrap on mousedown; global handlers (wired once) do the reordering. */
 function liDrag(){return `<button class="li-drag" title="Drag to reorder" onmousedown="startLiDrag(this)" onclick="return false;">⠿</button>`;}
+/* calendar-pick button (SVG icon renders everywhere, unlike an emoji) */
+function schedCalBtn(){return `<button class="sched-cal" onclick="openSchedCal(this)" title="Pick a date from the calendar"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" style="vertical-align:middle;"><rect x="2" y="3" width="12" height="11" rx="1.5"/><line x1="2" y1="6.5" x2="14" y2="6.5"/><line x1="5.5" y1="1.5" x2="5.5" y2="4"/><line x1="10.5" y1="1.5" x2="10.5" y2="4"/></svg></button>`;}
 let liDragSrc=null;
 function startLiDrag(btn){
   const wrap=btn.closest('.li-wrap');if(!wrap)return;
@@ -2028,7 +2030,7 @@ const SECTIONS = {
             <span class="sched-lwrap">
               ${liDrag()}
               <button class="li-del hint-late" data-hint="Delete this whole day" onclick="delLi(this)">×</button>
-              <button class="sched-cal" onclick="openSchedCal(this)" title="Pick a date from the calendar" style="position:static;display:none;margin-top:2px;">🗓</button>
+              ${schedCalBtn()}
             </span>
           </td>
           <td width="5" valign="top" style="width:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
@@ -2236,7 +2238,7 @@ const SECTIONS = {
             ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
             <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
           </td>
-          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;"><button class="sched-cal" onclick="openSchedCal(this)" title="Pick a date from the calendar">🗓</button>${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${schedCalBtn()}${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
         </tr>
       </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
@@ -5203,7 +5205,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.0',
+  version : 'v22.1',
   name    : 'Calendars & Guides',
   date    : '7 August 2026',
 };
@@ -6965,7 +6967,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.0 "Calendars & Guides" · 7 August 2026
+**Current build:** v22.1 "Calendars & Guides" · 7 August 2026
 
 ---
 
@@ -6986,6 +6988,12 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.1 — Calendar button fix · 7 August 2026
+
+- **Fixed the ������ date-picker buttons not appearing** on the schedule and events rows. They
+  now show on hover as a clear calendar icon — in the left control stack on the Weekly
+  Schedule, and with the other controls on Upcoming Events.
 
 ## v22.0 — Calendars, Guides, Embeds & docs refresh · 7 August 2026
 
