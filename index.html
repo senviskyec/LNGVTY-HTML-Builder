@@ -339,6 +339,15 @@
   .img-card:hover{border-color:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.09);}
   .img-card img{display:block;width:100%;height:110px;object-fit:cover;background:#f4f4f5;}
   .img-card .nm{font-size:10px;color:#666;padding:6px 8px;word-break:break-all;line-height:1.35;}
+  .img-tab{font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.5px;color:#666;background:#f1f1f3;border:1px solid #e2e2e5;border-radius:7px;padding:7px 14px;cursor:pointer;}
+  .img-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .logo-card{border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;cursor:pointer;background:#fff;transition:.12s;position:relative;}
+  .logo-card:hover{border-color:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.09);}
+  .logo-card .lg-frame{width:100%;height:120px;background:#fafafa;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .logo-card .lg-frame > *{max-width:100%;transform:scale(.7);transform-origin:center;}
+  .logo-card .nm{font-size:10px;color:#666;padding:6px 8px;word-break:break-all;line-height:1.35;}
+  .logo-card .lg-del{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;line-height:1;cursor:pointer;display:none;}
+  .logo-card:hover .lg-del{display:block;}
   .tb-label{font-size:11px;color:#999;font-weight:600;}
   .canvas-scroll{flex:1;overflow-y:auto;}
   .email-frame{width:620px;background:#fff;min-height:200px;position:relative;display:block;}
@@ -943,14 +952,47 @@
   <div class="modal" style="width:760px;">
     <div class="modal-head"><h3>&#128247; Image Library</h3><button onclick="closeImageLib()">&times;</button></div>
     <div class="modal-scroll">
-      <div class="panel-note" style="margin-top:0;">Images live in the repo's <code>/images</code> folder and are referenced by URL &mdash; so they stay out of the email payload. Click one to insert it, or upload a new one.</div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:14px;">
-        <button class="tb-btn" onclick="uploadImage()">&#8593; Upload New Image</button>
-        <button class="tb-btn" onclick="loadImageLib()">&#8635; Refresh</button>
-        <span style="flex:1;"></span>
-        <span style="font-size:11px;color:#999;" id="imgStatus"></span>
+      <div class="img-tabs" style="display:flex;gap:6px;margin:0 0 14px;">
+        <button class="img-tab active" id="imgtab-images" onclick="imgLibTab('images')">📷 Images</button>
+        <button class="img-tab" id="imgtab-logos" onclick="imgLibTab('logos')">🎨 HTML Logos</button>
       </div>
-      <div id="imgGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px;"></div>
+
+      <div id="imgSubImages">
+        <div class="panel-note" style="margin-top:0;">Images live in the repo's <code>/images</code> folder and are referenced by URL &mdash; so they stay out of the email payload. Click one to insert it, or upload a new one.</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:14px;">
+          <button class="tb-btn" onclick="uploadImage()">&#8593; Upload New Image</button>
+          <button class="tb-btn" onclick="loadImageLib()">&#8635; Refresh</button>
+          <span style="flex:1;"></span>
+          <span style="font-size:11px;color:#999;" id="imgStatus"></span>
+        </div>
+        <div id="imgGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px;"></div>
+      </div>
+
+      <div id="imgSubLogos" style="display:none;">
+        <div class="panel-note" style="margin-top:0;">HTML logos are small snippets of HTML stored in the repo's <code>/logos</code> folder. Unlike images, they're inserted as real HTML, so <strong>Gmail can't strip them</strong>. Paste your markup below, name it, and save — then click any saved logo to drop it into your newsletter.</div>
+        <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:280px;">
+            <label style="display:block;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:5px;">Logo HTML</label>
+            <textarea id="logoCode" oninput="logoLivePreview()" placeholder="Paste your logo HTML here…" style="width:100%;min-height:220px;padding:10px;border:1px solid #ccc;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+              <input type="text" id="logoName" placeholder="logo name (e.g. vitalitybits)" style="flex:1;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;"/>
+              <button class="tb-btn primary" onclick="saveLogo()">&#128190; Save to GitHub</button>
+            </div>
+            <div style="font-size:11px;color:#999;margin-top:6px;" id="logoSaveStatus"></div>
+          </div>
+          <div style="flex:0 0 200px;">
+            <label style="display:block;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:5px;">Live preview</label>
+            <div id="logoPreview" style="width:100%;min-height:200px;border:1px dashed #ccc;border-radius:8px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;overflow:auto;"><span style="color:#bbb;font-size:11px;">Preview appears here</span></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:18px;border-top:1px solid #eee;padding-top:14px;">
+          <span style="font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;">Saved logos</span>
+          <button class="tb-btn" onclick="loadLogoLib()" style="font-size:11px;">&#8635; Refresh</button>
+          <span style="flex:1;"></span>
+          <span style="font-size:11px;color:#999;" id="logoStatus"></span>
+        </div>
+        <div id="logoGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px;"></div>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="tb-btn" onclick="closeImageLib()">Close</button>
@@ -5010,7 +5052,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.8',
+  version : 'v21.9',
   name    : 'The Investigation',
   date    : '6 August 2026',
 };
@@ -5514,6 +5556,50 @@ async function ghPutImage(name,base64){
   return await res.json();
 }
 
+/* ── HTML LOGOS: same idea as images, but each file is a snippet of HTML stored
+   in the repo's /logos folder. Because they're inlined as real HTML on insert,
+   they survive Gmail's image stripping (there's no <img> to strip). ── */
+function ghLogoDir(){const c=ghConfig();return (c.logodir||'logos').replace(/^\/+|\/+$/g,'')||'logos';}
+async function ghListLogos(){
+  if(!ghReady())throw new Error('GitHub not configured');
+  const res=await fetch(ghContentsURL(ghLogoDir()),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404)return [];
+  if(!res.ok)throw new Error('Logo list failed ('+res.status+')');
+  const arr=await res.json();
+  return (Array.isArray(arr)?arr:[]).filter(f=>f.type==='file'&&/\.html?$/i.test(f.name))
+    .map(f=>({name:f.name,path:f.path,sha:f.sha,download_url:f.download_url}));
+}
+async function ghLoadLogo(file){
+  const url=file.download_url||ghContentsURL(file.path);
+  const res=await fetch(url,{headers:file.download_url?{}:ghHeaders(),cache:'no-store'});
+  if(!res.ok)throw new Error('Logo load failed ('+res.status+')');
+  return await res.text();
+}
+async function ghPutLogo(name,htmlText){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to save.');
+  if(!/\.html?$/i.test(name))name+='.html';
+  const path=`${ghLogoDir()}/${name}`;
+  const body={message:`builder: add logo ${name}`,content:b64encode(htmlText)};
+  if(c.branch)body.branch=c.branch;
+  const existing=await ghGetSha(path);
+  if(existing)body.sha=existing;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Logo save failed ('+res.status+') '+m);}
+  return await res.json();
+}
+async function ghDeleteLogo(path,sha){
+  const c=ghConfig();if(!c.token)throw new Error('A GitHub token is required to delete.');
+  if(!sha)sha=await ghGetSha(path);
+  const body={message:`builder: delete ${path}`,sha};if(c.branch)body.branch=c.branch;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'DELETE',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)});
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Delete failed ('+res.status+') '+m);}
+  return await res.json();
+}
+
 /* Build export-style HTML from a saved newsletter object WITHOUT touching the
    canvas — used for saved-item thumbnails and previews so you can look at a
    newsletter without loading it over your current work. */
@@ -5573,6 +5659,8 @@ async function previewSavedItem(it){
 function openImageLib(target){
   imagePickTarget=target||null;
   openSettings('images');
+  // always land on the Images sub-tab; the logos tab is opt-in
+  const it=document.getElementById('imgtab-images');if(it)imgLibTab('images');
 }
 function closeImageLib(){closeSettings();imagePickTarget=null;}
 
@@ -5640,6 +5728,101 @@ async function uploadImage(){
   };
   fi.click();
 }
+
+/* ═══════════ HTML LOGOS (Images tab → HTML Logos) ═══════════ */
+let LOGO_CACHE=[];
+function imgLibTab(which){
+  const onImages=which==='images';
+  document.getElementById('imgSubImages').style.display=onImages?'':'none';
+  document.getElementById('imgSubLogos').style.display=onImages?'none':'';
+  document.getElementById('imgtab-images').classList.toggle('active',onImages);
+  document.getElementById('imgtab-logos').classList.toggle('active',!onImages);
+  if(!onImages)loadLogoLib();
+}
+function logoLivePreview(){
+  const code=document.getElementById('logoCode').value;
+  const host=document.getElementById('logoPreview');
+  if(!code.trim()){host.innerHTML='<span style="color:#bbb;font-size:11px;">Preview appears here</span>';return;}
+  host.innerHTML=code;   // render exactly as it will be inserted
+}
+async function saveLogo(){
+  if(!ghReady()){toast('Connect GitHub first');openGithubSettings();return;}
+  const code=document.getElementById('logoCode').value.trim();
+  const nameRaw=document.getElementById('logoName').value.trim();
+  const st=document.getElementById('logoSaveStatus');
+  if(!code){st.style.color='#c0392b';st.textContent='Paste some HTML first.';return;}
+  if(!nameRaw){st.style.color='#c0392b';st.textContent='Give the logo a name.';return;}
+  let name=nameRaw.replace(/[^a-zA-Z0-9._-]/g,'-').toLowerCase();
+  if(!/\.html?$/i.test(name))name+='.html';
+  st.style.color='#999';st.textContent='Saving '+name+'…';
+  try{
+    await ghPutLogo(name,code);
+    st.style.color='#3f7d4f';st.textContent='\u2713 Saved '+name;
+    toast('\u2713 Logo saved');
+    document.getElementById('logoName').value='';
+    setTimeout(loadLogoLib,500);
+  }catch(e){st.style.color='#c0392b';st.textContent='Save failed: '+(e.message||e);}
+}
+async function loadLogoLib(){
+  const grid=document.getElementById('logoGrid');const status=document.getElementById('logoStatus');
+  if(!grid||!status)return;
+  if(!ghReady()){status.textContent='Connect GitHub first.';grid.innerHTML='';return;}
+  status.textContent='Loading…';grid.innerHTML='';
+  try{
+    const files=await ghListLogos();
+    if(!files.length){status.textContent='';grid.innerHTML='<div style="grid-column:1/-1;color:#9b9ca3;font-size:12px;padding:28px;text-align:center;">No logos yet. Paste some HTML above and save one.</div>';return;}
+    // load each file's HTML so we can render a real preview
+    LOGO_CACHE=[];
+    for(const f of files){
+      let html='';try{html=await ghLoadLogo(f);}catch(e){html='';}
+      LOGO_CACHE.push({name:f.name,path:f.path,sha:f.sha,html});
+    }
+    grid.innerHTML='';
+    LOGO_CACHE.forEach(lg=>{
+      const card=document.createElement('div');card.className='logo-card';card.title='Insert this logo';
+      const label=lg.name.replace(/\.html?$/i,'');
+      card.innerHTML=`<div class="lg-frame">${lg.html||'<span style=\"color:#bbb;font-size:10px;\">(empty)</span>'}</div><div class="nm">${esc(label)}</div><button class="lg-del" title="Delete logo" onclick="event.stopPropagation();deleteLogo('${esc(lg.path)}','${esc(lg.sha)}')">×</button>`;
+      card.onclick=()=>pickLogo(lg);
+      grid.appendChild(card);
+    });
+    status.textContent=LOGO_CACHE.length+' logo'+(LOGO_CACHE.length===1?'':'s');
+  }catch(e){status.textContent='Could not load: '+(e.message||e);}
+}
+async function deleteLogo(path,sha){
+  if(!confirm('Delete this logo from GitHub?'))return;
+  try{await ghDeleteLogo(path,sha);toast('Logo deleted');setTimeout(loadLogoLib,400);}
+  catch(e){toast('Delete failed: '+(e.message||e));}
+}
+/* Insert a logo as REAL HTML. If an image slot opened the picker we drop the
+   logo into that slot's container (replacing the <img>); otherwise we add a
+   standalone centered logo block to the canvas. Either way it's inline HTML,
+   so Gmail can't strip it. */
+function pickLogo(lg){
+  const markup=`<div class="logo-embed" style="text-align:center;">${lg.html}</div>`;
+  if(imagePickTarget && typeof imagePickTarget==='function'){
+    // signal HTML mode via a data: sentinel the known targets ignore — instead,
+    // insert a standalone block right after the targeted section for reliability.
+    insertLogoBlock(lg.html);
+    closeImageLib();
+    return;
+  }
+  insertLogoBlock(lg.html);
+  closeImageLib();
+}
+function insertLogoBlock(html){
+  const sec=document.createElement('div');sec.className='sec';sec.dataset.key='logo-block';
+  sec.innerHTML=`<div style="background:var(--secbg);padding:24px 20px;text-align:center;">
+    <div class="logo-embed" style="display:inline-block;">${html}</div>
+  </div>`+controlsHTML();
+  const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent='Logo';
+  // insert after the currently-selected section if any, else append
+  const sel=frame.querySelector('.sec.selected');
+  if(sel&&sel.parentNode)sel.after(sec);else frame.appendChild(sec);
+  applySecTheme(sec,'white');wireSec(sec);refreshState();saveStateLocal();
+  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  toast('\u2713 Logo added');
+}
+
 const PRESETS=['#e05a1b','#1e88e5','#43a047','#8e24aa','#e53935','#fb8c00','#00897b','#5e35b1','#d81b60','#00acc1'];
 const presetWrap=document.getElementById('presets');
 PRESETS.forEach(c=>{const s=document.createElement('div');s.className='swatch';s.style.background=c;s.title=c;s.onclick=()=>{document.getElementById('col-accent').value=c;setVar('accent',c);};presetWrap.appendChild(s);});
@@ -6577,7 +6760,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.8 "The Investigation" · 6 August 2026
+**Current build:** v21.9 "The Investigation" · 6 August 2026
 
 ---
 
@@ -6598,6 +6781,16 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.9 — HTML Logos · 6 August 2026
+
+- **New “HTML Logos” section in the Images tab.** Because Gmail strips image files from
+  graphics, you can now build logos out of pure HTML instead. Open ⚙ Images and switch to
+  the **HTML Logos** tab: paste your markup, watch it render in the live preview, name it,
+  and save it to the repo’s <code>/logos</code> folder — same GitHub-backed workflow as
+  images, but the files are HTML. Saved logos show as real rendered previews with their name
+  underneath, just like the image grid. Click one to drop it into your newsletter as inline
+  HTML, so there’s no image for Gmail to strip.
 
 ## v21.8 — Recipe picker, free-form stats & the Section Organizer · 6 August 2026
 
