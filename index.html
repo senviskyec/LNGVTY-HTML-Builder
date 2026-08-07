@@ -4691,8 +4691,11 @@ function setPhotoHost(host,img,url,name,logoHTML){
     if(img)img.style.display='none';
     host.dataset.logo='1';host.removeAttribute('data-src');
     const slot=document.createElement('div');
-    slot.className='logo-slot';slot.style.cssText='text-align:center;';
-    slot.innerHTML=logoHTML;
+    slot.className='logo-slot';
+    // center the logo and, crucially, let it size to its own content so a table
+    // cell in the exported email can't stretch a fixed-height logo box taller.
+    slot.style.cssText='text-align:center;padding:14px 8px;font-size:0;line-height:0;';
+    slot.innerHTML='<div class="logo-inner" style="display:inline-block;vertical-align:top;">'+logoHTML+'</div>';
     host.insertBefore(slot,host.firstChild);
   } else if(url){
     host.removeAttribute('data-logo');
@@ -5082,7 +5085,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.10',
+  version : 'v21.11',
   name    : 'The Investigation',
   date    : '7 August 2026',
 };
@@ -6373,7 +6376,9 @@ function convertFlexToTable(el){
       else if(childGrows(kid)){cs+='width:100%;';td.setAttribute('width','100%');}
       // stretched rows: make every cell + its child fill the full row height so
       // coloured side-blocks don't leave a gap (matches flex align-items:stretch)
-      if(isStretch && kids.length>1){
+      // — but never stretch a fixed-size logo, which would balloon its background.
+      const holdsLogo=kid.querySelector&&kid.querySelector('.logo-slot,.logo-inner');
+      if(isStretch && kids.length>1 && !holdsLogo){
         cs+='height:100%;';
         if(ks['height']===undefined){ks['height']='100%';kid.setAttribute('style',objToStyle(ks));}
       }
@@ -6794,7 +6799,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.10 "The Investigation" · 7 August 2026
+**Current build:** v21.11 "The Investigation" · 7 August 2026
 
 ---
 
@@ -6815,6 +6820,12 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v21.11 — Logo sizing fix · 7 August 2026
+
+- **Fixed HTML logos stretching in preview/export.** A logo dropped into a product or recipe
+  photo slot is now kept at its natural size instead of being stretched to match the card
+  height, so it renders the same in the editor, the preview, and the sent email.
 
 ## v21.10 — Logos in photo slots · 7 August 2026
 
