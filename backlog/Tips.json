@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-10T13:46:11.964Z",
+  "updatedAt": "2026-08-11T15:49:58.442Z",
   "items": [
     {
       "id": "tip-001",
@@ -299,12 +299,12 @@
     },
     {
       "id": "tip-015",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-10-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T00:00:00Z",
+      "updatedAt": "2026-08-11T15:49:58.442Z",
       "content": {
         "main": "Discipline is remembering what you actually want.",
         "description": "The hardest rep is the decision to start. Win that one and the rest follow.",
