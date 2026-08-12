@@ -182,6 +182,11 @@
      scroll container would only ever be viewport-tall and would scroll away. */
   .canvas-stage{position:relative;display:flex;justify-content:center;
     width:100%;min-height:100%;padding:44px 24px 160px;box-sizing:border-box;}
+  /* The EKG backdrop is an animated canvas pinned over the stage. Its drawing
+     surface is CAPPED to a viewport-sized band (see startEKG) rather than the full
+     content height — otherwise the canvas backing store grows with the document and
+     every animation frame has to rasterise an ever-larger surface, which tanks
+     performance on long newsletters. */
   #ekg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
   /* the white shell is a real padded element (not a shadow) so it tracks height exactly */
   .frame-shell{position:relative;z-index:1;background:#fff;padding:12px;border-radius:5px;
@@ -339,6 +344,15 @@
   .img-card:hover{border-color:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.09);}
   .img-card img{display:block;width:100%;height:110px;object-fit:cover;background:#f4f4f5;}
   .img-card .nm{font-size:10px;color:#666;padding:6px 8px;word-break:break-all;line-height:1.35;}
+  .img-tab{font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:.5px;color:#666;background:#f1f1f3;border:1px solid #e2e2e5;border-radius:7px;padding:7px 14px;cursor:pointer;}
+  .img-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .logo-card{border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;cursor:pointer;background:#fff;transition:.12s;position:relative;}
+  .logo-card:hover{border-color:var(--accent);box-shadow:0 3px 10px rgba(0,0,0,.09);}
+  .logo-card .lg-frame{width:100%;height:120px;background:#fafafa;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .logo-card .lg-frame > *{max-width:100%;transform:scale(.7);transform-origin:center;}
+  .logo-card .nm{font-size:10px;color:#666;padding:6px 8px;word-break:break-all;line-height:1.35;}
+  .logo-card .lg-del{position:absolute;top:5px;right:5px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:13px;line-height:1;cursor:pointer;display:none;}
+  .logo-card:hover .lg-del{display:block;}
   .tb-label{font-size:11px;color:#999;font-weight:600;}
   .canvas-scroll{flex:1;overflow-y:auto;}
   .email-frame{width:620px;background:#fff;min-height:200px;position:relative;display:block;}
@@ -363,7 +377,7 @@
   .sc-btn.drag{cursor:grab;}
   .sec-tag{position:absolute;top:6px;left:6px;background:rgba(26,26,26,.85);color:#fff;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;z-index:40;display:none;}
   .sec:hover .sec-tag{display:block;}
-  /* documentation: per-track colour chip (builder-only, stripped on export) */
+  /* documentation: per-track color chip (builder-only, stripped on export) */
   .doc-hue{position:absolute;top:10px;right:10px;z-index:30;display:none;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.4px;color:#fff;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.45);border-radius:5px;padding:4px 9px;cursor:pointer;}
   .doc-track:hover .doc-hue{display:block;}
   .doc-hue:hover{background:rgba(0,0,0,.65);}
@@ -371,7 +385,7 @@
   .doc-extra{font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--accent);background:rgba(224,90,27,.06);border:1px dashed var(--accent);border-radius:5px;padding:5px 10px;cursor:pointer;opacity:0;transition:opacity .14s;}
   .sec:hover .doc-extra{opacity:1;}
   .doc-extra:hover{background:rgba(224,90,27,.14);}
-  /* per-section colour control */
+  /* per-section color control */
   .sc-color{padding:0 8px;}
   .sc-color .sc-dot{display:inline-block;width:13px;height:13px;border-radius:50%;background:var(--accent);border:1px solid rgba(255,255,255,.55);vertical-align:middle;}
   .sw-grid{display:flex;flex-wrap:wrap;gap:9px;}
@@ -379,7 +393,7 @@
   .sw:hover{transform:scale(1.08);}
   .sw.on{border-color:#1a1a1a;box-shadow:0 0 0 2px #fff inset;}
   .sw-clear{background:#f2f2f2;color:#888;font-size:14px;font-weight:700;border:1px dashed #bbb;}
-  /* text colour popover */
+  /* text color popover */
   .cb-more{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid #4a4b50;border-radius:5px;color:#eee;font-family:'Montserrat';font-size:11px;font-weight:700;padding:4px 9px;cursor:pointer;}
   .cb-more:hover{border-color:var(--accent);}
   .cb-more-dot{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#e05a1b 0%,#3f7d4f 50%,#6b2d5c 100%);display:inline-block;}
@@ -486,6 +500,21 @@
   .sched-addsub{position:absolute;bottom:2px;right:21px;background:rgba(224,90,27,.9);color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;z-index:31;}
   .li-wrap:hover > .sched-addsub,.li-wrap:hover .li-ctrls > .sched-addsub{display:block;}
   .sched-addsub:hover{background:var(--accent);}
+  .sched-cal{position:static;display:none;width:20px;height:20px;border-radius:4px;border:none;background:rgba(26,26,26,.82);color:#fff;padding:0;cursor:pointer;z-index:32;line-height:0;text-align:center;}
+  .li-wrap:hover > .sched-cal,.li-wrap:hover .li-ctrls > .sched-cal,.li-wrap:hover .sched-lctrls .sched-cal,.li-wrap:hover .sched-lwrap > .sched-cal{display:inline-block;vertical-align:top;}
+  .sched-cal:hover{background:var(--accent);}
+  /* schedule day: left-hand controls column (drag + delete-whole-day) */
+  .sched-lctrls{position:relative;width:26px;font-size:0;line-height:0;white-space:nowrap;padding:0;vertical-align:top;}
+  .sched-lctrls .li-drag,.sched-lctrls .li-del{position:static;display:none;margin:0 1px;}
+  .li-wrap:hover .sched-lctrls .li-drag,.li-wrap:hover .sched-lctrls .li-del{display:inline-block;vertical-align:top;}
+  .sched-lwrap{display:inline-flex;flex-direction:column;gap:3px;padding:2px 6px 0 0;}
+  /* delayed tooltip: only shows after hovering the element for >1s */
+  .hint-late{position:relative;}
+  .hint-late::after{content:attr(data-hint);position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);
+    background:#1a1a1a;color:#fff;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:600;letter-spacing:.3px;
+    white-space:nowrap;padding:4px 8px;border-radius:5px;pointer-events:none;opacity:0;z-index:60;
+    transition:opacity .15s ease;transition-delay:0s;}
+  .hint-late:hover::after{opacity:1;transition-delay:1s;}
   .sched-sub + .sched-sub{border-top:1px dashed #eee;}
   /* delete buttons inside stat cells and multi-event schedule days */
   .stat-cell{ }
@@ -523,6 +552,20 @@
   .swatch:hover{box-shadow:0 0 0 2px var(--accent);}
 
   .colorbar{position:fixed;z-index:800;background:#1a1a1a;border-radius:8px;padding:7px 10px;display:none;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.35);}
+  /* persistent formatting bar under the main toolbar */
+  .formatbar{display:flex;align-items:center;gap:5px;background:#fff;border-bottom:1px solid #e6e6ea;padding:6px 22px;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.03);flex-wrap:wrap;position:relative;z-index:4;}
+  .formatbar .fmt-label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#b7b7bd;margin-right:6px;}
+  .fmt-btn{min-width:30px;height:30px;padding:0 8px;border:1px solid #e2e2e7;background:#fafafa;border-radius:6px;font-family:'Open Sans',sans-serif;font-size:14px;color:#333;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:background .12s,border-color .12s;}
+  .fmt-btn:hover{background:#f0f0f2;border-color:#cfcfd6;}
+  .fmt-btn:active{background:#e7e7ea;}
+  .fmt-div{width:1px;height:20px;background:#e6e6ea;margin:0 3px;}
+  .fmt-swatch{position:relative;font-weight:800;}
+  .fmt-dot{width:12px;height:4px;border-radius:2px;background:var(--accent);display:inline-block;position:absolute;bottom:4px;left:50%;transform:translateX(-50%);}
+  .fmt-hl{width:14px;height:12px;border-radius:3px;background:var(--accent);display:inline-block;}
+  .fmt-hint{font-size:11px;color:#b0b0b6;margin-left:6px;font-style:italic;}
+  .formatbar.armed .fmt-hint{display:none;}
+  .formatbar:not(.armed) .fmt-btn{opacity:.45;pointer-events:none;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
   .colorbar.show{display:flex;}
   .colorbar .cb-label{font-size:9px;color:#999;font-family:'Montserrat';font-weight:700;letter-spacing:1px;text-transform:uppercase;}
   .cb-sw{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #555;}
@@ -678,12 +721,30 @@
     <button class="tb-btn primary" onclick="saveState()" data-tip="Save to this browser and to GitHub.">&#128190; Save</button>
     <button class="tb-btn" onclick="openPreview()" data-tip="See the finished email, with desktop and mobile views.">&#128065; Preview</button>
     <button class="tb-btn" onclick="copyHTML()" data-tip="Copy the finished email HTML. Paste this into GoHighLevel.">&#128203; Copy HTML</button>
+    <button class="tb-btn" onclick="openEmbeds()" data-tip="Add hidden embed / tracking codes that ride along in the exported HTML but aren't shown on the canvas.">&#128279; Embed</button>
     <span class="tb-div"></span>
     <button class="tb-btn" onclick="openSaved()" data-tip="Browse everything saved to GitHub.">&#9733; Saved</button>
     <div class="tb-spacer"></div>
     <span class="tb-label" id="secCount">0 sections</span>
     <button class="tb-btn" onclick="openSettings()" data-tip="Everything else: theme, images, docs, GitHub, import, and more.">&#9881; Settings</button>
     <button class="tb-btn danger" onclick="clearAll()" data-tip="Remove everything from the canvas.">&#128465; Clear</button>
+  </div>
+  <!-- persistent text formatting bar (acts on the current selection) -->
+  <div class="formatbar" id="formatbar">
+    <span class="fmt-label">Format</span>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtBold()" data-tip="Bold"><b>B</b></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtItalic()" data-tip="Italic"><i>I</i></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtUnderline()" data-tip="Underline"><u>U</u></button>
+    <span class="fmt-div"></span>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtAlign('left')" data-tip="Align left"><svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2" x2="14" y2="2"/><line x1="1" y1="6" x2="9" y2="6"/><line x1="1" y1="10" x2="12" y2="10"/></svg></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtAlign('center')" data-tip="Align center"><svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2" x2="14" y2="2"/><line x1="3" y1="6" x2="12" y2="6"/><line x1="2" y1="10" x2="13" y2="10"/></svg></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtAlign('right')" data-tip="Align right"><svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2" x2="14" y2="2"/><line x1="6" y1="6" x2="14" y2="6"/><line x1="3" y1="10" x2="14" y2="10"/></svg></button>
+    <span class="fmt-div"></span>
+    <button class="fmt-btn fmt-swatch" onmousedown="event.preventDefault();openFmtColor('text')" data-tip="Text color"><span class="fmt-dot" id="fmtTextDot"></span>A</button>
+    <button class="fmt-btn fmt-swatch" onmousedown="event.preventDefault();openFmtColor('mark')" data-tip="Highlight color"><span class="fmt-hl" id="fmtMarkDot"></span>&#9646;</button>
+    <span class="fmt-div"></span>
+    <button class="fmt-btn" onmousedown="event.preventDefault();openTextLink()" data-tip="Add or edit link">&#128279;</button>
+    <span class="fmt-hint" id="fmtHint">Select text in the canvas to format it</span>
   </div>
   <div class="canvas-scroll" id="canvasScroll">
     <div class="canvas-stage" id="canvasStage">
@@ -724,6 +785,7 @@
         <div class="set-sep"></div>
         <button class="set-item" data-pane="github"><span class="ic">&#9881;</span><span class="tx">GitHub</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="guides"><span class="ic">&#127909;</span><span class="tx">Guides</span><span class="ch">›</span></button>
         <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
         <button class="set-item set-item-feedback" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Send Feedback</span><span class="ch">›</span></button>
@@ -764,6 +826,7 @@
         <div class="set-pane" data-pane="organize" id="pane-organize"></div>
         <div class="set-pane" data-pane="github" id="pane-github"></div>
         <div class="set-pane" data-pane="docs" id="pane-docs"></div>
+        <div class="set-pane" data-pane="guides" id="pane-guides"></div>
 
         <div class="set-pane" data-pane="about" id="pane-about">
           <div class="ver-hero">
@@ -943,14 +1006,47 @@
   <div class="modal" style="width:760px;">
     <div class="modal-head"><h3>&#128247; Image Library</h3><button onclick="closeImageLib()">&times;</button></div>
     <div class="modal-scroll">
-      <div class="panel-note" style="margin-top:0;">Images live in the repo's <code>/images</code> folder and are referenced by URL &mdash; so they stay out of the email payload. Click one to insert it, or upload a new one.</div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:14px;">
-        <button class="tb-btn" onclick="uploadImage()">&#8593; Upload New Image</button>
-        <button class="tb-btn" onclick="loadImageLib()">&#8635; Refresh</button>
-        <span style="flex:1;"></span>
-        <span style="font-size:11px;color:#999;" id="imgStatus"></span>
+      <div class="img-tabs" style="display:flex;gap:6px;margin:0 0 14px;">
+        <button class="img-tab active" id="imgtab-images" onclick="imgLibTab('images')">📷 Images</button>
+        <button class="img-tab" id="imgtab-logos" onclick="imgLibTab('logos')">🎨 HTML Logos</button>
       </div>
-      <div id="imgGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px;"></div>
+
+      <div id="imgSubImages">
+        <div class="panel-note" style="margin-top:0;">Images live in the repo's <code>/images</code> folder and are referenced by URL &mdash; so they stay out of the email payload. Click one to insert it, or upload a new one.</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:14px;">
+          <button class="tb-btn" onclick="uploadImage()">&#8593; Upload New Image</button>
+          <button class="tb-btn" onclick="loadImageLib()">&#8635; Refresh</button>
+          <span style="flex:1;"></span>
+          <span style="font-size:11px;color:#999;" id="imgStatus"></span>
+        </div>
+        <div id="imgGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px;"></div>
+      </div>
+
+      <div id="imgSubLogos" style="display:none;">
+        <div class="panel-note" style="margin-top:0;">HTML logos are small snippets of HTML stored in the repo's <code>/logos</code> folder. Unlike images, they're inserted as real HTML, so <strong>Gmail can't strip them</strong>. Paste your markup below, name it, and save — then click any saved logo to drop it into your newsletter.</div>
+        <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:280px;">
+            <label style="display:block;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:5px;">Logo HTML</label>
+            <textarea id="logoCode" oninput="logoLivePreview()" placeholder="Paste your logo HTML here…" style="width:100%;min-height:220px;padding:10px;border:1px solid #ccc;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:12px;box-sizing:border-box;resize:vertical;"></textarea>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+              <input type="text" id="logoName" placeholder="logo name (e.g. vitalitybits)" style="flex:1;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:13px;"/>
+              <button class="tb-btn primary" onclick="saveLogo()">&#128190; Save to GitHub</button>
+            </div>
+            <div style="font-size:11px;color:#999;margin-top:6px;" id="logoSaveStatus"></div>
+          </div>
+          <div style="flex:0 0 200px;">
+            <label style="display:block;font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#888;margin-bottom:5px;">Live preview</label>
+            <div id="logoPreview" style="width:100%;min-height:200px;border:1px dashed #ccc;border-radius:8px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;overflow:auto;"><span style="color:#bbb;font-size:11px;">Preview appears here</span></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:18px;border-top:1px solid #eee;padding-top:14px;">
+          <span style="font-family:'Montserrat';font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;">Saved logos</span>
+          <button class="tb-btn" onclick="loadLogoLib()" style="font-size:11px;">&#8635; Refresh</button>
+          <span style="flex:1;"></span>
+          <span style="font-size:11px;color:#999;" id="logoStatus"></span>
+        </div>
+        <div id="logoGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px;"></div>
+      </div>
     </div>
     <div class="modal-foot">
       <button class="tb-btn" onclick="closeImageLib()">Close</button>
@@ -958,16 +1054,16 @@
   </div>
 </div>
 
-<div class="colorbar" id="colorbar">
-  <span class="cb-label">Text</span>
-  <button class="cb-more" id="cbMore" title="Choose a colour"><span class="cb-more-dot"></span> Colour</button>
-  <span class="cb-div"></span>
-  <button class="cb-link" id="cbLink" title="Add or edit link">&#128279; Link</button>
-</div>
+<!-- retired: floating colorbar replaced by the persistent format bar -->
 
-<!-- full text-colour palette (all theme colours + custom hex) -->
+<!-- shared text / highlight color popover (all theme colors + custom hex) -->
 <div class="cb-pop" id="cbPop">
-  <div class="cb-pop-head">Theme colours</div>
+  <div class="cb-pop-head" id="cbPopTitle" style="font-size:11px;color:#333;font-weight:800;margin-bottom:8px;">Text color</div>
+  <div id="cbMarkReset" style="display:none;margin-bottom:10px;">
+    <button class="tb-btn" style="width:100%;padding:7px 10px;font-size:12px;" onmousedown="event.preventDefault();applyHighlight('var(--accent)')">Default orange highlight</button>
+    <button class="tb-btn" style="width:100%;padding:7px 10px;font-size:12px;margin-top:5px;" onmousedown="event.preventDefault();applyHighlight('transparent')">Remove highlight</button>
+  </div>
+  <div class="cb-pop-head">Theme colors</div>
   <div class="sw-grid" id="cbThemeSw"></div>
   <div class="cb-pop-head" style="margin-top:12px;">Palette</div>
   <div class="sw-grid" id="cbPaletteSw"></div>
@@ -1045,12 +1141,12 @@
   </div>
 </div>
 
-<!-- SECTION COLOUR modal -->
+<!-- SECTION COLOR modal -->
 <div class="modal-bg" id="secColorBg">
   <div class="modal" style="width:400px;">
-    <div class="modal-head"><h3>Section Colour</h3><button onclick="closeSecColor()">&times;</button></div>
+    <div class="modal-head"><h3>Section Color</h3><button onclick="closeSecColor()">&times;</button></div>
     <div class="modal-scroll">
-      <p class="panel-note" style="margin-top:0;">Overrides the global accent for <b>this section only</b> &mdash; rules, bullets, eyebrows and borders all follow it. Use &#10005; to go back to the document colour.</p>
+      <p class="panel-note" style="margin-top:0;">Overrides the global accent for <b>this section only</b> &mdash; rules, bullets, eyebrows and borders all follow it. Use &#10005; to go back to the document color.</p>
       <div class="sw-grid" id="secColorSwatches"></div>
       <div class="field-row" style="margin-top:14px;">
         <label>Custom hex</label>
@@ -1267,6 +1363,38 @@
   </div>
 </div>
 
+<!-- BACKGROUND EMBEDS modal -->
+<div class="modal-bg" id="embedsBg">
+  <div class="modal" style="width:560px;">
+    <div class="modal-head"><h3>&#128279; Background Embeds</h3><button onclick="closeEmbeds()">&times;</button></div>
+    <div class="modal-scroll">
+      <div class="panel-note" style="margin-top:0;">Paste embed or tracking codes that need to ride along in the exported HTML but don't show on the canvas — tracking pixels, analytics snippets, hidden preheaders, and the like. They're appended to the end of the exported email. Add as many as you need.</div>
+      <div id="embedList" style="display:flex;flex-direction:column;gap:12px;margin:14px 0;"></div>
+      <button class="tb-btn" onclick="addEmbed()">＋ Add embed</button>
+    </div>
+    <div class="modal-foot">
+      <span style="flex:1;font-size:11px;color:#999;" id="embedStatus"></span>
+      <button class="tb-btn primary" onclick="saveEmbeds()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE / EVENTS DATE PICKER modal -->
+<div class="modal-bg" id="schedCalBg">
+  <div class="modal" style="width:320px;">
+    <div class="modal-head"><h3>🗓 Pick a date</h3><button onclick="closeSchedCal()">&times;</button></div>
+    <div class="modal-scroll" style="padding-bottom:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <button class="tb-btn" onclick="schedCalNav(-1)" style="padding:5px 10px;">‹</button>
+        <span id="schedCalLabel" style="font-family:'Montserrat';font-weight:800;font-size:14px;"></span>
+        <button class="tb-btn" onclick="schedCalNav(1)" style="padding:5px 10px;">›</button>
+      </div>
+      <div id="schedCalGrid"></div>
+      <div style="font-size:11px;color:#999;margin-top:10px;line-height:1.5;">Clicking a date fills the weekday and date for this row automatically.</div>
+    </div>
+  </div>
+</div>
+
 <!-- LIBRARY PICKER modal (choose a specific item, no randomness) -->
 <div class="modal-bg" id="libPickBg">
   <div class="modal" style="width:560px;">
@@ -1473,6 +1601,8 @@ function liMoves(){return `<button class="li-move up" onclick="moveLi(this,-1)" 
    arrows many times). Used by the schedule sections. The handle sets draggable
    on its .li-wrap on mousedown; global handlers (wired once) do the reordering. */
 function liDrag(){return `<button class="li-drag" title="Drag to reorder" onmousedown="startLiDrag(this)" onclick="return false;">⠿</button>`;}
+/* calendar-pick button (SVG icon renders everywhere, unlike an emoji) */
+function schedCalBtn(){return `<button class="sched-cal" onclick="openSchedCal(this)" title="Pick a date from the calendar"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" style="vertical-align:middle;"><rect x="2" y="3" width="12" height="11" rx="1.5"/><line x1="2" y1="6.5" x2="14" y2="6.5"/><line x1="5.5" y1="1.5" x2="5.5" y2="4"/><line x1="10.5" y1="1.5" x2="10.5" y2="4"/></svg></button>`;}
 let liDragSrc=null;
 function startLiDrag(btn){
   const wrap=btn.closest('.li-wrap');if(!wrap)return;
@@ -1925,13 +2055,20 @@ const SECTIONS = {
       // Each sub-event (a day can hold more than one). Plain block layout — no flex.
       const sub=(name,time)=>`<div class="sched-sub" style="position:relative;padding:4px 0;">
           ${ph(name,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;")}${ph(time,"font-size:11px;color:#999;font-weight:300;line-height:1.5;")}
-          <button class="li-del" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
+          <button class="li-del hint-late" data-hint="Delete just this event" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
       // A day row built as a TABLE so the orange bar + white card always fill the
       // full row height/width identically in every email client (no flex→table
       // guessing). Outer table = li-wrap; cell 1 = 5px accent bar, cell 2 = white
       // card holding an inner 2-col table (day/date | events).
       const mk=(day,date,name,time)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;margin-bottom:10px;position:relative;">
         <tr>
+          <td class="sched-lctrls" valign="top">
+            <span class="sched-lwrap">
+              ${liDrag()}
+              <button class="li-del hint-late" data-hint="Delete this whole day" onclick="delLi(this)">×</button>
+              ${schedCalBtn()}
+            </span>
+          </td>
           <td width="5" valign="top" style="width:5px;background:var(--accent);font-size:0;line-height:0;">&nbsp;</td>
           <td valign="top" style="background:#fff;padding:10px 14px;">
             <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;"><tr>
@@ -1941,7 +2078,7 @@ const SECTIONS = {
           </td>
           <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">
             <button class="sched-addsub" onclick="addSchedSub(this)" title="Add another event on this day">＋ event</button>
-            ${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button>
+            ${liMoves()}
           </td>
         </tr>
       </table>`;
@@ -2083,7 +2220,7 @@ const SECTIONS = {
         <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
       </tr></table>`;
       return `<div style="background:var(--secbg);padding:40px 48px 34px;border-bottom:1px solid #eee;text-align:center;">
-        ${ph('QUICK TIP',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px;text-align:center;")}
+        ${ph('QUICK TIP',"font-family:'Montserrat',sans-serif;font-size:20px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px;text-align:center;")}
         ${listBlock([para("A short, punchy tip goes here — one or two sentences the reader can act on this week.")],para('New paragraph'),'Add paragraph')}
       </div>`;}},
 
@@ -2137,7 +2274,7 @@ const SECTIONS = {
             ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
             <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
           </td>
-          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${schedCalBtn()}${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
         </tr>
       </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
@@ -2714,7 +2851,7 @@ const SECTIONS = {
      Building blocks for plan / proposal / strategy documents. Designed for the
      Webpage page-format (wide canvas). Every list, table row and timeline stop is
      add/removable, and the accent-bar sections carry an editable color chip so a
-     document can run two or more colour-coded tracks (e.g. two challenges). */
+     document can run two or more color-coded tracks (e.g. two challenges). */
 
   docMast:{group:'Doc Structure',norder:0,icon:'▤',name:'Document Masthead',theme:'dark',mode:'docs',
     html:()=>`<div style="background:var(--dark);border-bottom:5px solid var(--accent);">
@@ -2767,10 +2904,10 @@ const SECTIONS = {
       ${ph('A one- or two-sentence lede that frames what this section covers.',"font-size:17px;line-height:1.7;color:var(--body-text);max-width:66ch;")}
     </div>`},
 
-  docTrackHead:{group:'Doc Content',norder:0,icon:'▰',name:'Colour Track Header',theme:'white',mode:'docs',
+  docTrackHead:{group:'Doc Content',norder:0,icon:'▰',name:'Color Track Header',theme:'white',mode:'docs',
     html:()=>`<div style="background:var(--secbg);padding:28px 7% 0;">
       <div class="doc-track" data-accent="#3f7d4f" style="background:#2b5837;padding:40px 44px;position:relative;overflow:hidden;">
-        <button class="doc-hue" onclick="cycleDocHue(this)" title="Change track colour">◐ colour</button>
+        <button class="doc-hue" onclick="cycleDocHue(this)" title="Change track color">◐ color</button>
         ${ph('Positioning',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3.4px;text-transform:uppercase;color:rgba(255,255,255,.72);")}
         ${ph('Reset Your Body',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:46px;line-height:1;letter-spacing:-1px;color:#fff;margin:8px 0 6px;")}
         ${ph('The one-line promise for this track.',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;letter-spacing:.4px;color:rgba(255,255,255,.75);")}
@@ -3065,7 +3202,7 @@ const SECTIONS = {
         <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
       </tr></table>`;
       return `<div style="background:var(--secbg);padding:44px 48px;">
-        ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
+        ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
         ${listBlock([para('Your paragraph goes here. Write as much as you like — this block is for the letter or intro copy.')],para('New paragraph'),'Add paragraph')}
         <div style="margin-top:14px;">${ph('— Tim',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--sectext);",'span')}</div>
       </div>`;}},
@@ -3345,7 +3482,7 @@ function applySecTheme(sec,theme){
 }
 function cycleTheme(btn){const sec=btn.closest('.sec');const cur=sec.dataset.theme||'white';const next=THEME_CYCLE[(THEME_CYCLE.indexOf(cur)+1)%THEME_CYCLE.length];applySecTheme(sec,next);}
 
-/* ═══════════ PER-SECTION COLOUR ═══════════
+/* ═══════════ PER-SECTION COLOR ═══════════
    The global theme sets --accent for the whole document. A section can override
    it locally, which is what lets one plan run a green track and a purple track
    side by side. The override is just an inline custom property on the .sec, so
@@ -3363,7 +3500,7 @@ function openSecColor(btn){
   const host=document.getElementById('secColorSwatches');
   host.innerHTML=SEC_PALETTE.map(([n,hex])=>
     `<button class="sw${cur.toLowerCase()===hex.toLowerCase()?' on':''}" style="background:${hex}" title="${n}" onclick="setSecColor('${hex}')"></button>`
-  ).join('')+`<button class="sw sw-clear" title="Use global colour" onclick="setSecColor('')">\u2715</button>`;
+  ).join('')+`<button class="sw sw-clear" title="Use global color" onclick="setSecColor('')">\u2715</button>`;
   const hx=document.getElementById('secColorHex');
   if(hx)hx.value=cur||'';
   document.getElementById('secColorBg').classList.add('show');
@@ -3377,7 +3514,7 @@ function setSecColor(hex){
   if(chip)chip.style.background=hex||'var(--accent)';
   markDirty&&markDirty();
   closeSecColor();
-  toast(hex?('Section colour set '+hex):'Using global colour');
+  toast(hex?('Section color set '+hex):'Using global color');
 }
 function applySecColorHex(){
   const v=(document.getElementById('secColorHex').value||'').trim();
@@ -3680,7 +3817,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -3743,7 +3880,7 @@ function controlsHTML(){
   return `<div class="sec-tag"></div>
     <div class="sec-controls">
       <button class="sc-btn sc-theme" title="Cycle block shade: white / cream / gray / black / accent" onclick="cycleTheme(this)">○ White</button>
-      <button class="sc-btn sc-color" title="Set this section's colour" onclick="openSecColor(this)"><span class="sc-dot"></span></button>
+      <button class="sc-btn sc-color" title="Set this section's color" onclick="openSecColor(this)"><span class="sc-dot"></span></button>
       <button class="sc-btn drag" title="Drag to move">⠿</button>
       <button class="sc-btn" title="Up" onclick="moveSec(this,-1)">↑</button>
       <button class="sc-btn" title="Down" onclick="moveSec(this,1)">↓</button>
@@ -4208,6 +4345,7 @@ function applyNewsletterDates(picked,headerOnly){
 function startEKG(){
   const cv=document.getElementById('ekg');
   const stage=document.getElementById('canvasStage');
+  const scroller=document.getElementById('canvasScroll')||stage;
   if(!cv||!stage||!cv.getContext)return;
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const ctx=cv.getContext('2d');
@@ -4215,28 +4353,35 @@ function startEKG(){
   let w=0,h=0;
   const dpr=Math.min(window.devicePixelRatio||1,2);
 
-  /* Size to the STAGE, not the viewport, so the trace grows as sections are added. */
+  /* Size the canvas to the VISIBLE scroll band, not the full document. The canvas
+     is absolutely positioned inside the stage; we move it with scrollTop so it
+     always covers exactly what's on screen. This keeps the drawing surface (and
+     therefore the per-frame rasterisation cost) constant no matter how long the
+     newsletter gets — the previous full-height sizing is what caused the sharp
+     lag past a certain amount of text. */
   function size(){
-    const nw=stage.clientWidth, nh=stage.clientHeight;
+    const nw=stage.clientWidth;
+    const nh=Math.min(scroller.clientHeight||stage.clientHeight, 1400); // viewport band, hard cap
     if(nw===w && nh===h)return;
     w=nw;h=nh;
     cv.width=Math.max(1,w*dpr);cv.height=Math.max(1,h*dpr);
     cv.style.width=w+'px';cv.style.height=h+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
+  /* keep the canvas parked over the visible area as the user scrolls */
+  function park(){cv.style.top=(scroller.scrollTop||0)+'px';}
+  cv.style.position='absolute';cv.style.left='0';park();
   size();
   window.addEventListener('resize',size);
-  // the canvas re-measures itself whenever the document grows or shrinks.
-  // Defer the resize into the next frame so we don't resize synchronously inside
-  // the observer callback — that's what produces the harmless but noisy
-  // "ResizeObserver loop completed with undelivered notifications" warning.
+  scroller.addEventListener('scroll',park,{passive:true});
+  // the canvas re-measures itself whenever the viewport (not the document) changes.
   if(window.ResizeObserver){
     let roScheduled=false;
     const ro=new ResizeObserver(()=>{
       if(roScheduled)return;roScheduled=true;
-      requestAnimationFrame(()=>{roScheduled=false;size();});
+      requestAnimationFrame(()=>{roScheduled=false;size();park();});
     });
-    ro.observe(stage);
+    ro.observe(scroller);
   }
 
   // one heartbeat: baseline, small p-wave, the tall QRS spike, then a t-wave
@@ -4476,10 +4621,10 @@ function renumberSteps(list){
   nums.forEach((n,i)=>{n.textContent=String(i+1);});
 }
 
-/* ═══════════ DOC TRACK COLOUR ═══════════
+/* ═══════════ DOC TRACK COLOR ═══════════
    Documentation "track" headers carry their own accent so a single document can
-   run two or more colour-coded threads (e.g. one colour per challenge). Cycling
-   recolours the header background and every accent element inside that track. */
+   run two or more color-coded threads (e.g. one color per challenge). Cycling
+   recolors the header background and every accent element inside that track. */
 const DOC_HUES=[
   {bg:'#2b5837',accent:'#3f7d4f',name:'Green'},
   {bg:'#4a1d40',accent:'#6b2d5c',name:'Plum'},
@@ -4519,7 +4664,7 @@ function delStat(btn){const cell=btn.closest('.stat-cell');const row=cell?.paren
 /* schedule: add another event under the same day (connected bar, no gap) */
 function addSchedSub(btn){
   const wrap=btn.closest('.li-wrap');const subs=wrap.querySelector('.sched-subs');if(!subs)return;
-  const proto=`<div class="sched-sub" style="position:relative;padding:4px 0;"><div contenteditable="true" data-ph="Event Name" style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;"></div><div contenteditable="true" data-ph="Time &amp; details" style="font-size:11px;color:#999;font-weight:300;line-height:1.5;"></div><button class="li-del" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
+  const proto=`<div class="sched-sub" style="position:relative;padding:4px 0;"><div contenteditable="true" data-ph="Event Name" style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:13px;color:var(--heading);margin-bottom:2px;"></div><div contenteditable="true" data-ph="Time &amp; details" style="font-size:11px;color:#999;font-weight:300;line-height:1.5;"></div><button class="li-del hint-late" data-hint="Delete just this event" onclick="delSchedSub(this)" title="Remove this event">×</button></div>`;
   const tmp=document.createElement('div');tmp.innerHTML=proto;const node=tmp.firstElementChild;subs.appendChild(node);
   refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
 }
@@ -4527,6 +4672,67 @@ function delSchedSub(btn){
   const sub=btn.closest('.sched-sub');const subs=sub?.parentElement;if(!subs)return;
   if(subs.querySelectorAll(':scope > .sched-sub').length<=1){toast('Use the × on the day to remove it entirely');return;}
   sub.remove();
+}
+
+/* ═══════════ SCHEDULE / EVENTS DATE PICKER ═══════════
+   The 🗓 button on a Weekly Schedule day or an Upcoming Event opens a small month
+   calendar. Clicking a date fills that row's day/date fields:
+   • Weekly Schedule → weekday spelled out ("Sunday") + "AUG 9"
+   • Upcoming Events → month ≤4-char ("Aug") + day number ("9") + weekday ("Sunday")
+   Month abbreviations are capped at 4 characters; weekdays are always spelled out. */
+const WEEKDAYS_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function monthAbbr(mIdx){
+  // ≤4 chars: most 3-letter, but keep it readable
+  const a=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sept','Oct','Nov','Dec'];
+  return a[mIdx];
+}
+let schedCalRow=null, schedCalKind=null, schedCalView=null;
+function openSchedCal(btn){
+  schedCalRow=btn.closest('.li-wrap');
+  const sec=btn.closest('.sec');schedCalKind=(sec&&sec.dataset.key==='nlevents')?'events':'schedule';
+  schedCalView=new Date();schedCalView.setDate(1);
+  renderSchedCal();
+  document.getElementById('schedCalBg').classList.add('show');
+}
+function closeSchedCal(){document.getElementById('schedCalBg').classList.remove('show');schedCalRow=null;}
+function schedCalNav(delta){schedCalView.setMonth(schedCalView.getMonth()+delta);renderSchedCal();}
+function renderSchedCal(){
+  const host=document.getElementById('schedCalGrid');if(!host)return;
+  const y=schedCalView.getFullYear(),m=schedCalView.getMonth();
+  document.getElementById('schedCalLabel').textContent=NL_MONTHS[m]+' '+y;
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  let html='<table role="presentation" style="width:100%;border-collapse:collapse;text-align:center;">';
+  html+='<tr>'+['S','M','T','W','T','F','S'].map(d=>`<th style="font-family:\\'Montserrat\\';font-size:9px;color:#aaa;font-weight:700;padding:4px 0;">${d}</th>`).join('')+'</tr><tr>';
+  for(let i=0;i<first;i++)html+='<td></td>';
+  for(let d=1;d<=days;d++){
+    const cur=new Date(y,m,d);const isToday=cur.getTime()===today.getTime();
+    html+=`<td style="padding:2px;"><button onclick="pickSchedDate(${y},${m},${d})" style="width:30px;height:30px;border-radius:6px;border:1px solid ${isToday?'var(--accent)':'#e6e6e6'};background:${isToday?'rgba(224,90,27,.08)':'#fff'};color:#333;font-family:'Montserrat';font-size:12px;font-weight:600;cursor:pointer;">${d}</button></td>`;
+    if((first+d)%7===0)html+='</tr><tr>';
+  }
+  html+='</tr></table>';
+  host.innerHTML=html;
+}
+function pickSchedDate(y,m,d){
+  if(!schedCalRow)return;
+  const date=new Date(y,m,d);
+  const weekday=WEEKDAYS_FULL[date.getDay()];
+  const eds=[...schedCalRow.querySelectorAll('[contenteditable][data-ph]')];
+  if(schedCalKind==='events'){
+    // month (≤4) | day number | weekday — the first three editable fields in the date box
+    const box=schedCalRow.querySelector('td[valign="middle"]')||schedCalRow;
+    const boxEds=[...box.querySelectorAll('[contenteditable][data-ph]')];
+    if(boxEds[0])libSetField(boxEds[0],monthAbbr(m));
+    if(boxEds[1])libSetField(boxEds[1],String(d));
+    if(boxEds[2])libSetField(boxEds[2],weekday);
+  } else {
+    // schedule: weekday + "AUG 9" (month abbr uppercased + day)
+    if(eds[0])libSetField(eds[0],weekday);
+    if(eds[1])libSetField(eds[1],monthAbbr(m).toUpperCase()+' '+d);
+  }
+  saveStateLocal();
+  closeSchedCal();
 }
 /* timeline step: flip between complete (orange) and incomplete (gray) */
 function toggleTlDot(btn){
@@ -4553,8 +4759,8 @@ function toggleMemberPics(btn){
 let memberPicTarget=null;
 function openMemberPic(btn){
   const wrap=btn.closest('.li-wrap');const host=wrap.querySelector('.nl-pic');const img=host.querySelector('.nl-pic-img');
-  openImageLib((url,name)=>{
-    img.src=url;img.alt=name||'';host.dataset.src=url;
+  openImageLib((url,name,logoHTML)=>{
+    setPhotoHost(host,img,url,name,logoHTML);
     saveStateLocal();
   });
 }
@@ -4636,7 +4842,40 @@ function toggleProductPic(btn){
 }
 function openProductPic(btn){
   const host=btn.closest('.nl-ppic');const img=host.querySelector('.nl-ppic-img');
-  openImageLib((url,name)=>{img.src=url;img.alt=name||'';host.dataset.src=url;saveStateLocal();});
+  openImageLib((url,name,logoHTML)=>{setPhotoHost(host,img,url,name,logoHTML);saveStateLocal();});
+}
+/* Put either a URL image or an inline HTML logo into a photo host. When a logo
+   is chosen we swap the <img> for the logo markup (kept in a .logo-slot wrapper)
+   so it exports as real HTML — Gmail-safe — while the host still tracks state so
+   the toggle/preview keep working. Passing a url restores the plain <img>. */
+function setPhotoHost(host,img,url,name,logoHTML){
+  if(!host)return;
+  const old=host.querySelector('.logo-slot');if(old)old.remove();
+  if(logoHTML){
+    if(img)img.style.display='none';
+    host.dataset.logo='1';host.removeAttribute('data-src');
+    const slot=document.createElement('div');
+    slot.className='logo-slot';
+    // center the logo and, crucially, let it size to its own content so a table
+    // cell in the exported email can't stretch a fixed-height logo box taller.
+    slot.style.cssText='text-align:center;padding:14px 8px;font-size:0;line-height:0;';
+    slot.innerHTML='<div class="logo-inner" style="display:inline-block;vertical-align:top;">'+logoHTML+'</div>';
+    host.insertBefore(slot,host.firstChild);
+  } else if(url){
+    host.removeAttribute('data-logo');
+    if(img){img.src=url;img.alt=name||'';img.style.display='';}
+    host.dataset.src=url;
+  }
+  // reveal the host and flip its toggle on (product/recipe photos are off by default)
+  host.dataset.on='1';host.style.display='block';
+  const card=host.closest('.nl-prod')||host.closest('.sec');
+  if(card){
+    const tg=card.querySelector('.nl-pptoggle,.nl-rpictoggle');
+    if(tg){tg.dataset.on='1';
+      if(tg.classList.contains('nl-pptoggle')){const compact=/photo$/i.test((tg.textContent||'').trim())&&!/show product|hide product/i.test(tg.textContent||'');tg.textContent=compact?'\u2212 Photo':'\u2212 Hide product photo';}
+      else tg.textContent='\u2212 Hide Recipe Photo';
+    }
+  }
 }
 /* toggle the optional featured-recipe photo on/off */
 function toggleRecipePic(btn){
@@ -4652,8 +4891,8 @@ function toggleRecipePic(btn){
 function openRecipePic(btn){
   const host=btn.closest('.nl-rpic');const img=host.querySelector('.nl-rpic-img');
   // pull from the repo's image library (URL-referenced, keeps the email light)
-  openImageLib((url,name)=>{
-    img.src=url;img.alt=name||'';host.dataset.src=url;
+  openImageLib((url,name,logoHTML)=>{
+    setPhotoHost(host,img,url,name,logoHTML);
     saveStateLocal();
   });
 }
@@ -4869,19 +5108,112 @@ function loadHotkeys(){try{const d=localStorage.getItem('lngvty_hotkeys');if(d)H
 
 /* ═══════════ INLINE FONT COLOR ═══════════ */
 const colorbar=document.getElementById('colorbar');
-function positionColorbar(){
-  const sel=window.getSelection();
-  if(sel.rangeCount&&!sel.isCollapsed&&frame.contains(sel.anchorNode)){
-    const r=sel.getRangeAt(0).getBoundingClientRect();
-    colorbar.style.left=Math.max(8,Math.min(window.innerWidth-180,r.left+r.width/2-85))+'px';
-    colorbar.style.top=Math.max(8,r.top-48)+'px';
-    colorbar.classList.add('show');
+const formatbar=document.getElementById('formatbar');
+/* Arm the format bar whenever there's a non-empty selection inside the canvas,
+   and remember that range so a click on a bar button (which blurs the editor)
+   can restore it before applying the command. */
+let fmtRange=null;
+function fmtCaptureFromSelection(){
+  const s=window.getSelection();
+  if(s&&s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode)){
+    fmtRange=s.getRangeAt(0).cloneRange();
+    if(formatbar)formatbar.classList.add('armed');
+    return true;
+  }
+  return false;
+}
+function fmtSyncArmed(){
+  const s=window.getSelection();
+  const on=s&&s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode);
+  if(on)fmtRange=s.getRangeAt(0).cloneRange();
+  if(formatbar)formatbar.classList.toggle('armed',!!on);
+}
+function fmtRestore(){
+  if(!fmtRange)return false;
+  let host=fmtRange.startContainer;
+  while(host&&host.nodeType!==1)host=host.parentNode;
+  const editable=host&&host.closest?host.closest('[contenteditable]'):null;
+  if(editable)editable.focus();
+  const s=window.getSelection();s.removeAllRanges();s.addRange(fmtRange);return true;
+}
+function fmtExec(cmd,val){
+  if(!fmtRestore())return;
+  document.execCommand('styleWithCSS',false,true);
+  document.execCommand(cmd,false,val===undefined?null:val);
+  fmtSyncArmed();markDirty&&markDirty();
+}
+function fmtBold(){fmtExec('bold');}
+function fmtItalic(){fmtExec('italic');}
+function fmtUnderline(){fmtExec('underline');}
+function fmtAlign(dir){
+  // justify commands act on the block; restore the selection first
+  fmtRestore();
+  document.execCommand('justify'+(dir==='left'?'Left':dir==='right'?'Right':'Center'),false,null);
+  fmtSyncArmed();markDirty&&markDirty();
+}
+/* Highlight = pill-style background on the selection, like the recipe tags:
+   a soft tint of the chosen color with a little padding and rounding. Orange by
+   default. Robust to focus moving into the popover. */
+let fmtLastMark='var(--accent)';
+function applyHighlight(c){
+  let range=(cbSavedRange&&!cbSavedRange.collapsed)?cbSavedRange.cloneRange()
+           :(fmtRange&&!fmtRange.collapsed)?fmtRange.cloneRange():null;
+  if(!range){ if(!fmtCaptureFromSelection()){toast('Select some text first');return;} range=fmtRange.cloneRange(); }
+  const pop=document.getElementById('cbPop');
+  // resolve CSS vars to a concrete color
+  let val=c;
+  if(/var\(/.test(val)){const m=val.match(/var\((--[\w-]+)\)/);if(m){const cv=getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim();if(cv)val=cv;}}
+  if(c==='transparent'){
+    // unwrap: strip any highlight span wrapping/within the selection
+    unwrapHighlight(range);
+    if(pop)pop.classList.remove('show');markDirty&&markDirty();return;
+  }
+  if(range.collapsed){toast('Select some text first');return;}
+  const tint=tintColor(val,0.18);           // soft background like the tags
+  try{
+    const span=document.createElement('span');
+    span.className='hl-mark';
+    span.style.backgroundColor=tint;
+    span.style.color=val;
+    span.style.padding='1px 6px';
+    span.style.borderRadius='4px';
+    span.style.fontWeight='600';
+    try{ range.surroundContents(span); }
+    catch(_){ const frag=range.extractContents(); span.appendChild(frag); range.insertNode(span); }
+    const sel=window.getSelection();sel.removeAllRanges();const nr=document.createRange();nr.selectNodeContents(span);sel.addRange(nr);
+    fmtRange=nr.cloneRange();cbSavedRange=nr.cloneRange();
+  }catch(e){toast('Couldn\u2019t highlight that selection');return;}
+  fmtLastMark=c;
+  const dot=document.getElementById('fmtMarkDot');if(dot)dot.style.background=val;
+  if(pop)pop.classList.remove('show');
+  markDirty&&markDirty();
+}
+/* remove highlight spans intersecting a range by replacing them with their text */
+function unwrapHighlight(range){
+  let node=range.startContainer;
+  while(node&&node!==frame){
+    if(node.nodeType===1&&node.classList&&node.classList.contains('hl-mark')){
+      const parent=node.parentNode;
+      while(node.firstChild)parent.insertBefore(node.firstChild,node);
+      parent.removeChild(node);
+      return;
+    }
+    node=node.parentNode;
   }
 }
-document.addEventListener('mouseup',()=>setTimeout(()=>{const s=window.getSelection();if(s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode))positionColorbar();else if(!colorbar.matches(':hover'))colorbar.classList.remove('show');},10));
-document.addEventListener('keyup',()=>{const s=window.getSelection();if(s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode))positionColorbar();});
-/* ═══════════ TEXT COLOUR PALETTE ═══════════
-   The selection toolbar opens a popover listing every theme colour (live values,
+/* mix a hex color with white to get a soft tint (for the pill background) */
+function tintColor(hex,alpha){
+  const m=(hex||'').replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if(!m)return hex;
+  const r=parseInt(m[1],16),g=parseInt(m[2],16),b=parseInt(m[3],16);
+  const mix=(ch)=>Math.round(ch*alpha+255*(1-alpha));
+  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+}
+function positionColorbar(){/* floating bar retired in favor of the fixed format bar */}
+document.addEventListener('mouseup',()=>setTimeout(fmtSyncArmed,10));
+document.addEventListener('keyup',()=>{const s=window.getSelection();if(s&&s.rangeCount&&frame.contains(s.anchorNode))fmtSyncArmed();});
+/* ═══════════ TEXT COLOR PALETTE ═══════════
+   The selection toolbar opens a popover listing every theme color (live values,
    so a re-themed document shows its own palette), a standing palette, and a hex
    field. Selection is captured on mousedown because opening the popover would
    otherwise blur it away. */
@@ -4892,20 +5224,80 @@ function cbCaptureRange(){
 }
 function cbRestoreRange(){
   if(!cbSavedRange)return false;
+  // focus the editable that owns the range first — execCommand('foreColor'/'hiliteColor')
+  // is a no-op unless the contenteditable host actually has focus.
+  let host=cbSavedRange.startContainer;
+  while(host&&host.nodeType!==1)host=host.parentNode;
+  const editable=host&&host.closest?host.closest('[contenteditable]'):null;
+  if(editable)editable.focus();
   const s=window.getSelection();s.removeAllRanges();s.addRange(cbSavedRange);return true;
 }
+/* Wrap the current saved range in a <span> carrying the given inline style.
+   This is used for text color and highlight instead of the flaky, deprecated
+   execCommand('foreColor'/'hiliteColor'), which silently no-ops when focus has
+   moved to the color popover. Manual wrapping always works. */
+function fmtWrapRange(range,styleProp,styleVal){
+  if(!range||range.collapsed)return false;
+  // resolve a CSS var to its computed hex so the exported email has a real color
+  let val=styleVal;
+  if(/var\(/.test(val)){
+    const m=val.match(/var\((--[\w-]+)\)/);
+    if(m){const cv=getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim();if(cv)val=cv;}
+  }
+  try{
+    const span=document.createElement('span');
+    span.style[styleProp]=val;
+    // if the selection is entirely within one text node/element, surroundContents works;
+    // otherwise fall back to extract + wrap + reinsert which handles partial/multi-node spans
+    try{ range.surroundContents(span); }
+    catch(_){
+      const frag=range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
+    }
+    // reselect the newly wrapped span so the user can chain formats
+    const sel=window.getSelection();sel.removeAllRanges();
+    const nr=document.createRange();nr.selectNodeContents(span);sel.addRange(nr);
+    fmtRange=nr.cloneRange();cbSavedRange=nr.cloneRange();
+    return true;
+  }catch(e){return false;}
+}
 function applyTextColor(c){
-  if(!cbRestoreRange())return;
-  document.execCommand('styleWithCSS',false,true);
-  document.execCommand('foreColor',false,c);
+  // use the best range we have: the one saved when the popover opened, else the
+  // last armed selection. Never bail just because focus moved to the popover.
+  let range=(cbSavedRange&&!cbSavedRange.collapsed)?cbSavedRange.cloneRange()
+           :(fmtRange&&!fmtRange.collapsed)?fmtRange.cloneRange():null;
+  if(!range){ if(!fmtCaptureFromSelection()){toast('Select some text first');return;} range=fmtRange.cloneRange(); }
+  if(fmtColorTarget==='mark'){applyHighlight(c);return;}
+  const ok=fmtWrapRange(range,'color',c);
+  if(!ok)toast('Select some text first');
+  const dot=document.getElementById('fmtTextDot');if(dot)dot.style.background=c==='var(--accent)'?getComputedStyle(document.documentElement).getPropertyValue('--accent').trim():c;
   document.getElementById('cbPop').classList.remove('show');
-  colorbar.classList.remove('show');
   markDirty&&markDirty();
 }
 function applyTextHex(){
   const v=(document.getElementById('cbHex').value||'').trim();
   if(!/^#?[0-9a-f]{6}$/i.test(v)){toast('Enter a 6-digit hex, e.g. #3f7d4f');return;}
   applyTextColor(v.charAt(0)==='#'?v:'#'+v);
+}
+/* Open the shared color popover under the format bar, for either the text color
+   or the highlight. Highlight defaults to orange and can be set to any color. */
+let fmtColorTarget='text';
+function openFmtColor(target){
+  fmtColorTarget=target||'text';
+  if(!fmtCaptureFromSelection()){toast('Select some text first');return;}
+  cbSavedRange=fmtRange?fmtRange.cloneRange():null;
+  renderTextPalette();
+  const pop=document.getElementById('cbPop');
+  document.getElementById('cbPopTitle') && (document.getElementById('cbPopTitle').textContent = target==='mark'?'Highlight color':'Text color');
+  // show a "default orange" shortcut for highlight
+  const resetRow=document.getElementById('cbMarkReset');
+  if(resetRow)resetRow.style.display=(target==='mark')?'block':'none';
+  const anchor=document.querySelector('.formatbar .fmt-swatch'+(target==='mark'?':nth-of-type(2)':''))||formatbar;
+  const r=(target==='mark'?document.getElementById('fmtMarkDot'):document.getElementById('fmtTextDot')).closest('.fmt-btn').getBoundingClientRect();
+  pop.style.left=Math.max(8,Math.min(window.innerWidth-260,r.left))+'px';
+  pop.style.top=(r.bottom+6)+'px';
+  pop.classList.add('show');
 }
 function renderTextPalette(){
   const cs=getComputedStyle(document.documentElement);
@@ -4914,9 +5306,19 @@ function renderTextPalette(){
     return [name.replace('-',' '),hex];
   });
   const mk=(arr)=>arr.map(([n,hex])=>
-    `<button class="sw" style="background:${hex}" title="${n} ${hex}" onmousedown="event.preventDefault();applyTextColor('${hex}')"></button>`).join('');
-  document.getElementById('cbThemeSw').innerHTML=mk(themeSw);
-  document.getElementById('cbPaletteSw').innerHTML=mk(SEC_PALETTE.concat([['White','#ffffff'],['Black','#1a1a1a']]));
+    `<button type="button" class="sw" style="background:${hex}" title="${n} ${hex}" data-hex="${hex}"></button>`).join('');
+  const themeHost=document.getElementById('cbThemeSw');
+  const palHost=document.getElementById('cbPaletteSw');
+  themeHost.innerHTML=mk(themeSw);
+  palHost.innerHTML=mk(SEC_PALETTE.concat([['White','#ffffff'],['Black','#1a1a1a']]));
+  // Attach real listeners on pointerdown and preventDefault so focus/selection
+  // never leaves the editor. Inline onmousedown attributes proved unreliable when
+  // the swatch grid is re-rendered each time the popover opens.
+  [themeHost,palHost].forEach(host=>{
+    host.querySelectorAll('.sw').forEach(sw=>{
+      sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();applyTextColor(sw.getAttribute('data-hex'));});
+    });
+  });
 }
 const cbMore=document.getElementById('cbMore');
 if(cbMore){
@@ -4933,7 +5335,8 @@ if(cbMore){
 }
 document.addEventListener('mousedown',e=>{
   const pop=document.getElementById('cbPop');
-  if(pop&&pop.classList.contains('show')&&!pop.contains(e.target)&&e.target!==cbMore){
+  // ignore clicks on the format-bar swatches (they open this popover) and cbMore
+  if(pop&&pop.classList.contains('show')&&!pop.contains(e.target)&&e.target!==cbMore&&!e.target.closest('.fmt-swatch')){
     pop.classList.remove('show');
   }
 });
@@ -4941,21 +5344,19 @@ document.addEventListener('mousedown',e=>{
 /* ═══════════ INLINE TEXT LINK (link selected text) ═══════════ */
 let textLinkRange=null;       // saved selection range
 let textLinkExisting=null;    // the <a> we're editing, if selection is inside one
+function openTextLink(){
+  const sel=window.getSelection();
+  if(!sel.rangeCount||sel.isCollapsed||!frame.contains(sel.anchorNode)){toast('Select some text first');return;}
+  textLinkRange=sel.getRangeAt(0).cloneRange();
+  let node=sel.anchorNode;textLinkExisting=null;
+  while(node&&node!==frame){if(node.nodeType===1&&node.tagName==='A'){textLinkExisting=node;break;}node=node.parentNode;}
+  document.getElementById('textLinkUrl').value=textLinkExisting?(textLinkExisting.getAttribute('href')||''):'';
+  document.getElementById('textLinkBg').classList.add('show');
+  setTimeout(()=>document.getElementById('textLinkUrl').focus(),30);
+}
 const cbLink=document.getElementById('cbLink');
 if(cbLink){
-  cbLink.addEventListener('mousedown',e=>{
-    e.preventDefault();
-    const sel=window.getSelection();
-    if(!sel.rangeCount||!frame.contains(sel.anchorNode)){toast('Select some text first');return;}
-    textLinkRange=sel.getRangeAt(0).cloneRange();
-    // is the selection already inside a link?
-    let node=sel.anchorNode;textLinkExisting=null;
-    while(node&&node!==frame){if(node.nodeType===1&&node.tagName==='A'){textLinkExisting=node;break;}node=node.parentNode;}
-    document.getElementById('textLinkUrl').value=textLinkExisting?(textLinkExisting.getAttribute('href')||''):'';
-    colorbar.classList.remove('show');
-    document.getElementById('textLinkBg').classList.add('show');
-    setTimeout(()=>document.getElementById('textLinkUrl').focus(),30);
-  });
+  cbLink.addEventListener('mousedown',e=>{e.preventDefault();openTextLink();});
 }
 function closeTextLink(){document.getElementById('textLinkBg').classList.remove('show');}
 function restoreTextRange(){
@@ -5010,9 +5411,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v21.8',
-  name    : 'The Investigation',
-  date    : '6 August 2026',
+  version : 'v22.4',
+  name    : 'Calendars & Guides',
+  date    : '12 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -5161,6 +5562,7 @@ const SET_PANES={
   organize:{title:'Organize Sections', src:null},   // authored inline
   github : {title:'GitHub',       src:'githubBg'},
   docs   : {title:'Docs',         src:'docsBg'},
+  guides : {title:'Guides',       src:null},   // authored inline
   about  : {title:'Version & Notes', src:null},   // authored inline
   feedback:{title:'Feedback',     src:null},      // authored inline
   pageformat:{title:'Page Format', src:null},   // authored inline
@@ -5370,6 +5772,7 @@ function setPane(key){
   // pane-specific refreshes
   if(key==='images')loadImageLib();
   if(key==='organize')renderOrganize();
+  if(key==='guides')renderGuides();
   if(key==='docs'){
     // the sidebar reaches this pane directly, so it has to fill itself
     const view=document.getElementById('docsView');
@@ -5416,6 +5819,48 @@ document.addEventListener('click',e=>{
 function openCustomize(){openSettings('theme');}
 function closeCustomize(){closeSettings();}
 function openDocsPane(){openSettings('docs');}
+
+/* ═══════════ VIDEO GUIDES ═══════════
+   Screen-recorded walkthroughs stored in the repo's /videos folder and served
+   from GitHub Pages. GUIDES lists each video (filename + title + blurb); a new
+   entry is added whenever a walkthrough is recorded. Filenames are provided
+   after this release — until then the list shows a friendly placeholder. */
+const GUIDES=[
+  // Example shape (uncomment & fill once videos exist):
+  // {file:'build-a-newsletter.mp4', title:'Build a newsletter, start to finish', blurb:'The full weekly workflow from Start a Newsletter to Copy HTML.', version:'v22.0'},
+];
+function ghPagesBase(){const c=ghConfig();if(!c.owner||!c.repo)return '';return `https://${c.owner}.github.io/${c.repo}`;}
+function ghVideoDir(){const c=ghConfig();return (c.videodir||'videos').replace(/^\/+|\/+$/g,'')||'videos';}
+function renderGuides(){
+  const pane=document.getElementById('pane-guides');if(!pane)return;
+  const base=ghPagesBase();
+  let cards='';
+  if(GUIDES.length){
+    cards=GUIDES.map(g=>{
+      const src=(base?base+'/':'')+ghVideoDir()+'/'+g.file;
+      return `<div style="border:1px solid #e6e6ea;border-radius:10px;overflow:hidden;background:#fff;margin-bottom:16px;">
+        <video controls preload="metadata" style="display:block;width:100%;background:#000;max-height:420px;">
+          <source src="${esc(src)}" type="video/mp4"/>
+          Your browser can't play this video. <a href="${esc(src)}" target="_blank" rel="noopener">Open it directly</a>.
+        </video>
+        <div style="padding:12px 14px;">
+          <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:14px;color:#1a1a1a;">${esc(g.title)}${g.version?` <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:#fff;background:var(--accent);padding:1px 7px;border-radius:4px;margin-left:6px;">${esc(g.version)}</span>`:''}</div>
+          ${g.blurb?`<div style="font-size:13px;color:#777;margin-top:4px;line-height:1.5;">${esc(g.blurb)}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    cards=`<div style="border:1px dashed #d5d5da;border-radius:10px;padding:34px 20px;text-align:center;color:#999;background:#fafafa;">
+      <div style="font-size:34px;margin-bottom:8px;">🎬</div>
+      <div style="font-family:'Montserrat',sans-serif;font-weight:800;font-size:15px;color:#666;margin-bottom:6px;">Video guides are coming soon</div>
+      <div style="font-size:13px;line-height:1.6;max-width:44ch;margin:0 auto;">Screen-recorded walkthroughs will appear here &mdash; a full newsletter build, plus a short clip for each significant update. They'll be stored in the repo's <code>/videos</code> folder and play right in this panel.</div>
+    </div>`;
+  }
+  pane.innerHTML=`<div class="docs-body">
+    <div class="tocard"><b>&#127909; Video Guides</b><br>Watch instead of read. Each walkthrough plays right here. New clips are added whenever there's a significant update. Prefer written steps? See the <button onclick="setPane('docs')" style="background:none;border:none;color:var(--accent);font-weight:700;cursor:pointer;padding:0;font-size:inherit;text-decoration:underline;">Docs</button> tab.</div>
+    ${cards}
+  </div>`;
+}
 
 /* typography — applied as document-level CSS vars that sections inherit */
 function setFont(which,val){
@@ -5469,7 +5914,7 @@ function normalizeAllText(){
         if(!w.attributes.length){while(w.firstChild)w.parentNode.insertBefore(w.firstChild,w);w.remove();}
       }
     });
-    // 2) drop foreign font/size/colour from the box's own style, keep layout props
+    // 2) drop foreign font/size/color from the box's own style, keep layout props
     const st=el.getAttribute('style')||'';
     if(/font-family|font-size|color|background/i.test(st)) cleaned++;
     // note: we intentionally do NOT wipe the section's own inline style here —
@@ -5514,20 +5959,67 @@ async function ghPutImage(name,base64){
   return await res.json();
 }
 
+/* ── HTML LOGOS: same idea as images, but each file is a snippet of HTML stored
+   in the repo's /logos folder. Because they're inlined as real HTML on insert,
+   they survive Gmail's image stripping (there's no <img> to strip). ── */
+function ghLogoDir(){const c=ghConfig();return (c.logodir||'logos').replace(/^\/+|\/+$/g,'')||'logos';}
+async function ghListLogos(){
+  if(!ghReady())throw new Error('GitHub not configured');
+  const res=await fetch(ghContentsURL(ghLogoDir()),{headers:ghHeaders(),cache:'no-store'});
+  if(res.status===404)return [];
+  if(!res.ok)throw new Error('Logo list failed ('+res.status+')');
+  const arr=await res.json();
+  return (Array.isArray(arr)?arr:[]).filter(f=>f.type==='file'&&/\.html?$/i.test(f.name))
+    .map(f=>({name:f.name,path:f.path,sha:f.sha,download_url:f.download_url}));
+}
+async function ghLoadLogo(file){
+  const url=file.download_url||ghContentsURL(file.path);
+  const res=await fetch(url,{headers:file.download_url?{}:ghHeaders(),cache:'no-store'});
+  if(!res.ok)throw new Error('Logo load failed ('+res.status+')');
+  return await res.text();
+}
+async function ghPutLogo(name,htmlText){
+  const c=ghConfig();
+  if(!c.token)throw new Error('A GitHub token is required to save.');
+  if(!/\.html?$/i.test(name))name+='.html';
+  const path=`${ghLogoDir()}/${name}`;
+  const body={message:`builder: add logo ${name}`,content:b64encode(htmlText)};
+  if(c.branch)body.branch=c.branch;
+  const existing=await ghGetSha(path);
+  if(existing)body.sha=existing;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)
+  });
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Logo save failed ('+res.status+') '+m);}
+  return await res.json();
+}
+async function ghDeleteLogo(path,sha){
+  const c=ghConfig();if(!c.token)throw new Error('A GitHub token is required to delete.');
+  if(!sha)sha=await ghGetSha(path);
+  const body={message:`builder: delete ${path}`,sha};if(c.branch)body.branch=c.branch;
+  const res=await fetch(`${GH_API}/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${path}`,{
+    method:'DELETE',headers:Object.assign({'Content-Type':'application/json'},ghHeaders(true)),body:JSON.stringify(body)});
+  if(!res.ok){let m='';try{m=(await res.json()).message||'';}catch(e){}throw new Error('Delete failed ('+res.status+') '+m);}
+  return await res.json();
+}
+
 /* Build export-style HTML from a saved newsletter object WITHOUT touching the
    canvas — used for saved-item thumbnails and previews so you can look at a
    newsletter without loading it over your current work. */
 function renderSavedHTML(nl){
   const stash=frame.innerHTML;                 // keep the live canvas intact
+  const stashEmbeds=BG_EMBEDS;                  // and the live embeds
   const stashVars={};
   Object.values(THEME_VARMAP).forEach(cv=>{stashVars[cv]=document.documentElement.style.getPropertyValue(cv);});
   let html='';
   try{
     applyThemeVars(nl.theme);
+    BG_EMBEDS=Array.isArray(nl.embeds)?nl.embeds:[];
     loadSections(nl.sections||[]);
     html=buildExport();
   } finally {
     frame.innerHTML=stash;                     // always restore, even on error
+    BG_EMBEDS=stashEmbeds;
     Object.entries(stashVars).forEach(([cv,v])=>{
       if(v)document.documentElement.style.setProperty(cv,v);
       else document.documentElement.style.removeProperty(cv);
@@ -5573,6 +6065,8 @@ async function previewSavedItem(it){
 function openImageLib(target){
   imagePickTarget=target||null;
   openSettings('images');
+  // always land on the Images sub-tab; the logos tab is opt-in
+  const it=document.getElementById('imgtab-images');if(it)imgLibTab('images');
 }
 function closeImageLib(){closeSettings();imagePickTarget=null;}
 
@@ -5640,6 +6134,101 @@ async function uploadImage(){
   };
   fi.click();
 }
+
+/* ═══════════ HTML LOGOS (Images tab → HTML Logos) ═══════════ */
+let LOGO_CACHE=[];
+function imgLibTab(which){
+  const onImages=which==='images';
+  document.getElementById('imgSubImages').style.display=onImages?'':'none';
+  document.getElementById('imgSubLogos').style.display=onImages?'none':'';
+  document.getElementById('imgtab-images').classList.toggle('active',onImages);
+  document.getElementById('imgtab-logos').classList.toggle('active',!onImages);
+  if(!onImages)loadLogoLib();
+}
+function logoLivePreview(){
+  const code=document.getElementById('logoCode').value;
+  const host=document.getElementById('logoPreview');
+  if(!code.trim()){host.innerHTML='<span style="color:#bbb;font-size:11px;">Preview appears here</span>';return;}
+  host.innerHTML=code;   // render exactly as it will be inserted
+}
+async function saveLogo(){
+  if(!ghReady()){toast('Connect GitHub first');openGithubSettings();return;}
+  const code=document.getElementById('logoCode').value.trim();
+  const nameRaw=document.getElementById('logoName').value.trim();
+  const st=document.getElementById('logoSaveStatus');
+  if(!code){st.style.color='#c0392b';st.textContent='Paste some HTML first.';return;}
+  if(!nameRaw){st.style.color='#c0392b';st.textContent='Give the logo a name.';return;}
+  let name=nameRaw.replace(/[^a-zA-Z0-9._-]/g,'-').toLowerCase();
+  if(!/\.html?$/i.test(name))name+='.html';
+  st.style.color='#999';st.textContent='Saving '+name+'…';
+  try{
+    await ghPutLogo(name,code);
+    st.style.color='#3f7d4f';st.textContent='\u2713 Saved '+name;
+    toast('\u2713 Logo saved');
+    document.getElementById('logoName').value='';
+    setTimeout(loadLogoLib,500);
+  }catch(e){st.style.color='#c0392b';st.textContent='Save failed: '+(e.message||e);}
+}
+async function loadLogoLib(){
+  const grid=document.getElementById('logoGrid');const status=document.getElementById('logoStatus');
+  if(!grid||!status)return;
+  if(!ghReady()){status.textContent='Connect GitHub first.';grid.innerHTML='';return;}
+  status.textContent='Loading…';grid.innerHTML='';
+  try{
+    const files=await ghListLogos();
+    if(!files.length){status.textContent='';grid.innerHTML='<div style="grid-column:1/-1;color:#9b9ca3;font-size:12px;padding:28px;text-align:center;">No logos yet. Paste some HTML above and save one.</div>';return;}
+    // load each file's HTML so we can render a real preview
+    LOGO_CACHE=[];
+    for(const f of files){
+      let html='';try{html=await ghLoadLogo(f);}catch(e){html='';}
+      LOGO_CACHE.push({name:f.name,path:f.path,sha:f.sha,html});
+    }
+    grid.innerHTML='';
+    LOGO_CACHE.forEach(lg=>{
+      const card=document.createElement('div');card.className='logo-card';card.title='Insert this logo';
+      const label=lg.name.replace(/\.html?$/i,'');
+      card.innerHTML=`<div class="lg-frame">${lg.html||'<span style=\"color:#bbb;font-size:10px;\">(empty)</span>'}</div><div class="nm">${esc(label)}</div><button class="lg-del" title="Delete logo" onclick="event.stopPropagation();deleteLogo('${esc(lg.path)}','${esc(lg.sha)}')">×</button>`;
+      card.onclick=()=>pickLogo(lg);
+      grid.appendChild(card);
+    });
+    status.textContent=LOGO_CACHE.length+' logo'+(LOGO_CACHE.length===1?'':'s');
+  }catch(e){status.textContent='Could not load: '+(e.message||e);}
+}
+async function deleteLogo(path,sha){
+  if(!confirm('Delete this logo from GitHub?'))return;
+  try{await ghDeleteLogo(path,sha);toast('Logo deleted');setTimeout(loadLogoLib,400);}
+  catch(e){toast('Delete failed: '+(e.message||e));}
+}
+/* Insert a logo as REAL HTML. If an image slot opened the picker we drop the
+   logo into that slot's container (replacing the <img>); otherwise we add a
+   standalone centered logo block to the canvas. Either way it's inline HTML,
+   so Gmail can't strip it. */
+function pickLogo(lg){
+  if(imagePickTarget && typeof imagePickTarget==='function'){
+    // a photo slot opened the picker — hand it the logo HTML so it goes into
+    // that slot (product/recipe/member photo) as inline, Gmail-safe markup.
+    imagePickTarget(null, lg.name.replace(/\.html?$/i,''), lg.html);
+    closeImageLib();
+    return;
+  }
+  // opened standalone — drop a centered logo block onto the canvas
+  insertLogoBlock(lg.html);
+  closeImageLib();
+}
+function insertLogoBlock(html){
+  const sec=document.createElement('div');sec.className='sec';sec.dataset.key='logo-block';
+  sec.innerHTML=`<div style="background:var(--secbg);padding:24px 20px;text-align:center;">
+    <div class="logo-embed" style="display:inline-block;">${html}</div>
+  </div>`+controlsHTML();
+  const tag=sec.querySelector('.sec-tag');if(tag)tag.textContent='Logo';
+  // insert after the currently-selected section if any, else append
+  const sel=frame.querySelector('.sec.selected');
+  if(sel&&sel.parentNode)sel.after(sec);else frame.appendChild(sec);
+  applySecTheme(sec,'white');wireSec(sec);refreshState();saveStateLocal();
+  sec.scrollIntoView({behavior:'smooth',block:'center'});
+  toast('\u2713 Logo added');
+}
+
 const PRESETS=['#e05a1b','#1e88e5','#43a047','#8e24aa','#e53935','#fb8c00','#00897b','#5e35b1','#d81b60','#00acc1'];
 const presetWrap=document.getElementById('presets');
 PRESETS.forEach(c=>{const s=document.createElement('div');s.className='swatch';s.style.background=c;s.title=c;s.onclick=()=>{document.getElementById('col-accent').value=c;setVar('accent',c);};presetWrap.appendChild(s);});
@@ -5650,7 +6239,8 @@ function buildExport(){
   const clone=frame.cloneNode(true);
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  clone.querySelectorAll('.sched-lctrls').forEach(td=>td.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -5662,7 +6252,7 @@ function buildExport(){
       const theme=live.dataset.theme||'white';
       const vars=SEC_THEMES[theme]||SEC_THEMES.white;
       let extra=Object.entries(vars).map(([k,v])=>`${k}:${v}`).join(';');
-      // a per-section colour override must win over the global accent
+      // a per-section color override must win over the global accent
       const acc=(live.style.getPropertyValue('--accent')||'').trim();
       if(acc)extra+=';--accent:'+acc;
       cs.setAttribute('style',((cs.getAttribute('style')||'')+';'+extra).replace(/^;/,''));
@@ -5714,7 +6304,7 @@ function buildExport(){
   // contenteditable cleanup — drop ghost text only when truly empty.
   // EXCEPTION: small fixed-size styled badges (numbered step circles, timeline
   // dots) carry their number in the placeholder. Blanking those leaves an empty
-  // coloured circle with no number, so for these we bake the placeholder text in.
+  // colored circle with no number, so for these we bake the placeholder text in.
   clone.querySelectorAll('[contenteditable]').forEach(e=>{
     const isEmpty=e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio');
     if(isEmpty){
@@ -5809,17 +6399,21 @@ function buildExport(){
   });
   // newsletter: drop the recipe photo if toggled off or no image was chosen
   clone.querySelectorAll('.nl-rpic').forEach(p=>{
-    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    const hasLogo=p.dataset.logo==='1' && p.querySelector('.logo-slot');
+    const shown=hasLogo || (p.dataset.on==='1' && (p.dataset.src||''));
     if(!shown){p.remove();return;}
-    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
-    const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.removeAttribute('data-logo');p.style.display='';
+    if(hasLogo){const im=p.querySelector('.nl-rpic-img');if(im)im.remove();const sl=p.querySelector('.logo-slot');if(sl)sl.removeAttribute('class');}
+    else{const img=p.querySelector('.nl-rpic-img');if(img){img.classList.remove('nl-rpic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}}
   });
   // featured product photo — same rule as the recipe photo
   clone.querySelectorAll('.nl-ppic').forEach(p=>{
-    const shown=p.dataset.on==='1' && (p.dataset.src||'');
+    const hasLogo=p.dataset.logo==='1' && p.querySelector('.logo-slot');
+    const shown=hasLogo || (p.dataset.on==='1' && (p.dataset.src||''));
     if(!shown){p.remove();return;}
-    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.style.display='';
-    const img=p.querySelector('.nl-ppic-img');if(img){img.classList.remove('nl-ppic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}
+    p.removeAttribute('class');p.removeAttribute('data-on');p.removeAttribute('data-src');p.removeAttribute('data-logo');p.style.display='';
+    if(hasLogo){const im=p.querySelector('.nl-ppic-img');if(im)im.remove();const sl=p.querySelector('.logo-slot');if(sl)sl.removeAttribute('class');}
+    else{const img=p.querySelector('.nl-ppic-img');if(img){img.classList.remove('nl-ppic-img');if(!img.getAttribute('class'))img.removeAttribute('class');}}
   });
   clone.querySelectorAll('.nl-prod').forEach(p=>{p.classList.remove('nl-prod');if(!p.getAttribute('class'))p.removeAttribute('class');});
   clone.querySelectorAll('.sec').forEach(s=>{
@@ -5861,7 +6455,7 @@ function buildExport(){
 <body>
 <div class="lngvty-page">
 ${clone.innerHTML.trim()}
-</div>
+</div>${buildEmbedMarkup()}
 </body>
 </html>`;
   }
@@ -5903,7 +6497,7 @@ ${clone.innerHTML.trim()}
 </td></tr>
 </table>
 </td></tr>
-</table>
+</table>${buildEmbedMarkup()}
 </body>
 </html>`;
 }
@@ -6045,7 +6639,7 @@ function convertFlexToTable(el){
   // Flexbox stretches children to equal height by default (align-items:stretch,
   // which is also the value when align-items is unspecified). A table won't do
   // that on its own, so when the source row stretched, force the cells (and the
-  // child's own box) to full height — this keeps coloured side-blocks (date
+  // child's own box) to full height — this keeps colored side-blocks (date
   // chips, accent bars) filling the whole row instead of leaving a gap where
   // the section background shows through.
   const isStretch=(alignItems==='' || alignItems.indexOf('stretch')!==-1);
@@ -6155,8 +6749,10 @@ function convertFlexToTable(el){
       // already 100%). This makes the white card / content fill the row.
       else if(childGrows(kid)){cs+='width:100%;';td.setAttribute('width','100%');}
       // stretched rows: make every cell + its child fill the full row height so
-      // coloured side-blocks don't leave a gap (matches flex align-items:stretch)
-      if(isStretch && kids.length>1){
+      // colored side-blocks don't leave a gap (matches flex align-items:stretch)
+      // — but never stretch a fixed-size logo, which would balloon its background.
+      const holdsLogo=kid.querySelector&&kid.querySelector('.logo-slot,.logo-inner');
+      if(isStretch && kids.length>1 && !holdsLogo){
         cs+='height:100%;';
         if(ks['height']===undefined){ks['height']='100%';kid.setAttribute('style',objToStyle(ks));}
       }
@@ -6577,7 +7173,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v21.8 "The Investigation" · 6 August 2026
+**Current build:** v22.4 "Calendars & Guides" · 12 August 2026
 
 ---
 
@@ -6598,6 +7194,92 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.4 — Color & highlight fix · 12 August 2026
+
+- **Fixed text color and highlight in the formatting bar.** The color and highlight buttons
+  now open their color menu and actually apply to the selected text. Highlight uses a
+  pill-style background (orange by default, any color) like the recipe tags. (The buttons
+  relied on a browser command that silently did nothing once the color menu took focus;
+  they now wrap the selection directly, which always works and exports cleanly.)
+
+## v22.4 — Color & highlight fix · 12 August 2026
+
+- **Fixed text color and highlight not applying** from the formatting bar. Picking a color now
+  reliably colors the selected text, and the highlight paints a soft pill behind it (orange by
+  default, like the recipe tags) — with any color you choose. Both carry through to the
+  exported email.
+
+## v22.3 — Formatting bar · 8 August 2026
+
+- **New formatting bar under the toolbar.** Select any text on the canvas and a slim bar
+  right below the main buttons lets you set it: **bold / italic / underline**, **align**
+  (left / center / right), **text color**, **highlight** (orange by default, any color), and
+  **link**. It replaces the little floating popup, so the controls are always in the same
+  place instead of crowding the selection.
+- **Bigger section labels.** The orange kicker on **Quick Tip** and **Letter / Body Text** is
+  now 20px so it reads as a proper heading.
+
+## v22.2 — Performance fix (long-document lag) · 7 August 2026
+
+- **Fixed severe lag on longer newsletters.** The animated EKG backdrop was sizing its
+  drawing surface to the full document height, so once a newsletter got long enough, every
+  animation frame had to repaint an enormous canvas — which made the whole page stutter past
+  a certain amount of text. The backdrop is now capped to the visible area and follows the
+  scroll, so it stays smooth no matter how long the newsletter gets. (Measured ~2× faster
+  frame times on a very long document, and it no longer degrades as you keep typing.)
+
+## v22.1 — Calendar button fix · 7 August 2026
+
+- **Fixed the ������ date-picker buttons not appearing** on the schedule and events rows. They
+  now show on hover as a clear calendar icon — in the left control stack on the Weekly
+  Schedule, and with the other controls on Upcoming Events.
+
+## v22.0 — Calendars, Guides, Embeds & docs refresh · 7 August 2026
+
+- **Date picker on the schedule and events.** Both the Weekly Schedule and Upcoming Events
+  now have a ������ button. Click it, pick a day, and it fills the row automatically — the
+  Weekly Schedule gets the weekday spelled out plus “AUG 9”; Upcoming Events gets the month
+  (≤ 4 letters), the day number, and the weekday. No more typing dates by hand.
+- **Tidier schedule controls.** On the Weekly Schedule, the drag handle and the delete-whole-day
+  button moved to the ⬅ left of each row; add-event and the up/down arrows stay on the right.
+  Hovering a × for a second now tells you whether it deletes just that event or the whole day.
+- **Background Embeds.** A new ������ Embed button in the top bar holds hidden embed / tracking
+  codes (analytics, pixels, preheaders). They ride along in the exported HTML but never show
+  on the canvas, and you can add as many as you like. Saved with the newsletter.
+- **New Guides tab.** ⚙ Settings → ������ Guides holds screen-recorded walkthroughs that play
+  right in the panel. Docs and Guides link to each other. (Videos are added over time — the
+  first ones land shortly.)
+- **Docs refresh.** The guide now covers the current image situation (Gmail stripping hosted
+  images) and how to use Gmail-safe HTML logos, with links to free online logo tools; the
+  Organize Sections tab; a line-by-line example of recipe stats (“6g Protein”) and tags; and a
+  prominent button that jumps straight to the feedback form.
+- **American spelling.** “colour” is now “color” throughout — the standard going forward.
+
+## v21.11 — Logo sizing fix · 7 August 2026
+
+- **Fixed HTML logos stretching in preview/export.** A logo dropped into a product or recipe
+  photo slot is now kept at its natural size instead of being stretched to match the card
+  height, so it renders the same in the editor, the preview, and the sent email.
+
+## v21.10 — Logos in photo slots · 7 August 2026
+
+- **HTML logos now drop into the photo slots**, not just as a standalone block. Click
+  “Set photo” (or “+ Photo”) on a Featured Product card or the Featured Recipe, switch to
+  the HTML Logos tab, and pick a logo — it lands right in that photo spot as inline HTML.
+  The slot reveals itself automatically and the logo exports Gmail-safe (no image to strip).
+  Picking a logo with no photo slot open still drops a centered logo block as before, and
+  regular URL images work exactly as they did.
+
+## v21.9 — HTML Logos · 6 August 2026
+
+- **New “HTML Logos” section in the Images tab.** Because Gmail strips image files from
+  graphics, you can now build logos out of pure HTML instead. Open ⚙ Images and switch to
+  the **HTML Logos** tab: paste your markup, watch it render in the live preview, name it,
+  and save it to the repo’s <code>/logos</code> folder — same GitHub-backed workflow as
+  images, but the files are HTML. Saved logos show as real rendered previews with their name
+  underneath, just like the image grid. Click one to drop it into your newsletter as inline
+  HTML, so there’s no image for Gmail to strip.
 
 ## v21.8 — Recipe picker, free-form stats & the Section Organizer · 6 August 2026
 
@@ -6727,22 +7409,22 @@ campaign can be built in-app:
   Collected, Clue Card, Daily Mission, Symptom Log, Case Timeline, Stakeout Notes (a note
   from Tim in case-file dress), Redacted Teaser, The Raid (pantry clean-out),
   Interrogation, Anonymous Tip, Investigator Badge, and Case Closed.
-- Everything follows LNGVTY colours and the section shade/colour controls, so the whole
+- Everything follows LNGVTY colors and the section shade/color controls, so the whole
   case file can be re-tinted per section like any other block.
 
-## v20.3 — Colour control & growable blocks · 23 July 2026
+## v20.3 — Color control & growable blocks · 23 July 2026
 
-- **Per-section colour.** Every block now has a colour dot in its hover controls. Pick a
+- **Per-section color.** Every block now has a color dot in its hover controls. Pick a
   swatch or type a hex code and that section's rules, bullets, eyebrows and borders all
   follow it — the rest of the document is unaffected. This is what lets one plan run a
   green track and a purple track side by side. Choose ✕ to fall back to the document
-  colour. Section colours are saved with the document and baked into the export.
+  color. Section colors are saved with the document and baked into the export.
 - **The shade button works on documentation blocks now.** Those sections were painted with
   a hard-coded white background, so cycling the theme appeared to do nothing. They use the
   block shade properly, and <b>Orange</b> is relabelled <b>Accent</b> since it follows
-  whatever colour that section is set to.
-- **Full text-colour palette.** Selecting text and clicking <b>Colour</b> now opens every
-  colour in your current theme, a standing palette, and a hex box — instead of the old
+  whatever color that section is set to.
+- **Full text-color palette.** Selecting text and clicking <b>Color</b> now opens every
+  color in your current theme, a standing palette, and a hex box — instead of the old
   four fixed swatches.
 - **Blocks grow one item at a time.** Promise Grid, Phase Columns, Mechanics Cards,
   Numbered Pillars and the Recommendation steps used to add a whole row of three or four.
@@ -6763,7 +7445,7 @@ campaign can be built in-app:
   <b>+ Add example box</b> (the light grey sample panel) and <b>+ Add badges</b> (a row of
   add/removable pill tags). Both start hidden so cells stay uncluttered, they apply to one
   pillar at a time, and anything left switched off is dropped from the export.
-- **New Cream section colour.** The theme cycle is now White → Cream → Gray → Black
+- **New Cream section color.** The theme cycle is now White → Cream → Gray → Black
   → Orange. Cream is a real theme variable, editable under <b>Settings → Theme &amp;
   Type</b>, so a document can alternate white and cream bands the way the plan layout does.
 
@@ -6787,12 +7469,12 @@ campaign can be built in-app:
   without writing any code \u2014 the same drag-to-place, ghost-text, add-and-remove
   behaviour as every other section.
 - **What's in it:** Document Masthead, The Bet / Thesis, Section Header (rule),
-  Colour Track Header, Promise Grid, Phase / Week Columns, Mechanics Cards, Example Box,
+  Color Track Header, Promise Grid, Phase / Week Columns, Mechanics Cards, Example Box,
   Route / Timeline, Numbered Pillars, Production Table, Metric Strip, Pull Quote,
   Recommendation (orange), and the Document Footer Bar.
-- **Colour-coded tracks.** The Track Header carries a colour chip (hover it) that cycles
+- **Color-coded tracks.** The Track Header carries a color chip (hover it) that cycles
   through six palettes \u2014 green, plum, blue, amber, rust, brand orange \u2014 so one
-  document can run two or more visually distinct threads, like one colour per challenge.
+  document can run two or more visually distinct threads, like one color per challenge.
 - **Everything grows.** Every table, column set, card pair, timeline stop and next-step
   row has its own <b>+ Add</b>, so a document expands to whatever length it needs.
 - **Three new planning blocks** beyond the original layout: <b>Risks &amp; Mitigations</b>,
@@ -7149,6 +7831,12 @@ function defaultDocs(){return `<div class="docs-body">
   Click <span class="btnrep orange">&#9889; Start a Newsletter</span> &rarr; type over the faded text &rarr; <span class="btnrep orange">&#128190; Save</span> &rarr; <span class="btnrep">&#128203; Copy HTML</span> &rarr; paste into GHL.
 </div>
 
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 6px;">
+  <button onclick="setPane('feedback')" style="background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;letter-spacing:.4px;padding:12px 20px;cursor:pointer;box-shadow:0 3px 10px rgba(224,90,27,.25);">&#128172; Send Feedback / Report a Bug</button>
+  <button onclick="setPane('guides')" style="background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-family:'Montserrat',sans-serif;font-weight:800;font-size:13px;letter-spacing:.4px;padding:12px 20px;cursor:pointer;">&#127909; Watch the Video Guides &rarr;</button>
+</div>
+<p style="font-size:13px;color:#888;margin:4px 0 0;">Found something broken or have an idea? The orange button jumps straight to the feedback form. Prefer to watch instead of read? The <b>Guides</b> tab has screen-recorded walkthroughs.</p>
+
 <h2>1. The screen, in three parts</h2>
 
 <table>
@@ -7163,7 +7851,7 @@ function defaultDocs(){return `<div class="docs-body">
   </tr>
   <tr>
     <td><b>Top bar</b></td>
-    <td>Save, Preview, Copy HTML, Saved, and <span class="btnrep">&#9881; Settings</span> &mdash; everything else lives inside Settings.</td>
+    <td>Save, Preview, Copy HTML, Embed, Saved, and <span class="btnrep">&#9881; Settings</span> &mdash; everything else lives inside Settings. <b>&#128279; Embed</b> holds hidden tracking/embed codes that ride along in the exported HTML but never show on the canvas.</td>
   </tr>
 </table>
 
@@ -7266,7 +7954,7 @@ function defaultDocs(){return `<div class="docs-body">
   <li><b>Document Masthead</b> &mdash; who it's for, what it is, and the headline claim.</li>
   <li><b>The Bet / Thesis</b> &mdash; the single big idea, stated so someone could disagree with it.</li>
   <li><b>Section Header</b> &mdash; an eyebrow, a title, and a rule. Use one before each major part.</li>
-  <li><b>Colour Track Header</b> &mdash; the coloured banner for one thread of the plan. Hover it and click <span class="btnrep">&#9680; colour</span> to cycle through green, plum, blue, amber, rust, and brand orange. Give each track its own colour and the document explains itself at a glance.</li>
+  <li><b>Color Track Header</b> &mdash; the colored banner for one thread of the plan. Hover it and click <span class="btnrep">&#9680; color</span> to cycle through green, plum, blue, amber, rust, and brand orange. Give each track its own color and the document explains itself at a glance.</li>
   <li><b>Promise Grid</b>, <b>Phase Columns</b>, <b>Mechanics Cards</b> &mdash; the substance of each track.</li>
   <li><b>Numbered Pillars</b> &mdash; hover any pillar for <span class="btnrep">+ Add example box</span> and <span class="btnrep">+ Add badges</span>. Both stay hidden until you turn them on, so cells don't get crowded.</li>
   <li><b>Route / Timeline</b> &mdash; the dark schedule block. Each stop is add/removable and reorderable.</li>
@@ -7287,22 +7975,56 @@ function defaultDocs(){return `<div class="docs-body">
   <li><b>The Raid</b> (pantry clean-out), <b>Interrogation</b>, <b>Stakeout Notes</b> — familiar sections in case-file dress.</li>
   <li><b>Investigator Badge</b> and <b>Case Closed</b> — the finish.</li>
 </ul>
-<p>Every one of them takes colours and shades like any other block, so you can re-tint the whole case file if a future challenge needs a different look.</p>
+<p>Every one of them takes colors and shades like any other block, so you can re-tint the whole case file if a future challenge needs a different look.</p>
 
-<h3>Colours: global and per-section</h3>
-<p>There are two levels of colour, and they work the same way.</p>
+<h3>Colors: global and per-section</h3>
+<p>There are two levels of color, and they work the same way.</p>
 <ul>
-  <li><b>Whole document</b> &mdash; <b>Settings &rarr; &#127912; Theme &amp; Type</b>. Changing the accent here re-colours everything at once.</li>
-  <li><b>One section</b> &mdash; hover a block and click the small <b>colour dot</b> in its controls. Pick a swatch or type a hex code. That section's rules, bullets, eyebrows and borders all follow it, and the rest of the document is untouched. This is how a plan runs a green track and a purple track side by side. Choose <b>&#10005;</b> to go back to the document colour.</li>
+  <li><b>Whole document</b> &mdash; <b>Settings &rarr; &#127912; Theme &amp; Type</b>. Changing the accent here re-colors everything at once.</li>
+  <li><b>One section</b> &mdash; hover a block and click the small <b>color dot</b> in its controls. Pick a swatch or type a hex code. That section's rules, bullets, eyebrows and borders all follow it, and the rest of the document is untouched. This is how a plan runs a green track and a purple track side by side. Choose <b>&#10005;</b> to go back to the document color.</li>
 </ul>
-<p>The shade button next to it (<b>&#9675; White</b>) cycles the block background: <b>White &rarr; Cream &rarr; Gray &rarr; Black &rarr; Accent</b>. "Accent" follows whatever colour that section is set to, so it stays correct if you re-colour later.</p>
-<p><b>Colouring words:</b> select any text and a small bar appears. Click <b>Colour</b> for the full palette &mdash; every colour in your current theme, a standing palette, and a hex box for anything else.</p>
+<p>The shade button next to it (<b>&#9675; White</b>) cycles the block background: <b>White &rarr; Cream &rarr; Gray &rarr; Black &rarr; Accent</b>. "Accent" follows whatever color that section is set to, so it stays correct if you re-color later.</p>
+<p><b>Coloring words:</b> select any text and a small bar appears. Click <b>Color</b> for the full palette &mdash; every color in your current theme, a standing palette, and a hex box for anything else.</p>
 
 <h3>Lists that grow</h3>
 <p>Anywhere you see a dashed <span class="btnrep">+ Add</span> button, that block grows one item at a time &mdash; one benefit, one column, one card, one step. Rows re-centre themselves as you add or remove, so a set of three doesn't stretch awkwardly to fill four slots. Hover any item and click its <span class="chip red">&times;</span> to remove it. (A list always keeps at least one item, so a block can't collapse into nothing.)</p>
 
 <h3>Widgets</h3>
 <p>Open <b>Widgets</b> (next to the mode dropdown, top-left) for drop-in pieces you can add to any layout. Click one and it's appended to the canvas as its own block. The first widget is an orange <b>Button</b> &mdash; click its label to rename it, and use the <span class="btnrep">&#128279; link</span> control to set where it goes, exactly like the buttons in the CTA sections.</p>
+
+<div class="note">
+  <b>Heads up: hosted images are currently unreliable in Gmail.</b> Gmail (and some other clients) strip or block images that are loaded from a URL, so a photo that looks perfect in the preview can show up as a broken icon in the actual inbox. Until that's sorted, the safest way to put a logo or graphic into an email is an <b>HTML logo</b> (below), which is built from real HTML and can't be stripped.
+</div>
+
+<h3>HTML logos (Gmail-safe graphics)</h3>
+<p>Because a plain image can get stripped, the builder lets you drop in <b>HTML logos</b> &mdash; small graphics made entirely out of HTML and CSS instead of an image file. They render the same everywhere and survive Gmail because there's no image for it to block.</p>
+<ul>
+  <li><b>Where they live:</b> <span class="btnrep">&#9881; Settings</span> &rarr; <b>&#128247; Images</b> &rarr; the <b>HTML Logos</b> tab.</li>
+  <li><b>Make one:</b> paste your logo's HTML into the box. A <b>live preview</b> shows it as you type. Give it a name and click <b>Save to GitHub</b> &mdash; it's stored in the repo's <code>/logos</code> folder, exactly like images are stored in <code>/images</code>.</li>
+  <li><b>Use one:</b> saved logos appear as real previews with their name underneath. On a <b>Featured Product</b> card or the <b>Featured Recipe</b>, click <span class="btnrep">Set photo</span> (or <span class="btnrep">+ Photo</span>), switch to the <b>HTML Logos</b> tab, and click a logo &mdash; it drops right into that photo spot as inline HTML. Pick one with no photo slot open and it drops in as its own centered block.</li>
+</ul>
+<p><b>Don't write HTML by hand?</b> You don't have to. Free online tools can generate the HTML/CSS for a simple logo or badge that you can paste straight in:</p>
+<ul>
+  <li><a href="https://www.canva.com/create/logos/" target="_blank" rel="noopener">Canva Logo Maker</a> &mdash; design a logo, then export/convert it (or recreate a simple version in HTML).</li>
+  <li><a href="https://cssgradient.io/" target="_blank" rel="noopener">CSSGradient.io</a> &mdash; build the colored background for a logo tile and copy the CSS.</li>
+  <li><a href="https://htmlcssbuttongenerator.com/" target="_blank" rel="noopener">HTML/CSS Button Generator</a> &mdash; good for badge- and pill-style marks.</li>
+  <li><a href="https://www.w3schools.com/howto/howto_css_circles.asp" target="_blank" rel="noopener">W3Schools &mdash; shapes &amp; badges</a> &mdash; copy-paste recipes for circular and rounded marks.</li>
+</ul>
+<p>When in doubt, ask whoever set up the builder for a logo snippet &mdash; paste it into the HTML Logos tab once and it's saved for good.</p>
+
+<h3>Reorganizing the blocks (Organize Sections)</h3>
+<p>The left-rail blocks are grouped into tabs (Structure, Hero, Body, and so on). If that grouping doesn't match how you work, you can rearrange it: <span class="btnrep">&#9881; Settings</span> &rarr; <b>&#9776; Organize Sections</b>.</p>
+<ul>
+  <li><b>Move a block to another tab</b> &mdash; drag its chip into a different tab.</li>
+  <li><b>Reorder tabs</b> &mdash; drag a tab by its header.</li>
+  <li><b>Duplicate a block</b> &mdash; the <span class="chip">&#10697;</span> button copies a block so the same one can live in more than one tab.</li>
+  <li><b>Rename</b> &mdash; click a block name or a tab name and type.</li>
+  <li><b>New tabs</b> &mdash; <b>+ New tab</b> makes an empty one; drag blocks into it. Empty tabs can be deleted.</li>
+  <li><b>Switch modes</b> &mdash; do all of the above separately for Graphics, Newsletter, Webpage, and Docs.</li>
+</ul>
+<div class="note">
+  Organizing is <b>local to your browser only</b> &mdash; it changes how the rail looks for you, and never affects your saved newsletters or what gets exported. <b>Reset all</b> puts everything back to the defaults.
+</div>
 
 <h3>Filling sections from the content library</h3>
 <p>Instead of typing tips, quotes, and recipes by hand every week, the builder keeps a <b>library</b> of them and drops them in for you. Tip Tuesday, the header quote, and the recipe each have a small dark <b>fill bar</b> across the top:</p>
@@ -7322,6 +8044,21 @@ function defaultDocs(){return `<div class="docs-body">
   <li>Use the <b>search box</b> and the <b>status dropdown</b> to find things fast.</li>
   <li>For tips, there's a <b>Tags</b> box (one per line) &mdash; those are the pills that appear above the main tip when it's generated.</li>
 </ul>
+<p><b>Recipes: stats and tags are one-per-line.</b> A recipe's stats and tags each have their own box where you type <b>one entry per line</b> &mdash; just like the ingredients and steps boxes. This lets every recipe have its own mix of stats instead of a fixed set.</p>
+<ul>
+  <li><b>Stats box &mdash; amount first, then the label.</b> Put the number/amount at the start of the line and the label after a space. For example:
+    <br><code>6g Protein</code>
+    <br><code>210 Calories</code>
+    <br><code>$2.75 Per Serving</code>
+    <br><code>8g Net Carbs</code>
+    <br>The builder reads each line and fills a stat block: the first word (<code>6g</code>, <code>210</code>, <code>$2.75</code>) becomes the big number, and the rest (<code>Protein</code>, <code>Calories</code>) becomes the label under it. Add or remove lines and the recipe grows or shrinks its stat blocks to match.</li>
+  <li><b>Tags box &mdash; one tag per line.</b> For example:
+    <br><code>Keto</code>
+    <br><code>High Protein</code>
+    <br><code>One Pot</code>
+    <br>Each line becomes one of the pills shown on the recipe.</li>
+</ul>
+<p>When you place a recipe with <span class="btnrep">&#128214; Choose recipe&hellip;</span>, all of this fills in automatically &mdash; the name, stats, tags, ingredients, and steps.</p>
 <p>Everything lives as JSON files in the <code>/backlog</code> folder of your GitHub repo, so it's versioned and backed up for free, just like your saved newsletters. Adding content here means it's instantly available to <b>&#127922; Generate</b> in the builder.</p>
 
 <h2>5. Settings</h2>
@@ -7336,8 +8073,10 @@ function defaultDocs(){return `<div class="docs-body">
   <tr><td><b>&#10216;&#10217; View HTML</b></td><td>The finished code. Click <b>&#9998; Edit</b> to hand-tweak it (rarely needed).</td></tr>
   <tr><td><b>&#128229; Import</b></td><td>Paste a saved bundle to rebuild a document.</td></tr>
   <tr><td><b>&#10010; New Section</b></td><td>Build your own reusable block by pasting in HTML.</td></tr>
+  <tr><td><b>&#9776; Organize Sections</b></td><td>Rearrange the left-rail blocks: drag blocks between tabs, reorder or rename tabs, duplicate blocks, and make new tabs. Local to your browser; never affects saved work.</td></tr>
   <tr><td><b>&#9881; GitHub</b></td><td>Where documents are stored. Set up once, then forget it.</td></tr>
-  <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it.</td></tr>
+  <tr><td><b>&#128214; Docs</b></td><td>This guide. Click <b>&#9998; Edit</b> to change it. See also <b>&#127909; Guides</b> for video walkthroughs.</td></tr>
+  <tr><td><b>&#127909; Guides</b></td><td>Screen-recorded walkthroughs &mdash; how to build a newsletter start to finish, plus a short video for each significant update.</td></tr>
   <tr><td><b>&#128203; Content Backlog</b></td><td>The rotating bank of tips, smarter swaps, budget proteins, recipes, and quotes. The <b>Dashboard</b> tab shows what's queued next. Mark an item <b>USED</b> after it runs so it isn't repeated.</td></tr>
   <tr><td><b>&#128207; Page Format</b></td><td>How wide the canvas is and how it exports. Choose <b>Email / Graphic</b>, <b>Webpage</b>, or <b>Document</b>, set a custom width and padding, and save your own presets.</td></tr>
   <tr><td><b>&#127760; Content Library</b></td><td>The editable version of that bank, stored as JSON in <code>/backlog</code>. Add, edit, or delete tips, quotes, recipes, swaps, proteins, and myths. Sections pull from here with <b>&#127922; Generate</b>; items go <b>reserved</b> when pulled and <b>published</b> when the newsletter is sent.</td></tr>
@@ -7582,7 +8321,7 @@ function serializeSections(){
     const c=s.cloneNode(true);
     c.querySelectorAll('.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
     const o={key:s.dataset.key,theme:s.dataset.theme||'white',html:c.innerHTML};
-    // remember a per-section colour override so it survives save/reload
+    // remember a per-section color override so it survives save/reload
     const acc=(s.style.getPropertyValue('--accent')||'').trim();
     if(acc)o.accent=acc;
     return o;
@@ -7608,11 +8347,12 @@ function serializeNewsletter(meta){
     notes:meta.notes||'',
     updatedAt:meta.updatedAt||new Date().toISOString(),
     theme:serializeTheme(),
+    embeds:BG_EMBEDS,
     sections:serializeSections()
   };
 }
 
-/* apply a saved theme-vars object to the document + colour inputs */
+/* apply a saved theme-vars object to the document + color inputs */
 function applyThemeVars(theme){
   if(!theme)return;
   Object.entries(theme).forEach(([cv,val])=>{
@@ -7657,6 +8397,7 @@ function applyNewsletter(nl){
     if(!Array.isArray(nl.sections)){toast('Unrecognised file format');return false;}
   }
   applyThemeVars(nl.theme);
+  BG_EMBEDS=Array.isArray(nl.embeds)?nl.embeds:[];
   loadSections(nl.sections||[]);
   // remember this newsletter's metadata so re-saving keeps Tag/Status/Notes
   currentMeta={name:nl.name||'',tag:nl.tag||'',status:nl.status||'',notes:nl.notes||''};
@@ -7667,8 +8408,46 @@ function applyNewsletter(nl){
 /* client-side autosave (canvas + theme) to localStorage — silent.
    Stored in the legacy {secs,theme} shape that loadState() reads. */
 function saveStateLocal(){
-  const data=JSON.stringify({secs:serializeSections(),theme:serializeTheme()});
+  const data=JSON.stringify({secs:serializeSections(),theme:serializeTheme(),embeds:BG_EMBEDS});
   try{localStorage.setItem('lngvty_builder',data);}catch(e){MEM=data;}
+}
+
+/* ═══════════ BACKGROUND EMBEDS ═══════════
+   Hidden embed/tracking codes that ride along in the exported HTML (appended at
+   the end) but never render on the canvas. Stored with the newsletter state. */
+let BG_EMBEDS=[];
+function openEmbeds(){renderEmbedList();document.getElementById('embedsBg').classList.add('show');}
+function closeEmbeds(){document.getElementById('embedsBg').classList.remove('show');}
+function renderEmbedList(){
+  const host=document.getElementById('embedList');if(!host)return;host.innerHTML='';
+  if(!BG_EMBEDS.length){host.innerHTML='<div style="color:#aaa;font-size:12px;padding:8px 0;">No embeds yet. Click “Add embed” to paste one.</div>';}
+  BG_EMBEDS.forEach((em,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='border:1px solid #e6e6ea;border-radius:8px;padding:10px;background:#fafafa;';
+    row.innerHTML=`<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+        <input type="text" value="${esc(em.label||'')}" placeholder="Label (e.g. Analytics pixel)" oninput="updateEmbed(${i},'label',this.value)" style="flex:1;padding:6px 9px;border:1px solid #ddd;border-radius:6px;font-size:12px;"/>
+        <button class="tb-btn danger" onclick="removeEmbed(${i})" style="padding:5px 10px;font-size:11px;">Remove</button>
+      </div>
+      <textarea oninput="updateEmbed(${i},'code',this.value)" placeholder="Paste embed / tracking code here…" style="width:100%;min-height:80px;padding:8px;border:1px solid #ddd;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;box-sizing:border-box;resize:vertical;">${esc(em.code||'')}</textarea>`;
+    host.appendChild(row);
+  });
+}
+function addEmbed(){BG_EMBEDS.push({label:'',code:''});renderEmbedList();}
+function updateEmbed(i,key,val){if(BG_EMBEDS[i]){BG_EMBEDS[i][key]=val;}}
+function removeEmbed(i){BG_EMBEDS.splice(i,1);renderEmbedList();saveStateLocal();}
+function saveEmbeds(){
+  BG_EMBEDS=BG_EMBEDS.filter(e=>(e.code||'').trim());
+  saveStateLocal();closeEmbeds();
+  const n=BG_EMBEDS.length;
+  toast(n?('\u2713 '+n+' embed'+(n===1?'':'s')+' saved'):'Embeds cleared');
+}
+/* Build the hidden embed markup appended to the exported email. */
+function buildEmbedMarkup(){
+  const live=BG_EMBEDS.filter(e=>(e.code||'').trim());
+  if(!live.length)return '';
+  return '\n<!-- background embeds -->\n'+live.map(e=>
+    (e.label?`<!-- ${String(e.label).replace(/--+/g,'-')} -->\n`:'')+e.code
+  ).join('\n')+'\n';
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -8465,8 +9244,9 @@ function loadState(){
   let data=null;try{data=localStorage.getItem('lngvty_builder');}catch(e){data=MEM;}
   if(!data)return;
   try{
-    const {secs,theme}=JSON.parse(data);
+    const {secs,theme,embeds}=JSON.parse(data);
     applyThemeVars(theme);
+    BG_EMBEDS=Array.isArray(embeds)?embeds:[];
     loadSections(secs||[]);
   }catch(e){console.warn('load failed',e);}
 }
