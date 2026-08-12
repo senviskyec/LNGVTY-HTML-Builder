@@ -5130,6 +5130,10 @@ function fmtSyncArmed(){
 }
 function fmtRestore(){
   if(!fmtRange)return false;
+  let host=fmtRange.startContainer;
+  while(host&&host.nodeType!==1)host=host.parentNode;
+  const editable=host&&host.closest?host.closest('[contenteditable]'):null;
+  if(editable)editable.focus();
   const s=window.getSelection();s.removeAllRanges();s.addRange(fmtRange);return true;
 }
 function fmtExec(cmd,val){
@@ -5147,17 +5151,63 @@ function fmtAlign(dir){
   document.execCommand('justify'+(dir==='left'?'Left':dir==='right'?'Right':'Center'),false,null);
   fmtSyncArmed();markDirty&&markDirty();
 }
-/* Highlight = background color on the selection. Orange by default. */
+/* Highlight = pill-style background on the selection, like the recipe tags:
+   a soft tint of the chosen color with a little padding and rounding. Orange by
+   default. Robust to focus moving into the popover. */
 let fmtLastMark='var(--accent)';
 function applyHighlight(c){
-  if(!fmtRestore())return;
-  document.execCommand('styleWithCSS',false,true);
-  // hiliteColor is the standard; some engines only accept backColor
-  if(!document.execCommand('hiliteColor',false,c))document.execCommand('backColor',false,c);
+  let range=(cbSavedRange&&!cbSavedRange.collapsed)?cbSavedRange.cloneRange()
+           :(fmtRange&&!fmtRange.collapsed)?fmtRange.cloneRange():null;
+  if(!range){ if(!fmtCaptureFromSelection()){toast('Select some text first');return;} range=fmtRange.cloneRange(); }
+  const pop=document.getElementById('cbPop');
+  // resolve CSS vars to a concrete color
+  let val=c;
+  if(/var\(/.test(val)){const m=val.match(/var\((--[\w-]+)\)/);if(m){const cv=getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim();if(cv)val=cv;}}
+  if(c==='transparent'){
+    // unwrap: strip any highlight span wrapping/within the selection
+    unwrapHighlight(range);
+    if(pop)pop.classList.remove('show');markDirty&&markDirty();return;
+  }
+  if(range.collapsed){toast('Select some text first');return;}
+  const tint=tintColor(val,0.18);           // soft background like the tags
+  try{
+    const span=document.createElement('span');
+    span.className='hl-mark';
+    span.style.backgroundColor=tint;
+    span.style.color=val;
+    span.style.padding='1px 6px';
+    span.style.borderRadius='4px';
+    span.style.fontWeight='600';
+    try{ range.surroundContents(span); }
+    catch(_){ const frag=range.extractContents(); span.appendChild(frag); range.insertNode(span); }
+    const sel=window.getSelection();sel.removeAllRanges();const nr=document.createRange();nr.selectNodeContents(span);sel.addRange(nr);
+    fmtRange=nr.cloneRange();cbSavedRange=nr.cloneRange();
+  }catch(e){toast('Couldn\u2019t highlight that selection');return;}
   fmtLastMark=c;
-  const dot=document.getElementById('fmtMarkDot');if(dot)dot.style.background=c;
-  document.getElementById('cbPop').classList.remove('show');
-  fmtSyncArmed();markDirty&&markDirty();
+  const dot=document.getElementById('fmtMarkDot');if(dot)dot.style.background=val;
+  if(pop)pop.classList.remove('show');
+  markDirty&&markDirty();
+}
+/* remove highlight spans intersecting a range by replacing them with their text */
+function unwrapHighlight(range){
+  let node=range.startContainer;
+  while(node&&node!==frame){
+    if(node.nodeType===1&&node.classList&&node.classList.contains('hl-mark')){
+      const parent=node.parentNode;
+      while(node.firstChild)parent.insertBefore(node.firstChild,node);
+      parent.removeChild(node);
+      return;
+    }
+    node=node.parentNode;
+  }
+}
+/* mix a hex color with white to get a soft tint (for the pill background) */
+function tintColor(hex,alpha){
+  const m=(hex||'').replace('#','').match(/^([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if(!m)return hex;
+  const r=parseInt(m[1],16),g=parseInt(m[2],16),b=parseInt(m[3],16);
+  const mix=(ch)=>Math.round(ch*alpha+255*(1-alpha));
+  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
 }
 function positionColorbar(){/* floating bar retired in favor of the fixed format bar */}
 document.addEventListener('mouseup',()=>setTimeout(fmtSyncArmed,10));
@@ -5174,16 +5224,56 @@ function cbCaptureRange(){
 }
 function cbRestoreRange(){
   if(!cbSavedRange)return false;
+  // focus the editable that owns the range first — execCommand('foreColor'/'hiliteColor')
+  // is a no-op unless the contenteditable host actually has focus.
+  let host=cbSavedRange.startContainer;
+  while(host&&host.nodeType!==1)host=host.parentNode;
+  const editable=host&&host.closest?host.closest('[contenteditable]'):null;
+  if(editable)editable.focus();
   const s=window.getSelection();s.removeAllRanges();s.addRange(cbSavedRange);return true;
 }
+/* Wrap the current saved range in a <span> carrying the given inline style.
+   This is used for text color and highlight instead of the flaky, deprecated
+   execCommand('foreColor'/'hiliteColor'), which silently no-ops when focus has
+   moved to the color popover. Manual wrapping always works. */
+function fmtWrapRange(range,styleProp,styleVal){
+  if(!range||range.collapsed)return false;
+  // resolve a CSS var to its computed hex so the exported email has a real color
+  let val=styleVal;
+  if(/var\(/.test(val)){
+    const m=val.match(/var\((--[\w-]+)\)/);
+    if(m){const cv=getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim();if(cv)val=cv;}
+  }
+  try{
+    const span=document.createElement('span');
+    span.style[styleProp]=val;
+    // if the selection is entirely within one text node/element, surroundContents works;
+    // otherwise fall back to extract + wrap + reinsert which handles partial/multi-node spans
+    try{ range.surroundContents(span); }
+    catch(_){
+      const frag=range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
+    }
+    // reselect the newly wrapped span so the user can chain formats
+    const sel=window.getSelection();sel.removeAllRanges();
+    const nr=document.createRange();nr.selectNodeContents(span);sel.addRange(nr);
+    fmtRange=nr.cloneRange();cbSavedRange=nr.cloneRange();
+    return true;
+  }catch(e){return false;}
+}
 function applyTextColor(c){
-  if(!cbRestoreRange())return;
+  // use the best range we have: the one saved when the popover opened, else the
+  // last armed selection. Never bail just because focus moved to the popover.
+  let range=(cbSavedRange&&!cbSavedRange.collapsed)?cbSavedRange.cloneRange()
+           :(fmtRange&&!fmtRange.collapsed)?fmtRange.cloneRange():null;
+  if(!range){ if(!fmtCaptureFromSelection()){toast('Select some text first');return;} range=fmtRange.cloneRange(); }
   if(fmtColorTarget==='mark'){applyHighlight(c);return;}
-  document.execCommand('styleWithCSS',false,true);
-  document.execCommand('foreColor',false,c);
-  const dot=document.getElementById('fmtTextDot');if(dot)dot.style.background=c;
+  const ok=fmtWrapRange(range,'color',c);
+  if(!ok)toast('Select some text first');
+  const dot=document.getElementById('fmtTextDot');if(dot)dot.style.background=c==='var(--accent)'?getComputedStyle(document.documentElement).getPropertyValue('--accent').trim():c;
   document.getElementById('cbPop').classList.remove('show');
-  fmtSyncArmed();markDirty&&markDirty();
+  markDirty&&markDirty();
 }
 function applyTextHex(){
   const v=(document.getElementById('cbHex').value||'').trim();
@@ -5216,9 +5306,19 @@ function renderTextPalette(){
     return [name.replace('-',' '),hex];
   });
   const mk=(arr)=>arr.map(([n,hex])=>
-    `<button class="sw" style="background:${hex}" title="${n} ${hex}" onmousedown="event.preventDefault();applyTextColor('${hex}')"></button>`).join('');
-  document.getElementById('cbThemeSw').innerHTML=mk(themeSw);
-  document.getElementById('cbPaletteSw').innerHTML=mk(SEC_PALETTE.concat([['White','#ffffff'],['Black','#1a1a1a']]));
+    `<button type="button" class="sw" style="background:${hex}" title="${n} ${hex}" data-hex="${hex}"></button>`).join('');
+  const themeHost=document.getElementById('cbThemeSw');
+  const palHost=document.getElementById('cbPaletteSw');
+  themeHost.innerHTML=mk(themeSw);
+  palHost.innerHTML=mk(SEC_PALETTE.concat([['White','#ffffff'],['Black','#1a1a1a']]));
+  // Attach real listeners on pointerdown and preventDefault so focus/selection
+  // never leaves the editor. Inline onmousedown attributes proved unreliable when
+  // the swatch grid is re-rendered each time the popover opens.
+  [themeHost,palHost].forEach(host=>{
+    host.querySelectorAll('.sw').forEach(sw=>{
+      sw.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();applyTextColor(sw.getAttribute('data-hex'));});
+    });
+  });
 }
 const cbMore=document.getElementById('cbMore');
 if(cbMore){
@@ -5235,7 +5335,8 @@ if(cbMore){
 }
 document.addEventListener('mousedown',e=>{
   const pop=document.getElementById('cbPop');
-  if(pop&&pop.classList.contains('show')&&!pop.contains(e.target)&&e.target!==cbMore){
+  // ignore clicks on the format-bar swatches (they open this popover) and cbMore
+  if(pop&&pop.classList.contains('show')&&!pop.contains(e.target)&&e.target!==cbMore&&!e.target.closest('.fmt-swatch')){
     pop.classList.remove('show');
   }
 });
@@ -5310,9 +5411,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.3',
+  version : 'v22.4',
   name    : 'Calendars & Guides',
-  date    : '8 August 2026',
+  date    : '12 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -7072,7 +7173,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.3 "Calendars & Guides" · 8 August 2026
+**Current build:** v22.4 "Calendars & Guides" · 12 August 2026
 
 ---
 
@@ -7093,6 +7194,21 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.4 — Color & highlight fix · 12 August 2026
+
+- **Fixed text color and highlight in the formatting bar.** The color and highlight buttons
+  now open their color menu and actually apply to the selected text. Highlight uses a
+  pill-style background (orange by default, any color) like the recipe tags. (The buttons
+  relied on a browser command that silently did nothing once the color menu took focus;
+  they now wrap the selection directly, which always works and exports cleanly.)
+
+## v22.4 — Color & highlight fix · 12 August 2026
+
+- **Fixed text color and highlight not applying** from the formatting bar. Picking a color now
+  reliably colors the selected text, and the highlight paints a soft pill behind it (orange by
+  default, like the recipe tags) — with any color you choose. Both carry through to the
+  exported email.
 
 ## v22.3 — Formatting bar · 8 August 2026
 
