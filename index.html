@@ -552,6 +552,20 @@
   .swatch:hover{box-shadow:0 0 0 2px var(--accent);}
 
   .colorbar{position:fixed;z-index:800;background:#1a1a1a;border-radius:8px;padding:7px 10px;display:none;align-items:center;gap:8px;box-shadow:0 6px 20px rgba(0,0,0,.35);}
+  /* persistent formatting bar under the main toolbar */
+  .formatbar{display:flex;align-items:center;gap:5px;background:#fff;border-bottom:1px solid #e6e6ea;padding:6px 22px;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.03);flex-wrap:wrap;position:relative;z-index:4;}
+  .formatbar .fmt-label{font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#b7b7bd;margin-right:6px;}
+  .fmt-btn{min-width:30px;height:30px;padding:0 8px;border:1px solid #e2e2e7;background:#fafafa;border-radius:6px;font-family:'Open Sans',sans-serif;font-size:14px;color:#333;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:5px;transition:background .12s,border-color .12s;}
+  .fmt-btn:hover{background:#f0f0f2;border-color:#cfcfd6;}
+  .fmt-btn:active{background:#e7e7ea;}
+  .fmt-div{width:1px;height:20px;background:#e6e6ea;margin:0 3px;}
+  .fmt-swatch{position:relative;font-weight:800;}
+  .fmt-dot{width:12px;height:4px;border-radius:2px;background:var(--accent);display:inline-block;position:absolute;bottom:4px;left:50%;transform:translateX(-50%);}
+  .fmt-hl{width:14px;height:12px;border-radius:3px;background:var(--accent);display:inline-block;}
+  .fmt-hint{font-size:11px;color:#b0b0b6;margin-left:6px;font-style:italic;}
+  .formatbar.armed .fmt-hint{display:none;}
+  .formatbar:not(.armed) .fmt-btn{opacity:.45;pointer-events:none;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
   .colorbar.show{display:flex;}
   .colorbar .cb-label{font-size:9px;color:#999;font-family:'Montserrat';font-weight:700;letter-spacing:1px;text-transform:uppercase;}
   .cb-sw{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #555;}
@@ -714,6 +728,23 @@
     <span class="tb-label" id="secCount">0 sections</span>
     <button class="tb-btn" onclick="openSettings()" data-tip="Everything else: theme, images, docs, GitHub, import, and more.">&#9881; Settings</button>
     <button class="tb-btn danger" onclick="clearAll()" data-tip="Remove everything from the canvas.">&#128465; Clear</button>
+  </div>
+  <!-- persistent text formatting bar (acts on the current selection) -->
+  <div class="formatbar" id="formatbar">
+    <span class="fmt-label">Format</span>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtBold()" data-tip="Bold"><b>B</b></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtItalic()" data-tip="Italic"><i>I</i></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtUnderline()" data-tip="Underline"><u>U</u></button>
+    <span class="fmt-div"></span>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtAlign('left')" data-tip="Align left"><svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2" x2="14" y2="2"/><line x1="1" y1="6" x2="9" y2="6"/><line x1="1" y1="10" x2="12" y2="10"/></svg></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtAlign('center')" data-tip="Align center"><svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2" x2="14" y2="2"/><line x1="3" y1="6" x2="12" y2="6"/><line x1="2" y1="10" x2="13" y2="10"/></svg></button>
+    <button class="fmt-btn" onmousedown="event.preventDefault();fmtAlign('right')" data-tip="Align right"><svg width="15" height="12" viewBox="0 0 15 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2" x2="14" y2="2"/><line x1="6" y1="6" x2="14" y2="6"/><line x1="3" y1="10" x2="14" y2="10"/></svg></button>
+    <span class="fmt-div"></span>
+    <button class="fmt-btn fmt-swatch" onmousedown="event.preventDefault();openFmtColor('text')" data-tip="Text color"><span class="fmt-dot" id="fmtTextDot"></span>A</button>
+    <button class="fmt-btn fmt-swatch" onmousedown="event.preventDefault();openFmtColor('mark')" data-tip="Highlight color"><span class="fmt-hl" id="fmtMarkDot"></span>&#9646;</button>
+    <span class="fmt-div"></span>
+    <button class="fmt-btn" onmousedown="event.preventDefault();openTextLink()" data-tip="Add or edit link">&#128279;</button>
+    <span class="fmt-hint" id="fmtHint">Select text in the canvas to format it</span>
   </div>
   <div class="canvas-scroll" id="canvasScroll">
     <div class="canvas-stage" id="canvasStage">
@@ -1023,15 +1054,15 @@
   </div>
 </div>
 
-<div class="colorbar" id="colorbar">
-  <span class="cb-label">Text</span>
-  <button class="cb-more" id="cbMore" title="Choose a color"><span class="cb-more-dot"></span> Color</button>
-  <span class="cb-div"></span>
-  <button class="cb-link" id="cbLink" title="Add or edit link">&#128279; Link</button>
-</div>
+<!-- retired: floating colorbar replaced by the persistent format bar -->
 
-<!-- full text-color palette (all theme colors + custom hex) -->
+<!-- shared text / highlight color popover (all theme colors + custom hex) -->
 <div class="cb-pop" id="cbPop">
+  <div class="cb-pop-head" id="cbPopTitle" style="font-size:11px;color:#333;font-weight:800;margin-bottom:8px;">Text color</div>
+  <div id="cbMarkReset" style="display:none;margin-bottom:10px;">
+    <button class="tb-btn" style="width:100%;padding:7px 10px;font-size:12px;" onmousedown="event.preventDefault();applyHighlight('var(--accent)')">Default orange highlight</button>
+    <button class="tb-btn" style="width:100%;padding:7px 10px;font-size:12px;margin-top:5px;" onmousedown="event.preventDefault();applyHighlight('transparent')">Remove highlight</button>
+  </div>
   <div class="cb-pop-head">Theme colors</div>
   <div class="sw-grid" id="cbThemeSw"></div>
   <div class="cb-pop-head" style="margin-top:12px;">Palette</div>
@@ -2189,7 +2220,7 @@ const SECTIONS = {
         <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
       </tr></table>`;
       return `<div style="background:var(--secbg);padding:40px 48px 34px;border-bottom:1px solid #eee;text-align:center;">
-        ${ph('QUICK TIP',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px;text-align:center;")}
+        ${ph('QUICK TIP',"font-family:'Montserrat',sans-serif;font-size:20px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:14px;text-align:center;")}
         ${listBlock([para("A short, punchy tip goes here — one or two sentences the reader can act on this week.")],para('New paragraph'),'Add paragraph')}
       </div>`;}},
 
@@ -3171,7 +3202,7 @@ const SECTIONS = {
         <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
       </tr></table>`;
       return `<div style="background:var(--secbg);padding:44px 48px;">
-        ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
+        ${ph('The good news',"font-family:'Montserrat',sans-serif;font-size:20px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;")}
         ${listBlock([para('Your paragraph goes here. Write as much as you like — this block is for the letter or intro copy.')],para('New paragraph'),'Add paragraph')}
         <div style="margin-top:14px;">${ph('— Tim',"font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--sectext);",'span')}</div>
       </div>`;}},
@@ -5077,17 +5108,60 @@ function loadHotkeys(){try{const d=localStorage.getItem('lngvty_hotkeys');if(d)H
 
 /* ═══════════ INLINE FONT COLOR ═══════════ */
 const colorbar=document.getElementById('colorbar');
-function positionColorbar(){
-  const sel=window.getSelection();
-  if(sel.rangeCount&&!sel.isCollapsed&&frame.contains(sel.anchorNode)){
-    const r=sel.getRangeAt(0).getBoundingClientRect();
-    colorbar.style.left=Math.max(8,Math.min(window.innerWidth-180,r.left+r.width/2-85))+'px';
-    colorbar.style.top=Math.max(8,r.top-48)+'px';
-    colorbar.classList.add('show');
+const formatbar=document.getElementById('formatbar');
+/* Arm the format bar whenever there's a non-empty selection inside the canvas,
+   and remember that range so a click on a bar button (which blurs the editor)
+   can restore it before applying the command. */
+let fmtRange=null;
+function fmtCaptureFromSelection(){
+  const s=window.getSelection();
+  if(s&&s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode)){
+    fmtRange=s.getRangeAt(0).cloneRange();
+    if(formatbar)formatbar.classList.add('armed');
+    return true;
   }
+  return false;
 }
-document.addEventListener('mouseup',()=>setTimeout(()=>{const s=window.getSelection();if(s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode))positionColorbar();else if(!colorbar.matches(':hover'))colorbar.classList.remove('show');},10));
-document.addEventListener('keyup',()=>{const s=window.getSelection();if(s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode))positionColorbar();});
+function fmtSyncArmed(){
+  const s=window.getSelection();
+  const on=s&&s.rangeCount&&!s.isCollapsed&&frame.contains(s.anchorNode);
+  if(on)fmtRange=s.getRangeAt(0).cloneRange();
+  if(formatbar)formatbar.classList.toggle('armed',!!on);
+}
+function fmtRestore(){
+  if(!fmtRange)return false;
+  const s=window.getSelection();s.removeAllRanges();s.addRange(fmtRange);return true;
+}
+function fmtExec(cmd,val){
+  if(!fmtRestore())return;
+  document.execCommand('styleWithCSS',false,true);
+  document.execCommand(cmd,false,val===undefined?null:val);
+  fmtSyncArmed();markDirty&&markDirty();
+}
+function fmtBold(){fmtExec('bold');}
+function fmtItalic(){fmtExec('italic');}
+function fmtUnderline(){fmtExec('underline');}
+function fmtAlign(dir){
+  // justify commands act on the block; restore the selection first
+  fmtRestore();
+  document.execCommand('justify'+(dir==='left'?'Left':dir==='right'?'Right':'Center'),false,null);
+  fmtSyncArmed();markDirty&&markDirty();
+}
+/* Highlight = background color on the selection. Orange by default. */
+let fmtLastMark='var(--accent)';
+function applyHighlight(c){
+  if(!fmtRestore())return;
+  document.execCommand('styleWithCSS',false,true);
+  // hiliteColor is the standard; some engines only accept backColor
+  if(!document.execCommand('hiliteColor',false,c))document.execCommand('backColor',false,c);
+  fmtLastMark=c;
+  const dot=document.getElementById('fmtMarkDot');if(dot)dot.style.background=c;
+  document.getElementById('cbPop').classList.remove('show');
+  fmtSyncArmed();markDirty&&markDirty();
+}
+function positionColorbar(){/* floating bar retired in favor of the fixed format bar */}
+document.addEventListener('mouseup',()=>setTimeout(fmtSyncArmed,10));
+document.addEventListener('keyup',()=>{const s=window.getSelection();if(s&&s.rangeCount&&frame.contains(s.anchorNode))fmtSyncArmed();});
 /* ═══════════ TEXT COLOR PALETTE ═══════════
    The selection toolbar opens a popover listing every theme color (live values,
    so a re-themed document shows its own palette), a standing palette, and a hex
@@ -5104,16 +5178,36 @@ function cbRestoreRange(){
 }
 function applyTextColor(c){
   if(!cbRestoreRange())return;
+  if(fmtColorTarget==='mark'){applyHighlight(c);return;}
   document.execCommand('styleWithCSS',false,true);
   document.execCommand('foreColor',false,c);
+  const dot=document.getElementById('fmtTextDot');if(dot)dot.style.background=c;
   document.getElementById('cbPop').classList.remove('show');
-  colorbar.classList.remove('show');
-  markDirty&&markDirty();
+  fmtSyncArmed();markDirty&&markDirty();
 }
 function applyTextHex(){
   const v=(document.getElementById('cbHex').value||'').trim();
   if(!/^#?[0-9a-f]{6}$/i.test(v)){toast('Enter a 6-digit hex, e.g. #3f7d4f');return;}
   applyTextColor(v.charAt(0)==='#'?v:'#'+v);
+}
+/* Open the shared color popover under the format bar, for either the text color
+   or the highlight. Highlight defaults to orange and can be set to any color. */
+let fmtColorTarget='text';
+function openFmtColor(target){
+  fmtColorTarget=target||'text';
+  if(!fmtCaptureFromSelection()){toast('Select some text first');return;}
+  cbSavedRange=fmtRange?fmtRange.cloneRange():null;
+  renderTextPalette();
+  const pop=document.getElementById('cbPop');
+  document.getElementById('cbPopTitle') && (document.getElementById('cbPopTitle').textContent = target==='mark'?'Highlight color':'Text color');
+  // show a "default orange" shortcut for highlight
+  const resetRow=document.getElementById('cbMarkReset');
+  if(resetRow)resetRow.style.display=(target==='mark')?'block':'none';
+  const anchor=document.querySelector('.formatbar .fmt-swatch'+(target==='mark'?':nth-of-type(2)':''))||formatbar;
+  const r=(target==='mark'?document.getElementById('fmtMarkDot'):document.getElementById('fmtTextDot')).closest('.fmt-btn').getBoundingClientRect();
+  pop.style.left=Math.max(8,Math.min(window.innerWidth-260,r.left))+'px';
+  pop.style.top=(r.bottom+6)+'px';
+  pop.classList.add('show');
 }
 function renderTextPalette(){
   const cs=getComputedStyle(document.documentElement);
@@ -5149,21 +5243,19 @@ document.addEventListener('mousedown',e=>{
 /* ═══════════ INLINE TEXT LINK (link selected text) ═══════════ */
 let textLinkRange=null;       // saved selection range
 let textLinkExisting=null;    // the <a> we're editing, if selection is inside one
+function openTextLink(){
+  const sel=window.getSelection();
+  if(!sel.rangeCount||sel.isCollapsed||!frame.contains(sel.anchorNode)){toast('Select some text first');return;}
+  textLinkRange=sel.getRangeAt(0).cloneRange();
+  let node=sel.anchorNode;textLinkExisting=null;
+  while(node&&node!==frame){if(node.nodeType===1&&node.tagName==='A'){textLinkExisting=node;break;}node=node.parentNode;}
+  document.getElementById('textLinkUrl').value=textLinkExisting?(textLinkExisting.getAttribute('href')||''):'';
+  document.getElementById('textLinkBg').classList.add('show');
+  setTimeout(()=>document.getElementById('textLinkUrl').focus(),30);
+}
 const cbLink=document.getElementById('cbLink');
 if(cbLink){
-  cbLink.addEventListener('mousedown',e=>{
-    e.preventDefault();
-    const sel=window.getSelection();
-    if(!sel.rangeCount||!frame.contains(sel.anchorNode)){toast('Select some text first');return;}
-    textLinkRange=sel.getRangeAt(0).cloneRange();
-    // is the selection already inside a link?
-    let node=sel.anchorNode;textLinkExisting=null;
-    while(node&&node!==frame){if(node.nodeType===1&&node.tagName==='A'){textLinkExisting=node;break;}node=node.parentNode;}
-    document.getElementById('textLinkUrl').value=textLinkExisting?(textLinkExisting.getAttribute('href')||''):'';
-    colorbar.classList.remove('show');
-    document.getElementById('textLinkBg').classList.add('show');
-    setTimeout(()=>document.getElementById('textLinkUrl').focus(),30);
-  });
+  cbLink.addEventListener('mousedown',e=>{e.preventDefault();openTextLink();});
 }
 function closeTextLink(){document.getElementById('textLinkBg').classList.remove('show');}
 function restoreTextRange(){
@@ -5218,9 +5310,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.2',
+  version : 'v22.3',
   name    : 'Calendars & Guides',
-  date    : '7 August 2026',
+  date    : '8 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -6980,7 +7072,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.2 "Calendars & Guides" · 7 August 2026
+**Current build:** v22.3 "Calendars & Guides" · 8 August 2026
 
 ---
 
@@ -7001,6 +7093,16 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.3 — Formatting bar · 8 August 2026
+
+- **New formatting bar under the toolbar.** Select any text on the canvas and a slim bar
+  right below the main buttons lets you set it: **bold / italic / underline**, **align**
+  (left / center / right), **text color**, **highlight** (orange by default, any color), and
+  **link**. It replaces the little floating popup, so the controls are always in the same
+  place instead of crowding the selection.
+- **Bigger section labels.** The orange kicker on **Quick Tip** and **Letter / Body Text** is
+  now 20px so it reads as a proper heading.
 
 ## v22.2 — Performance fix (long-document lag) · 7 August 2026
 
