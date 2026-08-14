@@ -241,13 +241,14 @@
     background:none;border:0;border-radius:9px;cursor:pointer;text-align:left;color:#9a9ba3;
     font-family:'Montserrat';font-size:12px;font-weight:700;letter-spacing:.3px;
     transition:background .16s ease,color .16s ease,transform .16s ease;}
-  .set-item .ic{width:18px;text-align:center;font-size:13px;filter:grayscale(1) opacity(.75);transition:filter .16s ease;}
+  .set-item .ic{width:18px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;opacity:.7;transition:opacity .16s ease;}
+  .set-item .ic svg{display:block;}
   .set-item .tx{flex:1;}
   .set-item .ch{opacity:0;font-size:14px;transform:translateX(-4px);transition:opacity .16s ease,transform .16s ease;}
   .set-item:hover{background:#212228;color:#d8d9de;transform:translateX(2px);}
-  .set-item:hover .ic{filter:none;}
+  .set-item:hover .ic{opacity:1;}
   .set-item.active{background:var(--accent);color:#fff;}
-  .set-item.active .ic{filter:none;}
+  .set-item.active .ic{opacity:1;}
   .set-item.active .ch{opacity:.85;transform:none;}
   .set-sep{height:1px;background:#26272d;margin:10px 12px;}
   /* ── Section Organizer ── */
@@ -522,6 +523,10 @@
   .stat-cell:hover > .li-del{display:block;}
   .sched-sub > .li-del{display:none;}
   .sched-sub:hover > .li-del{display:block;}
+  /* multi-event upcoming-events day: sub-events stack, first has no divider */
+  .evt-subs > .evt-sub:first-child{border-top:none !important;padding-top:14px;}
+  .evt-sub > .li-del{display:none;}
+  .evt-sub:hover > .li-del{display:block;}
 
   /* link-edit pill on buttons/links */
   .link-edit{position:absolute;top:-9px;right:-6px;z-index:35;background:#1a1a1a;color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;white-space:nowrap;}
@@ -770,23 +775,23 @@
         <span class="set-brand-sub">Builder Settings</span>
       </div>
       <nav class="set-nav" id="setNav">
-        <button class="set-item" data-pane="pageformat"><span class="ic">&#128207;</span><span class="tx">Page Format</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="theme"><span class="ic">&#127912;</span><span class="tx">Theme &amp; Type</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="images"><span class="ic">&#128247;</span><span class="tx">Images</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="pageformat"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2" width="11" height="12" rx="1"/><line x1="2.5" y1="5.5" x2="13.5" y2="5.5"/></svg></span><span class="tx">Page Format</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="theme"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M8 2.5v11M2.5 8h11"/></svg></span><span class="tx">Theme &amp; Type</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="images"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="9" rx="1"/><circle cx="5.5" cy="6.5" r="1"/><path d="M3 12l3-3 2.5 2.5L11 7l2 2.5"/></svg></span><span class="tx">Images</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
-        <button class="set-item" data-pane="export"><span class="ic">&#8595;</span><span class="tx">Export</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="html"><span class="ic">&#10216;&#10217;</span><span class="tx">View HTML</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="import"><span class="ic">&#128229;</span><span class="tx">Import</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="newsec"><span class="ic">&#10010;</span><span class="tx">New Section</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="organize"><span class="ic">&#9776;</span><span class="tx">Organize Sections</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="export"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7"/><path d="M5 6.5L8 9.5l3-3"/><path d="M3 12.5h10"/></svg></span><span class="tx">Export</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="html"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 5.5L3 8l3 2.5"/><path d="M10 5.5L13 8l-3 2.5"/></svg></span><span class="tx">View HTML</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="import"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9.5v-7"/><path d="M5 6.5L8 9.5l3-3" transform="rotate(180 8 6)"/><path d="M3 12.5h10"/></svg></span><span class="tx">Import</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="newsec"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg></span><span class="tx">New Section</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="organize"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="4.5" x2="13" y2="4.5"/><line x1="3" y1="8" x2="13" y2="8"/><line x1="3" y1="11.5" x2="13" y2="11.5"/></svg></span><span class="tx">Organize Sections</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
-        <button class="set-item" data-pane="backlog"><span class="ic">&#128203;</span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="library"><span class="ic">&#127760;</span><span class="tx">Content Library</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="backlog"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="2.5" width="10" height="11" rx="1"/><line x1="5.5" y1="6" x2="10.5" y2="6"/><line x1="5.5" y1="9" x2="10.5" y2="9"/></svg></span><span class="tx">Content Backlog</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="library"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><path d="M2.5 8h11M8 2.5c1.8 1.6 1.8 9.4 0 11M8 2.5c-1.8 1.6-1.8 9.4 0 11"/></svg></span><span class="tx">Content Library</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
-        <button class="set-item" data-pane="github"><span class="ic">&#9881;</span><span class="tx">GitHub</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="docs"><span class="ic">&#128214;</span><span class="tx">Docs</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="guides"><span class="ic">&#127909;</span><span class="tx">Guides</span><span class="ch">›</span></button>
-        <button class="set-item" data-pane="about"><span class="ic">&#8505;</span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="github"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4"/></svg></span><span class="tx">GitHub</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="docs"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2.5h6l4 4v7H3z"/><path d="M9 2.5v4h4"/></svg></span><span class="tx">Docs</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="guides"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="M6.5 6.5l3 1.5-3 1.5z" fill="currentColor" stroke="none"/></svg></span><span class="tx">Guides</span><span class="ch">›</span></button>
+        <button class="set-item" data-pane="about"><span class="ic"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="5.5"/><line x1="8" y1="7.3" x2="8" y2="11"/><circle cx="8" cy="5" r="0.6" fill="currentColor" stroke="none"/></svg></span><span class="tx">Version &amp; Notes</span><span class="ch">›</span></button>
         <div class="set-sep"></div>
         <button class="set-item set-item-feedback" data-pane="feedback"><span class="ic">&#128172;</span><span class="tx">Send Feedback</span><span class="ch">›</span></button>
       </nav>
@@ -1382,7 +1387,7 @@
 <!-- SCHEDULE / EVENTS DATE PICKER modal -->
 <div class="modal-bg" id="schedCalBg">
   <div class="modal" style="width:320px;">
-    <div class="modal-head"><h3>🗓 Pick a date</h3><button onclick="closeSchedCal()">&times;</button></div>
+    <div class="modal-head"><h3><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" style="vertical-align:-2px;"><rect x="2.5" y="3" width="11" height="10.5" rx="1.2"/><line x1="2.5" y1="6" x2="13.5" y2="6"/><line x1="5.5" y1="1.7" x2="5.5" y2="4"/><line x1="10.5" y1="1.7" x2="10.5" y2="4"/></svg> Pick a date</h3><button onclick="closeSchedCal()">&times;</button></div>
     <div class="modal-scroll" style="padding-bottom:8px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <button class="tb-btn" onclick="schedCalNav(-1)" style="padding:5px 10px;">‹</button>
@@ -2262,25 +2267,38 @@ const SECTIONS = {
 
   nlevents:{group:'Events',icon:'📅',name:'Upcoming Events',theme:'white',mode:'newsletter',
     html:()=>{
-      // Table-based row: gray date box (left, full height) + content card (right,
-      // full width). Built directly as a table so it renders identically in every
-      // email client with no flex→table conversion. The date box stacks
-      // month / big day number / weekday, all centred.
+      // One event within a day (a day can hold several). Stacks name+time, desc, tag.
+      const evsub=(name,time,desc,tag)=>`<div class="evt-sub" style="position:relative;padding:10px 0;border-top:1px solid #f0f0f0;">
+          <div style="margin-bottom:4px;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;display:inline;")} <span class="evt-time" contenteditable="true" data-ph="${esc(time)}"></span></div>
+          ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
+          <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
+          <button class="li-del hint-late" data-hint="Delete just this event" onclick="delEvtSub(this)" title="Remove this event">×</button>
+        </div>`;
+      // A day row: gray date box (left, fills full row height so it grows with the
+      // sub-events) + content cell holding one or more events. Left controls
+      // (drag / delete-day / calendar) and right controls (add-event / arrows)
+      // mirror the Weekly Schedule. Built as a table for email safety.
       const ev=(month,day,weekday,name,time,desc,tag)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;border-bottom:1px solid #f0f0f0;margin-bottom:2px;position:relative;">
         <tr>
-          <td width="64" valign="middle" align="center" style="width:64px;background:var(--gray);padding:10px 8px;text-align:center;">${ph(month,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;opacity:.7;")}${ph(day,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1.1;")}${ph(weekday,"font-size:9px;color:#fff;opacity:.6;font-weight:300;text-transform:capitalize;margin-top:2px;")}</td>
-          <td valign="top" style="padding:14px 16px;">
-            <div style="margin-bottom:4px;">${ph(name,"font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;display:inline;")} <span class="evt-time" contenteditable="true" data-ph="${esc(time)}"></span></div>
-            ${ph(desc,"font-size:12px;color:#888;line-height:1.6;font-weight:300;")}
-            <div style="margin-top:6px;">${tagBlock(tag?[tag]:[],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
+          <td class="sched-lctrls" valign="top">
+            <span class="sched-lwrap">
+              ${liDrag()}
+              <button class="li-del hint-late" data-hint="Delete this whole day" onclick="delLi(this)">×</button>
+              ${schedCalBtn()}
+            </span>
           </td>
-          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">${schedCalBtn()}${liDrag()}${liMoves()}<button class="li-del" onclick="delLi(this)">×</button></td>
+          <td width="64" valign="middle" align="center" style="width:64px;background:var(--gray);padding:10px 8px;text-align:center;">${ph(month,"font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;opacity:.7;")}${ph(day,"font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1.1;")}${ph(weekday,"font-size:9px;color:#fff;opacity:.6;font-weight:300;text-transform:capitalize;margin-top:2px;")}</td>
+          <td valign="top" style="padding:4px 16px;"><div class="evt-subs">${evsub(name,time,desc,tag)}</div></td>
+          <td class="li-ctrls" valign="top" style="width:0;font-size:0;line-height:0;white-space:nowrap;">
+            <button class="sched-addsub" onclick="addEvtSub(this)" title="Add another event on this day">＋ event</button>
+            ${liMoves()}
+          </td>
         </tr>
       </table>`;
       return `<div style="background:var(--secbg);padding:36px 48px;border-bottom:1px solid #eee;">
         ${ph('Special Events',"font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#bbb;margin-bottom:6px;")}
         ${ph('Mark Your Calendar',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--heading);text-transform:uppercase;margin-bottom:20px;line-height:1.1;")}
-        ${listBlock([ev('MON','00','Sunday','Event Name','Time','Short description.','Tag'),ev('MON','00','Monday','Event Name','Time','Short description.','Tag'),ev('MON','00','Tuesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Wednesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Thursday','Event Name','Time','Short description.','Tag'),ev('MON','00','Friday','Event Name','Time','Short description.','Tag'),ev('MON','00','Saturday','Event Name','Time','Short description.','Tag')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add event')}
+        ${listBlock([ev('MON','00','Sunday','Event Name','Time','Short description.','Tag'),ev('MON','00','Monday','Event Name','Time','Short description.','Tag'),ev('MON','00','Tuesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Wednesday','Event Name','Time','Short description.','Tag'),ev('MON','00','Thursday','Event Name','Time','Short description.','Tag'),ev('MON','00','Friday','Event Name','Time','Short description.','Tag'),ev('MON','00','Saturday','Event Name','Time','Short description.','Tag')],ev('MON','00','Weekday','Event Name','Time','Short description.','Tag'),'Add day')}
       </div>`;}},
 
   nl90:{group:'CTA',icon:'◷',name:'Coming Up on 90 Days?',theme:'white',mode:'both',
@@ -4673,9 +4691,28 @@ function delSchedSub(btn){
   if(subs.querySelectorAll(':scope > .sched-sub').length<=1){toast('Use the × on the day to remove it entirely');return;}
   sub.remove();
 }
+/* Upcoming Events: add another event under the same day. The gray date box is a
+   full-height table cell, so stacking more events simply grows the row and the
+   gray box extends down with it. */
+function addEvtSub(btn){
+  const wrap=btn.closest('.li-wrap');const subs=wrap.querySelector('.evt-subs');if(!subs)return;
+  const proto=`<div class="evt-sub" style="position:relative;padding:10px 0;border-top:1px solid #f0f0f0;">
+      <div style="margin-bottom:4px;"><span contenteditable="true" data-ph="Event Name" style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--heading);text-transform:uppercase;display:inline;"></span> <span class="evt-time" contenteditable="true" data-ph="Time"></span></div>
+      <div contenteditable="true" data-ph="Short description." style="font-size:12px;color:#888;line-height:1.6;font-weight:300;"></div>
+      <div style="margin-top:6px;">${tagBlock(['Tag'],"display:inline-block;font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;background:rgba(224,90,27,.12);color:var(--accent);")}</div>
+      <button class="li-del hint-late" data-hint="Delete just this event" onclick="delEvtSub(this)" title="Remove this event">×</button>
+    </div>`;
+  const tmp=document.createElement('div');tmp.innerHTML=proto;const node=tmp.firstElementChild;subs.appendChild(node);
+  refreshPlaceholders();node.querySelector('[contenteditable]')?.focus();
+}
+function delEvtSub(btn){
+  const sub=btn.closest('.evt-sub');const subs=sub?.parentElement;if(!subs)return;
+  if(subs.querySelectorAll(':scope > .evt-sub').length<=1){toast('Use the × on the day to remove it entirely');return;}
+  sub.remove();
+}
 
 /* ═══════════ SCHEDULE / EVENTS DATE PICKER ═══════════
-   The 🗓 button on a Weekly Schedule day or an Upcoming Event opens a small month
+   The calendar button on a Weekly Schedule day or an Upcoming Event opens a small month
    calendar. Clicking a date fills that row's day/date fields:
    • Weekly Schedule → weekday spelled out ("Sunday") + "AUG 9"
    • Upcoming Events → month ≤4-char ("Aug") + day number ("9") + weekday ("Sunday")
@@ -5411,9 +5448,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.4',
+  version : 'v22.5',
   name    : 'Calendars & Guides',
-  date    : '12 August 2026',
+  date    : '14 August 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -7173,7 +7210,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.4 "Calendars & Guides" · 12 August 2026
+**Current build:** v22.5 "Calendars & Guides" · 14 August 2026
 
 ---
 
@@ -7194,6 +7231,17 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.5 — Settings icons + multi-event Upcoming Events · 14 August 2026
+
+- **Settings icons render everywhere now.** The menu icons were emoji that showed as "??" in
+  some browsers — they're now clean drawn icons that display the same on every device.
+- **Upcoming Events: calendar button no longer overlaps delete.** The events rows now match the
+  Weekly Schedule: drag, delete-whole-day, and the calendar sit on the left; add-event and the
+  up/down arrows sit on the right.
+- **Multiple events per day on Upcoming Events.** Click "+ event" to add another event under the
+  same date — the gray date box simply extends down to fit. Each event has its own delete (×)
+  that appears on hover, and the whole-day × removes the entire day.
 
 ## v22.4 — Color & highlight fix · 12 August 2026
 
