@@ -3899,6 +3899,7 @@ function controlsHTML(){
     <div class="sec-controls">
       <button class="sc-btn sc-theme" title="Cycle block shade: white / cream / gray / black / accent" onclick="cycleTheme(this)">○ White</button>
       <button class="sc-btn sc-color" title="Set this section's color" onclick="openSecColor(this)"><span class="sc-dot"></span></button>
+      <button class="sc-btn sc-sync" title="Update this block to the latest version (keeps your text)" onclick="rebuildSec(this)"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M13.5 7a5.5 5.5 0 1 0-1.6 3.9"/><path d="M13.5 3.5V7H10"/></svg></button>
       <button class="sc-btn drag" title="Drag to move">⠿</button>
       <button class="sc-btn" title="Up" onclick="moveSec(this,-1)">↑</button>
       <button class="sc-btn" title="Down" onclick="moveSec(this,1)">↓</button>
@@ -4591,6 +4592,209 @@ function finishDrag(){
 function moveSec(btn,dir){const sec=btn.closest('.sec');if(dir<0&&sec.previousElementSibling?.classList.contains('sec'))sec.previousElementSibling.before(sec);else if(dir>0&&sec.nextElementSibling)sec.nextElementSibling.after(sec);refreshState();}
 function dupSec(btn){const sec=btn.closest('.sec');const clone=sec.cloneNode(true);wireSec(clone);sec.after(clone);refreshState();}
 function delSec(btn){btn.closest('.sec').remove();refreshState();}
+
+/* ═══════════ REBUILD / UPDATE A SECTION ═══════════
+   Regenerate a section from the current registry code (picking up any bug fixes
+   or new features) while preserving the operator's edited content — text, tags,
+   photos/logos, sub-events, per-section color and shade. If the freshly-built
+   markup already matches what's on the canvas, nothing changes and we say so.
+
+   Migration strategy: capture every editable field's HTML in document order, plus
+   the repeatable rows (schedule/event days, list items, tags, stats) and any
+   photo/logo hosts. Build a fresh copy, then replay: grow/shrink each repeatable
+   list to the saved count and pour the saved content back in, matched by position
+   within each structural group. Fields that no longer exist are dropped; brand-new
+   fields keep their fresh placeholder. */
+
+// A stable fingerprint of a section's *structure* (ignoring user text) so we can
+// tell whether the registry version differs from what's on the canvas.
+function secStructSig(root){
+  const clone=root.cloneNode(true);
+  clone.querySelectorAll('.sec-controls,.sec-tag,.fill-bar').forEach(e=>e.remove());
+  // strip user-entered text and volatile attributes, keep the skeleton
+  clone.querySelectorAll('[contenteditable]').forEach(e=>{e.innerHTML='';});
+  clone.querySelectorAll('img').forEach(e=>e.removeAttribute('src'));
+  clone.querySelectorAll('[data-src]').forEach(e=>e.removeAttribute('data-src'));
+  clone.querySelectorAll('[data-on]').forEach(e=>e.removeAttribute('data-on'));
+  clone.querySelectorAll('[data-logo]').forEach(e=>e.removeAttribute('data-logo'));
+  clone.querySelectorAll('.logo-slot,.hl-mark').forEach(e=>e.replaceWith(...e.childNodes));
+  clone.querySelectorAll('[style]').forEach(e=>{
+    // drop is-empty class artefacts + inline colors that come from user formatting
+  });
+  clone.querySelectorAll('.is-empty').forEach(e=>e.classList.remove('is-empty'));
+  // strip volatile runtime attributes added after render (placeholder bookkeeping etc.)
+  clone.querySelectorAll('[data-pkeys]').forEach(e=>e.removeAttribute('data-pkeys'));
+  clone.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('spellcheck'));
+  // drop now-empty class attributes so a live (class="") vs fresh (no class) pair matches
+  clone.querySelectorAll('*').forEach(e=>{if(e.getAttribute('class')==='')e.removeAttribute('class');});
+  return clone.innerHTML.replace(/\s+/g,' ').trim();
+}
+
+// Capture editable content from a section, grouped so it can be replayed onto a
+// freshly-built copy of the same section type.
+function captureSecContent(root){
+  const REPEAT_SEL='.li-wrap,.sched-sub,.evt-sub,.tag-pill,.stat-cell,.li-list-inner tr';
+  const inRepeat=(el)=>!!el.closest(REPEAT_SEL);
+  // top-level editable fields (outside any repeatable row)
+  const fields=[];
+  root.querySelectorAll('[contenteditable]').forEach(e=>{
+    if(inRepeat(e))return;
+    fields.push({ph:e.getAttribute('data-ph')||'',html:e.innerHTML, empty:e.classList.contains('is-empty')});
+  });
+  // repeatable lists: for each list capture, per row, the editable fields (ph+html)
+  // and any sub-events, so we can rebuild the same COUNT of rows using the FRESH
+  // structure and pour only the text back in.
+  const lists=[];
+  root.querySelectorAll('.li-list').forEach(list=>{
+    const rowEls=[...list.children];
+    const rows=rowEls.map(row=>{
+      // Capture every editable in the row as one flat, ordered pool (keyed by
+      // data-ph). We also note how many sub-events the row had so the fresh row
+      // can be grown to match before pouring text back in by data-ph.
+      const flat=[...row.querySelectorAll('[contenteditable]')]
+        .map(e=>({ph:e.getAttribute('data-ph')||'',html:e.innerHTML,empty:e.classList.contains('is-empty')}));
+      const subCount=row.querySelectorAll('.sched-sub,.evt-sub').length;
+      const tags=[...row.querySelectorAll('.tag-pill [contenteditable]')].map(t=>({html:t.innerHTML,empty:t.classList.contains('is-empty')}));
+      return {flat,subCount,tags};
+    });
+    lists.push({rows});
+  });
+  // top-level tag wraps (outside lists)
+  const tagWraps=[];
+  root.querySelectorAll('.tag-wrap').forEach(w=>{
+    if(w.closest('.li-list'))return;
+    tagWraps.push([...w.querySelectorAll('.tag-pill [contenteditable]')].map(t=>t.innerHTML));
+  });
+  // photo / logo hosts
+  const photos=[];
+  root.querySelectorAll('.nl-ppic,.nl-rpic,.nl-pic').forEach(h=>{
+    photos.push({on:h.dataset.on,src:h.dataset.src||'',logo:h.dataset.logo||'',
+      logoHTML:(h.querySelector('.logo-slot')?h.querySelector('.logo-slot').innerHTML:''),
+      imgsrc:(h.querySelector('img')?h.querySelector('img').getAttribute('src'):'')});
+  });
+  return {fields,lists,tagWraps,photos,
+    theme:root.dataset.theme||'white',
+    accent:(root.style.getPropertyValue('--accent')||'').trim()};
+}
+
+// pour a set of captured {ph,html,empty} fields into a set of target editables,
+// matching by data-ph first then falling back to position; skips empties.
+function pourFields(targets,pool){
+  const rest=pool.slice();
+  targets.forEach(t=>{
+    const ph=t.getAttribute('data-ph')||'';
+    let idx=rest.findIndex(f=>f.ph===ph);
+    if(idx<0)idx=rest.length?0:-1;
+    if(idx>=0){
+      const f=rest.splice(idx,1)[0];
+      if(f && !f.empty && f.html!=='') t.innerHTML=f.html;
+    }
+  });
+}
+
+// Replay captured content onto a freshly-built section of the same type.
+function applySecContent(root,cap){
+  // 1) repeatable lists — keep the FRESH row structure, match the saved row COUNT,
+  //    and pour only the saved text into each row (so bug-fixed markup is retained).
+  const newLists=root.querySelectorAll('.li-list');
+  newLists.forEach((list,li)=>{
+    const saved=cap.lists[li];if(!saved||!saved.rows.length)return;
+    const templateRow=list.firstElementChild;
+    if(!templateRow)return;
+    const tHTML=templateRow.outerHTML;
+    // grow/shrink the fresh list to the saved row count using the fresh template
+    const want=saved.rows.length;
+    while(list.children.length<want){const t=document.createElement('div');t.innerHTML=tHTML;list.appendChild(t.firstElementChild);}
+    while(list.children.length>want){list.lastElementChild.remove();}
+    // pour text into each fresh row
+    [...list.children].forEach((row,ri)=>{
+      const sr=saved.rows[ri];if(!sr)return;
+      // grow the fresh row's sub-events to match the saved count first, so all
+      // target fields exist before we pour
+      if(sr.subCount>1){
+        const addBtn=row.querySelector('.sched-addsub');
+        const isEvt=!!row.querySelector('.evt-subs');
+        const subHost=row.querySelector('.sched-subs,.evt-subs');
+        const haveSubs=()=>subHost?subHost.querySelectorAll(':scope > .sched-sub, :scope > .evt-sub').length:0;
+        let guard=0;
+        while(subHost && haveSubs()<sr.subCount && guard++<20){
+          if(isEvt && typeof addEvtSub==='function' && addBtn){addEvtSub(addBtn);}
+          else if(typeof addSchedSub==='function' && addBtn){addSchedSub(addBtn);}
+          else break;
+        }
+      }
+      // grow row tags to match
+      if(sr.tags && sr.tags.length){
+        const w=row.querySelector('.tag-wrap');const addBtn=w&&w.querySelector('.tag-add');
+        let guard=0;
+        while(w && addBtn && w.querySelectorAll('.tag-pill').length<sr.tags.length && guard++<20){addTag(addBtn);}
+        const pills=[...(w?w.querySelectorAll('.tag-pill [contenteditable]'):[])];
+        sr.tags.forEach((tg,ti)=>{if(pills[ti]&&!tg.empty&&tg.html!=='')pills[ti].innerHTML=tg.html;});
+      }
+      // pour every editable in the fresh row from the saved flat pool, matched by
+      // data-ph (falls back to order) — works even when a field moved from the
+      // row level into a sub-event between versions.
+      const rowTargets=[...row.querySelectorAll('[contenteditable]')].filter(e=>!e.closest('.tag-pill'));
+      pourFields(rowTargets,sr.flat.filter(f=>true));
+    });
+  });
+  // 2) top-level editable fields (outside lists)
+  const REPEAT_SEL='.li-wrap,.sched-sub,.evt-sub,.tag-pill,.stat-cell,.li-list-inner tr';
+  const targets=[...root.querySelectorAll('[contenteditable]')].filter(e=>!e.closest(REPEAT_SEL));
+  pourFields(targets,cap.fields);
+  // 3) top-level tags
+  const newWraps=[...root.querySelectorAll('.tag-wrap')].filter(w=>!w.closest('.li-list'));
+  newWraps.forEach((w,wi)=>{
+    const saved=cap.tagWraps[wi];if(!saved)return;
+    const addBtn=w.querySelector('.tag-add');
+    while(w.querySelectorAll('.tag-pill').length<saved.length && addBtn){addTag(addBtn);}
+    const now=[...w.querySelectorAll('.tag-pill [contenteditable]')];
+    saved.forEach((html,i)=>{if(now[i])now[i].innerHTML=html;});
+  });
+  // 4) photos / logos
+  const newHosts=root.querySelectorAll('.nl-ppic,.nl-rpic,.nl-pic');
+  newHosts.forEach((h,hi)=>{
+    const p=cap.photos[hi];if(!p)return;
+    const img=h.querySelector('img');
+    if(p.logo==='1' && p.logoHTML){ if(typeof setPhotoHost==='function')setPhotoHost(h,img,null,'',p.logoHTML); }
+    else if(p.src||p.imgsrc){ if(typeof setPhotoHost==='function')setPhotoHost(h,img,p.src||p.imgsrc,'',null); }
+  });
+  // 5) theme + accent
+  applySecTheme(root,cap.theme||'white');
+  if(cap.accent){root.style.setProperty('--accent',cap.accent);root.dataset.accent=cap.accent;}
+}
+
+function rebuildSec(btn){
+  const sec=btn.closest('.sec');if(!sec)return;
+  const key=sec.dataset.key;
+  const S=allSections();
+  // widgets rebuild from the WIDGETS registry
+  const isWidget=key&&key.startsWith('widget-');
+  const def=isWidget?WIDGETS[key.slice(7)]:S[key];
+  if(!def||typeof def.html!=='function'){toast('This block can\u2019t be auto-updated');return;}
+
+  // build a fresh reference section (registry markup + controls) to compare
+  const fresh=document.createElement('div');fresh.className='sec';fresh.dataset.key=key;
+  fresh.innerHTML=def.html()+controlsHTML();
+
+  // structural comparison — if identical, nothing to do
+  if(secStructSig(sec)===secStructSig(fresh)){
+    toast('\u2713 Block already up to date');
+    return;
+  }
+
+  // capture the operator's content, then pour it into the fresh markup
+  const cap=captureSecContent(sec);
+  applySecContent(fresh,cap);
+
+  // swap fresh in place of the old section, keep tag label + rewire
+  const tag=fresh.querySelector('.sec-tag');
+  if(tag)tag.textContent=isWidget?((WIDGETS[key.slice(7)]?.name||'Widget')+' (widget)'):(def.name||'');
+  sec.replaceWith(fresh);
+  wireSec(fresh);
+  refreshState();refreshPlaceholders();saveStateLocal();
+  toast('\u2713 Block updated to the latest version');
+}
 function clearAll(){if(!frame.querySelector('.sec'))return;if(confirm('Clear the entire email?')){frame.querySelectorAll('.sec').forEach(s=>s.remove());refreshState();try{saveStateLocal();}catch(e){}toast('Canvas cleared');}}
 
 /* ═══════════ LIST add / remove ═══════════ */
@@ -5448,7 +5652,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.5',
+  version : 'v22.6',
   name    : 'Calendars & Guides',
   date    : '14 August 2026',
 };
@@ -7210,7 +7414,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.5 "Calendars & Guides" · 14 August 2026
+**Current build:** v22.6 "Calendars & Guides" · 14 August 2026
 
 ---
 
@@ -7231,6 +7435,17 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.6 — Update a block to the latest version · 14 August 2026
+
+- **New "update block" button in each block's top bar** (the circular-arrow icon, next to the
+  color button). When a block like the Weekly Schedule or Upcoming Events gets a bug fix or a
+  new feature, older newsletters you saved still use the old version. Click this button to
+  rebuild that block with the latest code **while keeping everything you typed** — text, tags,
+  dates, photos, colors, and any extra events you added.
+- If the block is already current, it just says **"Block already up to date."**
+- Nothing else changes: after updating, every control still works (add/delete events, calendar
+  picker, drag, color, formatting), and the block exports cleanly.
 
 ## v22.5 — Settings icons + multi-event Upcoming Events · 14 August 2026
 
