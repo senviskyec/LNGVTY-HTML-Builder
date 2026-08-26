@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-11T15:49:58.442Z",
+  "updatedAt": "2026-08-26T01:15:12.451Z",
   "items": [
     {
       "id": "tip-001",
@@ -257,12 +257,12 @@
     },
     {
       "id": "tip-013",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-11-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T00:00:00Z",
+      "updatedAt": "2026-08-26T01:15:12.451Z",
       "content": {
         "main": "Motivation gets you started; systems keep you going.",
         "description": "Aim for never missing twice. One off day is nothing; two in a row is a pattern.",
