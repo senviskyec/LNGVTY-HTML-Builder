@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-08-26T01:15:12.451Z",
+  "updatedAt": "2026-09-13T22:17:45.200Z",
   "items": [
     {
       "id": "tip-001",
@@ -215,12 +215,12 @@
     },
     {
       "id": "tip-011",
-      "status": "available",
-      "reservedBy": null,
+      "status": "reserved",
+      "reservedBy": "newsletter-11-8-08",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-07-21T00:00:00Z",
+      "updatedAt": "2026-09-13T22:17:45.200Z",
       "content": {
         "main": "Your future self is built by today's boring choices.",
         "description": "Strong is the goal; lean is the byproduct. Chase capability and the rest follows.",
