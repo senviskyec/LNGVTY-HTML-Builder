@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-09-18T15:26:45.156Z",
+  "updatedAt": "2026-09-18T15:31:54.427Z",
   "items": [
     {
       "id": "quote-001",
@@ -630,11 +630,11 @@
     {
       "id": "quote-049",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-15-9-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-09-18T15:26:45.155Z",
+      "updatedAt": "2026-09-18T15:31:54.427Z",
       "content": {
         "quote": "Great things are done by a series of small things brought together.",
         "credit": "Vincent van Gogh"
