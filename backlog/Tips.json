@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-09-18T15:27:50.842Z",
+  "updatedAt": "2026-09-18T15:31:52.773Z",
   "items": [
     {
       "id": "tip-001",
@@ -132,11 +132,11 @@
     {
       "id": "tip-007",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-15-9-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-09-18T15:27:50.842Z",
+      "updatedAt": "2026-09-18T15:31:52.773Z",
       "content": {
         "main": "Mobility is the retirement plan for your joints.",
         "description": "Mobility is the retirement plan for your joints. A little now saves a lot later.",
