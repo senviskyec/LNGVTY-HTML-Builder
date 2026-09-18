@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "recipes",
-  "updatedAt": "2026-09-18T15:28:07.879Z",
+  "updatedAt": "2026-09-18T15:31:53.556Z",
   "items": [
     {
       "id": "recipe-001",
@@ -457,11 +457,11 @@
     {
       "id": "recipe-014",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-15-9-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-09-18T15:28:07.879Z",
+      "updatedAt": "2026-09-18T15:31:53.556Z",
       "content": {
         "name": "Shrimp Taco Bowl",
         "image": "",
