@@ -499,9 +499,6 @@
   .evt-time{display:inline-block;background:rgba(224,90,27,.18);color:var(--accent);font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.5px;padding:3px 10px;border-radius:4px;}
   /* schedule same-day add */
   .sched-addsub{position:absolute;bottom:2px;right:21px;background:rgba(224,90,27,.9);color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;z-index:31;}
-  .nl-flip{position:absolute;top:8px;right:8px;background:rgba(224,90,27,.92);color:#fff;border:none;border-radius:5px;font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:5px 10px;cursor:pointer;display:none;z-index:32;}
-  .sec:hover .nl-flip{display:block;}
-  .nl-flip:hover{background:#c44f18;}
   .li-wrap:hover > .sched-addsub,.li-wrap:hover .li-ctrls > .sched-addsub{display:block;}
   .sched-addsub:hover{background:var(--accent);}
   .sched-cal{position:static;display:none;width:20px;height:20px;border-radius:4px;border:none;background:rgba(26,26,26,.82);color:#fff;padding:0;cursor:pointer;z-index:32;line-height:0;text-align:center;}
@@ -2259,8 +2256,7 @@ const SECTIONS = {
     desc:'A row of side-by-side images (three by default). Click “+ column” to add another image or the × on a column to remove one — the row re-flows and exports as an email-safe table.'},
 
   nlimagetext:{group:'Images',ngroup:'Images',icon:'◧',name:'Image + Text',theme:'white',mode:'newsletter',
-    html:()=>`<div style="background:var(--secbg);padding:30px 40px;position:relative;">
-      <button class="nl-flip" type="button" onclick="flipImageText(this)" title="Flip: swap the image and text sides">&#8646; Flip sides</button>
+    html:()=>`<div style="background:var(--secbg);padding:30px 40px;">
       <div class="nl-it-row" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
         <div class="nl-it-pane" style="flex:1 1 44%;min-width:180px;">
           <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
@@ -4043,6 +4039,7 @@ function controlsHTML(){
       <button class="sc-btn sc-theme" title="Cycle block shade: white / cream / gray / black / accent" onclick="cycleTheme(this)">○ White</button>
       <button class="sc-btn sc-color" title="Set this section's color" onclick="openSecColor(this)"><span class="sc-dot"></span></button>
       <button class="sc-btn sc-sync" title="Update this block to the latest version (keeps your text)" onclick="rebuildSec(this)"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M13.5 7a5.5 5.5 0 1 0-1.6 3.9"/><path d="M13.5 3.5V7H10"/></svg></button>
+      <button class="sc-btn sc-flip" title="Flip horizontally: mirror the left/right layout of this block" onclick="flipSec(this)"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><line x1="8" y1="2" x2="8" y2="14"/><path d="M6 5 2.5 8 6 11z"/><path d="M10 5l3.5 3-3.5 3z"/></svg></button>
       <button class="sc-btn drag" title="Drag to move">⠿</button>
       <button class="sc-btn" title="Up" onclick="moveSec(this,-1)">↑</button>
       <button class="sc-btn" title="Down" onclick="moveSec(this,1)">↓</button>
@@ -5449,16 +5446,30 @@ function hydrateMedia(sec){
   sec.querySelectorAll('.embed-host').forEach(renderEmbedHost);
 }
 
-/* Image + Text: swap which side the image and text sit on. We reorder the two
-   panes in the DOM (not with flex row-reverse) so the flip is real order —
-   the email export's flex-to-table pass reads children in DOM order, so this
-   keeps the exported email matching what's on the canvas. */
-function flipImageText(btn){
-  const row=btn.closest('.sec').querySelector('.nl-it-row');
-  if(!row)return;
-  const panes=row.querySelectorAll(':scope > .nl-it-pane');
-  if(panes.length<2)return;
-  row.insertBefore(panes[1],panes[0]);
+/* Flip a whole section horizontally: reverse the left-to-right order of every
+   side-by-side (horizontal flex) row inside it. Reordering the actual DOM nodes
+   — rather than using flex-direction:row-reverse — makes the flip real, so the
+   email export (whose flex-to-table pass reads children in DOM order) mirrors
+   the canvas exactly. Toggling it again restores the original order. Works on
+   any section: Image + Text, Before/After, product grids, stat rows, etc. */
+function flipSec(btn){
+  const sec=btn.closest('.sec');if(!sec)return;
+  let flippedAny=false;
+  sec.querySelectorAll('div').forEach(el=>{
+    if(el.closest('.sec-controls'))return;                 // never touch the toolbar
+    const disp=(el.style.display||'').replace(/\s/g,'');
+    if(disp!=='flex')return;
+    const dir=(el.style.flexDirection||'').toLowerCase();
+    if(dir.indexOf('column')!==-1)return;                  // only horizontal rows
+    const kids=[...el.children];
+    if(kids.length<2)return;
+    // re-append children in reverse to flip left/right order
+    for(let i=kids.length-1;i>=0;i--)el.appendChild(kids[i]);
+    flippedAny=true;
+  });
+  if(!flippedAny){toast('Nothing to flip in this block');return;}
+  sec.dataset.flipped = sec.dataset.flipped==='1' ? '0' : '1';
+  refreshState&&refreshState();
   saveStateLocal&&saveStateLocal();
 }
 
@@ -5808,7 +5819,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.8',
+  version : 'v22.9',
   name    : 'Calendars & Guides',
   date    : '28 September 2026',
 };
@@ -6637,7 +6648,7 @@ function buildExport(){
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
   clone.querySelectorAll('.sched-lctrls').forEach(td=>td.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.nl-flip,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -7571,7 +7582,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.8 "Calendars & Guides" · 28 September 2026
+**Current build:** v22.9 "Calendars & Guides" · 28 September 2026
 
 ---
 
@@ -7593,7 +7604,13 @@ is regenerated on demand. The round trip is lossless by construction.
 
 ---
 
-## v22.8 — More image blocks + flip · 28 September 2026
+## v22.9 — Flip button in the block toolbar · 28 September 2026
+
+- **New Flip button in every block’s toolbar** (the mirror icon, next to the update and drag buttons). It flips the block horizontally — mirroring the left/right layout — so it works on Image + Text, Before / After, product grids, and any side-by-side block. Click again to flip back.
+- The flip is real (the sides actually swap), so the exported email matches the canvas.
+- Replaced the earlier “Flip sides” button that sat on the Image + Text block itself (it overlapped the toolbar).
+
+## v22.8 — More image blocks · 28 September 2026
 
 - **Image + Text now has a “Flip sides” button** (top-right, on hover) that swaps which side the image and the text sit on. The swap is real, so the exported email matches the canvas.
 - **Three more blocks in the Images group:**
