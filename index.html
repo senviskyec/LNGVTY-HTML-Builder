@@ -2218,6 +2218,85 @@ const SECTIONS = {
     </div>`;},
     desc:'A grid of featured products, two per row, each with a fixed-size photo, name, blurb, add/removable detail fields, and a Shop button. Add or remove whole product cards.'},
 
+  nlbigpic:{group:'Images',ngroup:'Images',icon:'▦',name:'Big Picture',theme:'white',mode:'newsletter',
+    html:()=>`<div style="background:var(--secbg);padding:0;">
+      <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
+        <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;max-height:460px;"/>
+        <div class="media-empty" style="padding:80px 24px;text-align:center;color:#999;">
+          <div style="font-size:40px;margin-bottom:10px;">&#128247;</div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:#777;margin-bottom:4px;">Big Picture</div>
+          <div style="font-size:12px;color:#aaa;line-height:1.5;">Set a public image URL with &ldquo;Set Image URL&rdquo; below.</div>
+        </div>
+      </div>
+      <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:10px 40px 0;width:auto;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;border-radius:5px;cursor:pointer;">&#128247; Set Image URL</button>
+      ${ph('Caption — add a short line about this photo (optional).',"margin:12px 40px 0;font-size:12px;color:var(--secmuted);font-style:italic;",'p')}
+    </div>`,
+    desc:'A single full-width featured image with an optional caption. Set the image with a public URL.'},
+
+  nlimagerow:{group:'Images',ngroup:'Images',icon:'▤',name:'Image Row (columns)',theme:'white',mode:'newsletter',
+    html:()=>{
+      // one image column. Flex-basis of ~30% => the email export tableizes it to
+      // a 3-across row; add/remove columns re-flows automatically.
+      const colProto=`<div class="li-wrap" style="flex:1 1 30%;min-width:150px;position:relative;">
+        <button class="li-del" onclick="delLi(this)" style="top:6px;right:6px;z-index:5;">×</button>
+        <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
+          <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;height:150px;"/>
+          <div class="media-empty" style="padding:44px 10px;text-align:center;color:#999;">
+            <div style="font-size:26px;margin-bottom:4px;">&#128247;</div>
+            <div style="font-size:9px;color:#aaa;font-family:'Montserrat';letter-spacing:.5px;text-transform:uppercase;">Image</div>
+          </div>
+        </div>
+        <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:8px 0 0;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px;border-radius:4px;cursor:pointer;">Set image</button>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:30px 40px;">
+      ${ph('Gallery',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+      ${ph('A few moments from this week',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;line-height:1.15;color:var(--sectext);margin-bottom:18px;")}
+      ${listBlock([colProto,colProto,colProto],colProto,'column','display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;')}
+    </div>`;},
+    desc:'A row of side-by-side images (three by default). Click “+ column” to add another image or the × on a column to remove one — the row re-flows and exports as an email-safe table.'},
+
+  nlimagetext:{group:'Images',ngroup:'Images',icon:'◧',name:'Image + Text',theme:'white',mode:'newsletter',
+    html:()=>`<div style="background:var(--secbg);padding:30px 40px;">
+      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
+        <div style="flex:1 1 44%;min-width:180px;">
+          <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
+            <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;max-height:260px;"/>
+            <div class="media-empty" style="padding:60px 12px;text-align:center;color:#999;">
+              <div style="font-size:32px;margin-bottom:6px;">&#128247;</div>
+              <div style="font-size:9px;color:#aaa;font-family:'Montserrat';letter-spacing:.5px;text-transform:uppercase;">Image</div>
+            </div>
+          </div>
+          <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:8px 0 0;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px;border-radius:4px;cursor:pointer;">Set image</button>
+        </div>
+        <div style="flex:1 1 44%;min-width:200px;">
+          ${ph('Headline goes here',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;line-height:1.2;color:var(--sectext);margin-bottom:8px;")}
+          ${ph('Write a short paragraph next to the image. Great for spotlighting a member, a new piece of equipment, or a story from the week.',"font-size:13.5px;line-height:1.7;color:var(--secmuted);font-weight:300;",'p')}
+        </div>
+      </div>
+    </div>`,
+    desc:'An image beside a headline and paragraph — good for a member spotlight or a story. The image and text stack on mobile / narrow email clients.'},
+
+  nlimagecard:{group:'Images',ngroup:'Images',icon:'▣',name:'Image Card + Button',theme:'white',mode:'newsletter',
+    html:()=>`<div style="background:var(--secbg);padding:30px 40px;">
+      <div style="border:1px solid rgba(127,127,127,.18);background:var(--secbg);">
+        <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
+          <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;max-height:300px;"/>
+          <div class="media-empty" style="padding:70px 20px;text-align:center;color:#999;">
+            <div style="font-size:36px;margin-bottom:8px;">&#128247;</div>
+            <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#777;">Card Image</div>
+          </div>
+        </div>
+        <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="display:block;width:100%;border:0;border-bottom:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px;cursor:pointer;">&#128247; Set image</button>
+        <div style="padding:22px 24px 24px;text-align:center;">
+          ${ph('Card Title',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;line-height:1.15;color:var(--sectext);margin-bottom:8px;")}
+          ${ph('One or two sentences describing what this is and why it matters.',"font-size:13.5px;line-height:1.7;color:var(--secmuted);font-weight:300;margin-bottom:16px;",'p')}
+          ${btn('Learn More ›',"display:inline-block;background:var(--accent);color:#fff;font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:12px 30px;border-radius:5px;",'https://lngvtyhub.com/')}
+        </div>
+      </div>
+    </div>`,
+    desc:'A framed image with a title, description, and a linkable button below it — like the “Learn More” / “See Event Details” cards. Set the button link with the \u{1f517} control.'},
+
+
   nlquicktip:{group:'Tips',ngroup:'Newsletter',icon:'✦',name:'Quick Tip',theme:'white',mode:'newsletter',
     html:()=>{
       const para=(txt)=>`<table class="li-wrap" role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;position:relative;"><tr>
@@ -3610,7 +3689,7 @@ function inCurrentMode(s){
   if(m==='blog')return false;                        // blog sections never show in email tabs
   return m==='both'||m===railMode;                   // 'both' = graphics + newsletter
 }
-const NEWSLETTER_GROUP_ORDER=['Newsletter','Members','Recipe','Tips','Nutrition','Events','CTA'];
+const NEWSLETTER_GROUP_ORDER=['Newsletter','Images','Members','Recipe','Tips','Nutrition','Events','CTA'];
 const BLOG_GROUP_ORDER=['Header','Content','Embed','CTA'];
 const DOCS_GROUP_ORDER=['Doc Structure','Doc Content','Doc Data','Doc Planning','Doc Close'];
 function computeTabs(){
@@ -5652,9 +5731,9 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.6',
+  version : 'v22.7',
   name    : 'Calendars & Guides',
-  date    : '14 August 2026',
+  date    : '28 September 2026',
 };
 
 /* ── a small, dependency-free Markdown renderer ──
@@ -7414,7 +7493,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.6 "Calendars & Guides" · 14 August 2026
+**Current build:** v22.7 "Calendars & Guides" · 28 September 2026
 
 ---
 
@@ -7435,6 +7514,15 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.7 — Images section · 28 September 2026
+
+- **New “Images” group in the Newsletter tab** for dropping photos into a newsletter, with four blocks:
+- **Big Picture** — one full-width featured image with an optional caption (the same big-picture block, now on the newsletter side).
+- **Image Row (columns)** — a row of side-by-side images, three by default. Click “+ column” to add another or the × on a column to remove one; the row re-flows and exports as an email-safe table.
+- **Image + Text** — an image beside a headline and paragraph, good for a member spotlight or a story. Stacks on mobile.
+- **Image Card + Button** — a framed image with a title, description, and a linkable button (like a “Learn More” card).
+- Every image is set by pasting a public image URL, and all four blocks recolor with the section theme and export clean.
 
 ## v22.6 — Update a block to the latest version · 14 August 2026
 
