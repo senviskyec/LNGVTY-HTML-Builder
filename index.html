@@ -499,6 +499,9 @@
   .evt-time{display:inline-block;background:rgba(224,90,27,.18);color:var(--accent);font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:.5px;padding:3px 10px;border-radius:4px;}
   /* schedule same-day add */
   .sched-addsub{position:absolute;bottom:2px;right:21px;background:rgba(224,90,27,.9);color:#fff;border:none;border-radius:4px;font-family:'Montserrat';font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 7px;cursor:pointer;display:none;z-index:31;}
+  .nl-flip{position:absolute;top:8px;right:8px;background:rgba(224,90,27,.92);color:#fff;border:none;border-radius:5px;font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:5px 10px;cursor:pointer;display:none;z-index:32;}
+  .sec:hover .nl-flip{display:block;}
+  .nl-flip:hover{background:#c44f18;}
   .li-wrap:hover > .sched-addsub,.li-wrap:hover .li-ctrls > .sched-addsub{display:block;}
   .sched-addsub:hover{background:var(--accent);}
   .sched-cal{position:static;display:none;width:20px;height:20px;border-radius:4px;border:none;background:rgba(26,26,26,.82);color:#fff;padding:0;cursor:pointer;z-index:32;line-height:0;text-align:center;}
@@ -2256,9 +2259,10 @@ const SECTIONS = {
     desc:'A row of side-by-side images (three by default). Click “+ column” to add another image or the × on a column to remove one — the row re-flows and exports as an email-safe table.'},
 
   nlimagetext:{group:'Images',ngroup:'Images',icon:'◧',name:'Image + Text',theme:'white',mode:'newsletter',
-    html:()=>`<div style="background:var(--secbg);padding:30px 40px;">
-      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
-        <div style="flex:1 1 44%;min-width:180px;">
+    html:()=>`<div style="background:var(--secbg);padding:30px 40px;position:relative;">
+      <button class="nl-flip" type="button" onclick="flipImageText(this)" title="Flip: swap the image and text sides">&#8646; Flip sides</button>
+      <div class="nl-it-row" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
+        <div class="nl-it-pane" style="flex:1 1 44%;min-width:180px;">
           <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
             <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;max-height:260px;"/>
             <div class="media-empty" style="padding:60px 12px;text-align:center;color:#999;">
@@ -2268,13 +2272,13 @@ const SECTIONS = {
           </div>
           <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:8px 0 0;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px;border-radius:4px;cursor:pointer;">Set image</button>
         </div>
-        <div style="flex:1 1 44%;min-width:200px;">
+        <div class="nl-it-pane" style="flex:1 1 44%;min-width:200px;">
           ${ph('Headline goes here',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;line-height:1.2;color:var(--sectext);margin-bottom:8px;")}
           ${ph('Write a short paragraph next to the image. Great for spotlighting a member, a new piece of equipment, or a story from the week.',"font-size:13.5px;line-height:1.7;color:var(--secmuted);font-weight:300;",'p')}
         </div>
       </div>
     </div>`,
-    desc:'An image beside a headline and paragraph — good for a member spotlight or a story. The image and text stack on mobile / narrow email clients.'},
+    desc:'An image beside a headline and paragraph — good for a member spotlight or a story. Use “Flip sides” to swap which side the image is on. Stacks on mobile / narrow email clients.'},
 
   nlimagecard:{group:'Images',ngroup:'Images',icon:'▣',name:'Image Card + Button',theme:'white',mode:'newsletter',
     html:()=>`<div style="background:var(--secbg);padding:30px 40px;">
@@ -2295,6 +2299,66 @@ const SECTIONS = {
       </div>
     </div>`,
     desc:'A framed image with a title, description, and a linkable button below it — like the “Learn More” / “See Event Details” cards. Set the button link with the \u{1f517} control.'},
+
+
+  nlimagegrid:{group:'Images',ngroup:'Images',icon:'▦',name:'Image Grid (2×2)',theme:'white',mode:'newsletter',
+    html:()=>{
+      // one tile; ~48% basis => two across, wrapping to a 2x2 on export.
+      const tileProto=`<div class="li-wrap" style="flex:1 1 46%;min-width:150px;position:relative;">
+        <button class="li-del" onclick="delLi(this)" style="top:6px;right:6px;z-index:5;">×</button>
+        <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
+          <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;height:150px;"/>
+          <div class="media-empty" style="padding:44px 10px;text-align:center;color:#999;">
+            <div style="font-size:26px;margin-bottom:4px;">&#128247;</div>
+            <div style="font-size:9px;color:#aaa;font-family:'Montserrat';letter-spacing:.5px;text-transform:uppercase;">Image</div>
+          </div>
+        </div>
+        <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:8px 0 0;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px;border-radius:4px;cursor:pointer;">Set image</button>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:30px 40px;">
+      ${ph('Gallery',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+      ${ph('This month in photos',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;line-height:1.15;color:var(--sectext);margin-bottom:18px;")}
+      ${listBlock([tileProto,tileProto,tileProto,tileProto],tileProto,'photo','display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;')}
+    </div>`;},
+    desc:'A 2×2 grid of photos (four by default). Add or remove tiles with “+ photo” / the × on a tile; exports as an email-safe table.'},
+
+  nlphotobanner:{group:'Images',ngroup:'Images',icon:'▰',name:'Photo Banner (text overlay)',theme:'dark',mode:'newsletter',
+    html:()=>`<div style="background:var(--secbg);padding:0;">
+      <div class="media-host" data-media-kind="image" data-src="" style="position:relative;background:#2a2a2a;background-size:cover;background-position:center;min-height:220px;">
+        <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;max-height:340px;"/>
+        <div class="media-empty" style="padding:60px 20px;text-align:center;color:#bbb;">
+          <div style="font-size:34px;margin-bottom:6px;">&#128247;</div>
+          <div style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#bbb;">Banner Image — set a wide photo below</div>
+        </div>
+      </div>
+      <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="display:block;width:100%;border:0;background:rgba(224,90,27,0.10);color:var(--accent);font-family:'Montserrat';font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px;cursor:pointer;">&#128247; Set banner image</button>
+      <div style="background:#1a1a1a;padding:22px 28px;text-align:center;">
+        ${ph('Announcement Headline',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;line-height:1.15;color:#fff;text-transform:uppercase;margin-bottom:6px;")}
+        ${ph('A short supporting line under the headline.',"font-size:13px;line-height:1.6;color:#cfcfcf;font-weight:300;",'p')}
+      </div>
+    </div>`,
+    desc:'A wide photo banner with a headline and subtext on a dark bar beneath it — good for a big announcement. The caption bar keeps text readable in every email client.'},
+
+  nlbeforeafter:{group:'Images',ngroup:'Images',icon:'◑',name:'Before / After',theme:'white',mode:'newsletter',
+    html:()=>{
+      const pane=(label)=>`<div style="flex:1 1 46%;min-width:150px;">
+        <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);text-align:center;margin-bottom:8px;">${label}</div>
+        <div class="media-host" data-media-kind="image" data-src="" style="background:#f0f0f0;">
+          <img class="media-el" src="" alt="" style="width:100%;display:none;object-fit:cover;height:220px;"/>
+          <div class="media-empty" style="padding:70px 10px;text-align:center;color:#999;">
+            <div style="font-size:28px;margin-bottom:4px;">&#128247;</div>
+            <div style="font-size:9px;color:#aaa;font-family:'Montserrat';letter-spacing:.5px;text-transform:uppercase;">Image</div>
+          </div>
+        </div>
+        <button class="media-edit-btn" type="button" onclick="openMediaEditor(this)" style="margin:8px 0 0;width:100%;border:1px dashed var(--accent);background:rgba(224,90,27,0.06);color:var(--accent);font-family:'Montserrat';font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:6px;border-radius:4px;cursor:pointer;">Set image</button>
+      </div>`;
+      return `<div style="background:var(--secbg);padding:30px 40px;">
+      ${ph('Transformation',"font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;")}
+      ${ph('Member progress',"font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;line-height:1.15;color:var(--sectext);margin-bottom:18px;")}
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;">${pane('Before')}${pane('After')}</div>
+      ${ph('A line of context about this transformation (optional).',"margin-top:12px;font-size:12px;color:var(--secmuted);font-style:italic;text-align:center;",'p')}
+    </div>`;},
+    desc:'Two labeled images side by side — Before and After — for member transformations or progress. Stacks on mobile.'},
 
 
   nlquicktip:{group:'Tips',ngroup:'Newsletter',icon:'✦',name:'Quick Tip',theme:'white',mode:'newsletter',
@@ -5385,6 +5449,19 @@ function hydrateMedia(sec){
   sec.querySelectorAll('.embed-host').forEach(renderEmbedHost);
 }
 
+/* Image + Text: swap which side the image and text sit on. We reorder the two
+   panes in the DOM (not with flex row-reverse) so the flip is real order —
+   the email export's flex-to-table pass reads children in DOM order, so this
+   keeps the exported email matching what's on the canvas. */
+function flipImageText(btn){
+  const row=btn.closest('.sec').querySelector('.nl-it-row');
+  if(!row)return;
+  const panes=row.querySelectorAll(':scope > .nl-it-pane');
+  if(panes.length<2)return;
+  row.insertBefore(panes[1],panes[0]);
+  saveStateLocal&&saveStateLocal();
+}
+
 /* ═══════════ MERGE TAG HOTKEYS ═══════════ */
 const BASE_HK=[
   {label:'First Name',tag:'{{contact.first_name}}'},
@@ -5731,7 +5808,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.7',
+  version : 'v22.8',
   name    : 'Calendars & Guides',
   date    : '28 September 2026',
 };
@@ -6560,7 +6637,7 @@ function buildExport(){
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
   clone.querySelectorAll('.sched-lctrls').forEach(td=>td.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.nl-flip,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -6650,6 +6727,7 @@ function buildExport(){
   });
   clone.querySelectorAll('.li-list').forEach(e=>{e.classList.remove('li-list');e.removeAttribute('data-proto');if(!e.getAttribute('class'))e.removeAttribute('class');});
   clone.querySelectorAll('.li-wrap').forEach(e=>{e.classList.remove('li-wrap');if(!e.getAttribute('class'))e.removeAttribute('class');});
+  clone.querySelectorAll('.nl-it-row,.nl-it-pane').forEach(e=>{e.classList.remove('nl-it-row');e.classList.remove('nl-it-pane');if(!e.getAttribute('class'))e.removeAttribute('class');});
   clone.querySelectorAll('.tag-wrap').forEach(e=>{e.classList.remove('tag-wrap');e.removeAttribute('data-proto');if(!e.getAttribute('class'))e.removeAttribute('class');});
   clone.querySelectorAll('.tag-pill').forEach(e=>{e.classList.remove('tag-pill');if(!e.getAttribute('class'))e.removeAttribute('class');});
   clone.querySelectorAll('.stat-row').forEach(e=>{e.classList.remove('stat-row');e.removeAttribute('data-proto');if(!e.getAttribute('class'))e.removeAttribute('class');});
@@ -7493,7 +7571,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.7 "Calendars & Guides" · 28 September 2026
+**Current build:** v22.8 "Calendars & Guides" · 28 September 2026
 
 ---
 
@@ -7514,6 +7592,14 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.8 — More image blocks + flip · 28 September 2026
+
+- **Image + Text now has a “Flip sides” button** (top-right, on hover) that swaps which side the image and the text sit on. The swap is real, so the exported email matches the canvas.
+- **Three more blocks in the Images group:**
+- **Image Grid (2×2)** — a four-photo grid; add or remove tiles with “+ photo”.
+- **Photo Banner (text overlay)** — a wide photo with a headline and subtext on a dark bar beneath it, for a big announcement.
+- **Before / After** — two labeled images side by side for member transformations or progress.
 
 ## v22.7 — Images section · 28 September 2026
 
