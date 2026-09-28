@@ -3974,7 +3974,7 @@ function showSecPreview(key,s,anchor){
   scale.innerHTML=`<div style="width:620px;background:#fff;">${html}</div>`;
   // make the preview legible: fill empty ghost text with its placeholder, drop editor-only controls
   const previewRoot=scale.firstElementChild;
-  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  previewRoot.querySelectorAll('.li-add,.li-del,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.nl-flip,.btn-del,.tl-toggle,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.sec-controls,.sec-tag,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   previewRoot.querySelectorAll('[data-ph]').forEach(e=>{
     if(e.textContent.trim().length===0 && !e.querySelector('img,iframe,video,audio')){e.textContent=e.getAttribute('data-ph')||'';}
     e.classList.remove('is-empty');
@@ -4048,6 +4048,9 @@ function controlsHTML(){
     </div>`;
 }
 function wireSec(sec){
+  // Purge legacy per-block flip buttons from newsletters saved before the flip
+  // control moved into the section toolbar (v22.9). Harmless if none present.
+  sec.querySelectorAll('.nl-flip').forEach(e=>e.remove());
   const handle=sec.querySelector('.sc-btn.drag');
   if(handle){
     handle.addEventListener('mousedown',()=>sec.setAttribute('draggable','true'));
@@ -5819,7 +5822,7 @@ let notesEditing=false;
    Version & Notes and is quoted on the feedback form, so a bug report always
    carries the build it came from. */
 const BUILD={
-  version : 'v22.9',
+  version : 'v22.10',
   name    : 'Calendars & Guides',
   date    : '28 September 2026',
 };
@@ -6648,7 +6651,7 @@ function buildExport(){
   // strip builder-only chrome
   clone.querySelectorAll('.li-ctrls,.drop-line').forEach(e=>e.remove());
   clone.querySelectorAll('.sched-lctrls').forEach(td=>td.remove());
-  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
+  clone.querySelectorAll('.sec-controls,.sec-tag,.li-del,.li-add,.li-move,.li-drag,.tag-add,.stat-add,.sched-addsub,.sched-cal,.link-edit,.embed-edit-btn,.media-edit-btn,.nl-flip,.tl-toggle,.btn-del,.nl-pic-btn,.nl-pictoggle,.nl-steptoggle,.nl-rpic-btn,.nl-rpictoggle,.nl-ppic-btn,.nl-pptoggle,.fill-bar,.doc-hue,.doc-extra,.doc-extra-btns').forEach(e=>e.remove());
   const hint=clone.querySelector('#emptyHint');if(hint)hint.remove();
 
   // bake per-section theme vars onto each section so export is self-contained
@@ -7582,7 +7585,7 @@ function defaultNotes(){return `# LNGVTY Builder — Release Notes
 A browser-based builder for LNGVTY Hub's newsletters, graphics, and web pages.
 One static HTML file. No server, no build step, no runtime cost.
 
-**Current build:** v22.9 "Calendars & Guides" · 28 September 2026
+**Current build:** v22.10 "Calendars & Guides" · 28 September 2026
 
 ---
 
@@ -7603,6 +7606,10 @@ is regenerated on demand. The round trip is lossless by construction.
 > truth. Persist the input; re-derive the output.
 
 ---
+
+## v22.10 — Clean up the old flip button · 28 September 2026
+
+- **Removed the leftover “Flip sides” button** that still showed up on Image + Text blocks in older saved newsletters (and in their previews/exports). Opening an affected newsletter now clears it automatically, and it no longer appears in previews or the exported email. Use the flip button in the block toolbar instead (added in v22.9).
 
 ## v22.9 — Flip button in the block toolbar · 28 September 2026
 
