@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-10-04T20:53:13.362Z",
+  "updatedAt": "2026-10-05T15:00:42.809Z",
   "items": [
     {
       "id": "tip-001",
@@ -279,11 +279,11 @@
     {
       "id": "tip-014",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-17-9-27",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-10-04T20:53:13.362Z",
+      "updatedAt": "2026-10-05T15:00:42.809Z",
       "content": {
         "main": "The goal isn't perfect — it's never two misses in a row.",
         "description": "Discipline is remembering what you actually want. Keep the goal in view when it's hard.",
