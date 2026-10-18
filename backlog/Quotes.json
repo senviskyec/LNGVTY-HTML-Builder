@@ -1,7 +1,7 @@
 {
   "schema": "lngvty.content/v1",
   "type": "quotes",
-  "updatedAt": "2026-10-18T18:09:28.845Z",
+  "updatedAt": "2026-10-18T18:27:43.772Z",
   "items": [
     {
       "id": "quote-001",
@@ -84,11 +84,11 @@
     {
       "id": "quote-007",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-18-10-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-10-18T18:09:28.845Z",
+      "updatedAt": "2026-10-18T18:27:43.772Z",
       "content": {
         "quote": "It does not matter how slowly you go as long as you do not stop.",
         "credit": "Confucius"
@@ -175,11 +175,11 @@
     {
       "id": "quote-014",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-18-10-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-10-04T20:50:35.637Z",
+      "updatedAt": "2026-10-18T18:27:43.772Z",
       "content": {
         "quote": "An early-morning walk is a blessing for the whole day.",
         "credit": "Henry David Thoreau"
