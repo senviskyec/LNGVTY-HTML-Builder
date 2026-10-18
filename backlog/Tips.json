@@ -1,16 +1,16 @@
 {
   "schema": "lngvty.content/v1",
   "type": "tips",
-  "updatedAt": "2026-10-18T18:16:59.431Z",
+  "updatedAt": "2026-10-18T18:27:41.694Z",
   "items": [
     {
       "id": "tip-001",
       "status": "reserved",
-      "reservedBy": "draft",
+      "reservedBy": "newsletter-18-10-18",
       "publishedIn": null,
       "publishedDate": null,
       "createdAt": "2026-07-20T00:00:00Z",
-      "updatedAt": "2026-10-18T18:16:59.431Z",
+      "updatedAt": "2026-10-18T18:27:41.694Z",
       "content": {
         "main": "Consistency beats intensity — show up for the small habit every day.",
         "description": "Small habits, done daily, beat heroic efforts you can't sustain. Here's where to put your focus this week.",
